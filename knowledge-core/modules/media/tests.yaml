@@ -140,3 +140,28 @@ tests:
       story: "US-002"
       spec: "tests/regression/media-list.regression.spec.js"
     # test.fail() en el spec: rojo esperado hasta corregir AQ2#11.
+
+  - id: "MED-TC-012"
+    titulo: "Abrir un media muestra el form de Basic Information"
+    modulo: "media"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["MED-AC-11"]
+      mitigates: []
+      story: "US-003"
+      spec: "tests/regression/media-detail.regression.spec.js"
+
+  - id: "MED-TC-013"
+    titulo: "Editar descripcion y guardar persiste (verificado por API)"
+    modulo: "media"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["MED-AC-12"]
+      mitigates: ["MED-RISK-007"]
+      story: "US-003"
+      spec: "tests/regression/media-detail.regression.spec.js"
+    # Self-contained: fixture transcodedMedia (ingesta remota + gate transcoding + cleanup).

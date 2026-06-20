@@ -70,3 +70,31 @@ stories:
     notas: |
       MED-AC-10 esta en rojo (bug AQ2#11): el estado de filtros/per-page no se
       serializa en la URL (solo skip/sort). Test vivo marcado test.fail().
+
+  - id: "US-003"
+    titulo: "Editar la informacion basica de un media"
+    rol: "administrador de contenido"
+    meta: "actualizar titulo, descripcion y categoria de un media"
+    beneficio: "mantener los metadatos correctos sin re-subir el contenido"
+    descripcion: |
+      Como administrador de contenido,
+      quiero editar la informacion basica de un media y guardarla,
+      para corregir o enriquecer sus metadatos.
+
+    acceptance_criteria:
+      - id: "MED-AC-11"
+        criterio: "Abrir un media muestra el form de Basic Information (titulo, descripcion, guardar)"
+      - id: "MED-AC-12"
+        criterio: "Editar la descripcion y guardar persiste el cambio (verificable por API)"
+
+    prioridad: "high"
+    tipo: "feature"
+    dependencias:
+      - "auth (sesion iniciada)"
+      - "api/media (provisioning self-contained: ingesta remota + transcoding)"
+
+    notas: |
+      El test crea su propio media por ingesta remota (gate de transcoding) y lo
+      borra al terminar. La cuenta tiene force_category_fill: se asigna categoria
+      antes de guardar. Riesgo conocido al guardar: MED-RISK-007 (#12).
+      Gap de testabilidad: campos de edicion sin marca sm: (#13).

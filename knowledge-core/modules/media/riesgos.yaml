@@ -128,3 +128,24 @@ riesgos:
       - "Jurrego1771/AQ2#11"
     prioridad_prueba: "MUST"
     nota_industria: "Nielsen #3 y #7. Deep-link de estado de listado estandar en CMS de media."
+
+  - id: "MED-RISK-007"
+    severidad: "medium"
+    probabilidad: "medium"
+    titulo: "Algunos media no se pueden guardar: POST 404 INVALID_SHOW_NOT_FOUND sin recurso en la UI"
+    descripcion: >
+      Al guardar ciertos media, el POST /api/media/:id responde 404 con
+      INVALID_SHOW_NOT_FOUND y el cliente muestra "The show you are trying to
+      save no longer exists". El media reporta show:null y la UI no expone campo
+      de show para corregirlo, dejando el media inguardable sin workaround.
+    detonador:
+      - "Guardar un media afectado (referencia show/season/episode no resoluble en backend)"
+    mitigacion: >
+      El save debe ignorar/limpiar la referencia huerfana o exponer el campo para
+      corregirla. Mensaje accionable.
+    archivos_afectados:
+      - "src/client/media.coffee"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#12"
+    prioridad_prueba: "SHOULD"
+    nota_industria: "Nielsen #9 (recuperarse de errores). 2/5 media probados afectados."

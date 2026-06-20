@@ -138,6 +138,18 @@ class MediaPage {
     const match = /skip=(\d+)/.exec(new URL(this.page.url()).hash);
     return match ? Number(match[1]) : 0;
   }
+
+  /**
+   * Id del primer media visible del listado (derivado de la marca
+   * media-container-<id>). Para abrir un detalle sin hardcodear ids.
+   * @returns {Promise<string|null>}
+   */
+  async firstMediaId() {
+    await this.items.first().waitFor({ state: 'visible', timeout: 10_000 });
+    const mark = await this.items.first().getAttribute('sm');
+    const match = mark && /media-container-(.+)$/.exec(mark);
+    return match ? match[1] : null;
+  }
 }
 
 module.exports = { MediaPage };

@@ -1,28 +1,59 @@
 // @ts-check
 const base = require('@playwright/test');
 const { MediaPage } = require('../pages/media.page');
+const { MediaDetailPage } = require('../pages/media-detail.page');
 const { MediaClient } = require('../api/media.client');
-const { BaseClient } = require('../api/base.client');
+const { ResourceCleaner } = require('./resource-cleaner');
+const { createTranscodedMedia } = require('../api/media-factory');
+const { env } = require('../utils/env');
+
+const AUTH_FILE = '.auth/user.json';
+// Video público corto y liviano para ingesta remota (transcoding rápido).
+// Configurable por env; default reproducible.
+const SAMPLE_VIDEO_URL =
+  process.env.QA_SAMPLE_VIDEO_URL ||
+  'https://cdn.pixabay.com/video/2022/10/01/133165-755982945_tiny.mp4';
 
 /**
- * Fixtures compartidas: inyectan Page Objects y clientes API ya listos.
+ * Fixtures compartidas: Page Objects, contexto API autenticado por sesión, y
+ * provisioning de datos self-contained (crear + limpiar).
  * Uso en specs:  const { test, expect } = require('../../src/fixtures');
  */
 const test = base.test.extend({
-  // Page Object de Media
+  // Page Object de Media (listado)
   mediaPage: async ({ page }, use) => {
     await use(new MediaPage(page));
   },
 
-  // Cliente API autenticado, reutiliza el storageState del login.
-  apiContext: async ({}, use) => {
-    const ctx = await BaseClient.newContext();
+  // Page Object del detalle/edición de Media
+  mediaDetailPage: async ({ page }, use) => {
+    await use(new MediaDetailPage(page));
+  },
+
+  // APIRequestContext autenticado por SESIÓN (cookies del storageState del
+  // login). Autoriza /api/media igual que la app, sin token aparte.
+  api: async ({ playwright }, use) => {
+    const ctx = await playwright.request.newContext({
+      baseURL: env.baseURL,
+      storageState: AUTH_FILE,
+    });
     await use(ctx);
     await ctx.dispose();
   },
 
-  mediaClient: async ({ apiContext }, use) => {
-    await use(new MediaClient(apiContext));
+  mediaClient: async ({ api }, use) => {
+    await use(new MediaClient(api));
+  },
+
+  // Media REAL self-contained: ingesta remota + gate de transcoding; se borra
+  // al terminar (teardown idempotente). El test recibe el id ya listo.
+  transcodedMedia: async ({ api }, use, testInfo) => {
+    const cleaner = new ResourceCleaner(api);
+    const fileName = `[QA-AUTO] ${testInfo.title.slice(0, 40)} ${Date.now()}`;
+    const id = await createTranscodedMedia(api, { fileUrl: SAMPLE_VIDEO_URL, fileName });
+    cleaner.register('media', id);
+    await use(id);
+    await cleaner.clean();
   },
 });
 
