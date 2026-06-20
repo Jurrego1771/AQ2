@@ -98,3 +98,69 @@ stories:
       borra al terminar. La cuenta tiene force_category_fill: se asigna categoria
       antes de guardar. Riesgo conocido al guardar: MED-RISK-007 (#12).
       Gap de testabilidad: campos de edicion sin marca sm: (#13).
+
+  - id: "US-004"
+    titulo: "Agregar subtitulos a un media (upload y auto-generado por IA)"
+    rol: "administrador de contenido"
+    meta: "subir o generar subtitulos para un media"
+    beneficio: "hacer el contenido accesible y multilenguaje sin editar el video"
+    descripcion: |
+      Como administrador de contenido,
+      quiero subir un archivo de subtitulos o generarlo por IA,
+      para ofrecer captions en uno o varios idiomas.
+
+    acceptance_criteria:
+      - id: "MED-AC-13"
+        criterio: "El upload de subtitulo exige idioma + nombre + archivo: Save sigue deshabilitado hasta tener los tres"
+      - id: "MED-AC-14"
+        criterio: "El input de archivo de subtitulo restringe a formatos .vtt/.ass/.srt"
+      - id: "MED-AC-15"
+        criterio: "La generacion por IA exige nombre + idioma principal: Generate deshabilitado hasta tenerlos"
+
+    prioridad: "high"
+    tipo: "feature"
+    dependencias:
+      - "auth (sesion iniciada)"
+      - "api/media/:id/subtitle"
+      - "media transcodificado (provisioning self-contained)"
+
+    notas: |
+      Los triggers "Upload Subtitles"/"Auto Generate" viven en seccion colapsable.
+      Backend convierte srt->vtt. Generacion IA es async (socket load-subtitles/error-subtitle):
+      el spec valida el gate de validacion, no el resultado async del transcoder de speech.
+
+  - id: "US-005"
+    titulo: "Crear y validar ad markers (breaks) en un media"
+    rol: "administrador de contenido / ad ops"
+    meta: "insertar marcadores de ad break en posiciones validas del video"
+    beneficio: "monetizar el contenido con cortes publicitarios en los tiempos correctos"
+    descripcion: |
+      Como ad ops,
+      quiero crear ad markers en tiempos validos y que el sistema rechace tiempos invalidos,
+      para insertar breaks utiles sin posiciones erroneas.
+
+    acceptance_criteria:
+      - id: "MED-AC-16"
+        criterio: "Crear un ad marker via modal con un tiempo valido (0 < t < duracion) lo agrega a la tabla"
+      - id: "MED-AC-17"
+        criterio: "Un tiempo con formato invalido es rechazado con alerta y sin escritura (modal abierto)"
+      - id: "MED-AC-18"
+        criterio: "Un tiempo mayor a la duracion es rechazado con 'Time exceeds video duration'"
+      - id: "MED-AC-19"
+        criterio: "Una posicion fuera de rango (>= duracion o <= 0) debe rechazarse server-side, no solo en el modal"
+      - id: "MED-AC-20"
+        criterio: "Un ad marker manual debe ser distinguible (nombre no fijo 'Smart Ad Break' o editable)"
+
+    prioridad: "high"
+    tipo: "feature"
+    dependencias:
+      - "auth (sesion iniciada)"
+      - "api/media/:id/track"
+      - "media transcodificado con duracion conocida (provisioning self-contained)"
+
+    notas: |
+      MED-AC-19 y MED-AC-20 estan en rojo (bugs #15 y #14): tests vivos test.fail().
+      new-ad-marker crea desde player.currentTime sin confirmacion; create-ad-marker abre modal
+      manual. Ad markers cargan async (socket load-ad-tracks) -> esperar con expect.poll.
+
+  # US-006 (thumbnails/preview) se movio al epic thumbnails-management (modulo thumbnails, PFX THM).

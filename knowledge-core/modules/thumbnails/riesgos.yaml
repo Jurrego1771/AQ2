@@ -1,0 +1,31 @@
+# Riesgos - Modulo Thumbnails. Poblado desde exploracion en vivo (dev) + codigo sm2.
+# Defectos = issues GitHub (Jurrego1771/AQ2#N).
+version: 1
+modulo: "thumbnails"
+ultima_actualizacion: '2026-06-20'
+
+riesgos:
+  - id: "THM-RISK-1"
+    severidad: "medium"
+    probabilidad: "high"
+    titulo: "Replace de media no regenera el sprite/VTT de timeline (vtt_created no se resetea)"
+    descripcion: >
+      Al reemplazar el video de un media (replace por ingesta remota/upload con media_id),
+      se regeneran metas, thumbnails y el preview clip, pero el sprite de la linea de tiempo
+      (preview_<id>.jpg) y su preview_<id>.vtt quedan byte-identicos a los del video anterior.
+      El seek-preview (scrubbing) del player muestra frames del video viejo y el VTT mapea
+      tiles que ya no corresponden.
+    detonador:
+      - "Reemplazar el video de un media y revisar el sprite/VTT (preview_<id>.jpg/.vtt)"
+    mitigacion: >
+      En notify_status.js (bloque media_replaced) resetear media.vtt_created = false junto a
+      is_initialized/preview, para que create_vtt (gated por !vtt_created) regenere el sprite.
+    archivos_afectados:
+      - "src/server/routes/api/-/media/notify_status.js"
+      - "src/server/fn.js"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#16"
+    prioridad_prueba: "MUST"
+    nota_industria: >
+      Integridad de contenido tras edicion. El seek-preview (sprite VTT) es estandar en players
+      (YouTube/JW/Brightcove); debe reflejar el video vigente.

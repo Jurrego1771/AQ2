@@ -1,0 +1,83 @@
+# Tests - Modulo Thumbnails. Definicion (sin estado de ejecucion: eso es derivado).
+# refs = FUENTE UNICA de los vinculos. El spec lleva en su titulo solo el id
+# de correlacion @THM-TC-N (+ la capa @smoke/@regression).
+version: 1
+modulo: "thumbnails"
+ultima_actualizacion: '2026-06-20'
+
+tests:
+  # ---- US-006: portada / preview ----
+  - id: "THM-TC-1"
+    titulo: "Setear un thumbnail como default cambia is_default (verificado por API)"
+    modulo: "thumbnails"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["THM-AC-1"]
+      mitigates: []
+      story: "US-006"
+      spec: "tests/regression/thumbnails.regression.spec.js"
+
+  - id: "THM-TC-2"
+    titulo: "Subir una imagen agrega un thumbnail que persiste"
+    modulo: "thumbnails"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["THM-AC-2"]
+      mitigates: []
+      story: "US-006"
+      spec: "tests/regression/thumbnails.regression.spec.js"
+
+  - id: "THM-TC-3"
+    titulo: "Regenerar el preview encola un job y responde OK con jobId"
+    modulo: "thumbnails"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["THM-AC-3"]
+      mitigates: []
+      story: "US-006"
+      spec: "tests/regression/thumbnails.regression.spec.js"
+
+  # ---- US-007: sprite/VTT de timeline ----
+  - id: "THM-TC-4"
+    titulo: "El sprite JPEG y el VTT son consistentes (grid==dims, tile uniforme, cues==tiles)"
+    modulo: "thumbnails"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["THM-AC-5", "THM-AC-6", "THM-AC-7"]
+      mitigates: []
+      story: "US-007"
+      spec: "tests/regression/thumbnails-sprite.regression.spec.js"
+
+  # ---- US-008: replace actualiza imagenes derivadas ----
+  - id: "THM-TC-5"
+    titulo: "Replace regenera los thumbnails: ninguno referencia metas del video anterior"
+    modulo: "thumbnails"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["THM-AC-8"]
+      mitigates: []
+      story: "US-008"
+      spec: "tests/regression/thumbnails-replace.regression.spec.js"
+
+  - id: "THM-TC-6"
+    titulo: "Replace regenera el sprite/VTT de timeline [prueba viva BUG]"
+    modulo: "thumbnails"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["THM-AC-9"]
+      mitigates: ["THM-RISK-1"]
+      story: "US-008"
+      spec: "tests/regression/thumbnails-replace.regression.spec.js"
+    # test.fail() en el spec: rojo esperado hasta corregir AQ2#16.

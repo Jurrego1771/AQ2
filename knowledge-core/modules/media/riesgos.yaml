@@ -149,3 +149,52 @@ riesgos:
       - "Jurrego1771/AQ2#12"
     prioridad_prueba: "SHOULD"
     nota_industria: "Nielsen #9 (recuperarse de errores). 2/5 media probados afectados."
+
+  - id: "MED-RISK-008"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "Ad markers manuales etiquetados 'Smart Ad Break' y nombre no editable"
+    descripcion: >
+      Todo ad marker creado manualmente (via 'Add ad marker' o el modal 'Create Ad
+      Marker') recibe el nombre fijo 'Smart Ad Break', el mismo de los breaks
+      generados por el feature de IA. El campo de nombre de la fila esta disabled,
+      asi que no se puede renombrar. No hay forma de distinguir un break manual de
+      uno automatico, lo que confunde reporting/ad ops.
+    detonador:
+      - "Crear un ad marker manual por cualquiera de las dos vias"
+    mitigacion: >
+      Nombre por defecto neutro (ej. 'Ad Break') para markers manuales o permitir
+      editarlo; reservar 'Smart Ad Break' para los generados por IA.
+    archivos_afectados:
+      - "src/client/media.coffee"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#14"
+    prioridad_prueba: "SHOULD"
+    nota_industria: >
+      Nielsen #2 (lenguaje honesto) y #4 (consistencia). IAB: trazabilidad del origen del break.
+
+  - id: "MED-RISK-009"
+    severidad: "low"
+    probabilidad: "medium"
+    titulo: "Posicion de ad marker sin validacion server-side; quick-add y API la saltan"
+    descripcion: >
+      La unica validacion de rango vive en el modal cliente 'Create Ad Marker'
+      (rechaza position > duration, con '>' no '>=', sin cota inferior). Se saltea
+      por (a) el quick-add 'Add ad marker' (new-ad-marker) que crea desde el
+      playhead sin validar, y (b) la API POST /track, que guarda req.body.position
+      tal cual (track/create.js no valida). Un break >= duracion nunca se dispara;
+      uno <= 0 se solapa con preroll.
+    detonador:
+      - "Quick-add 'Add ad marker' con el playhead al final (position == duracion)"
+      - "POST /api/media/:id/track con position > duration (verificado: persiste)"
+    mitigacion: >
+      Validar 0 < position < duration en el servidor (track/create.js) y endurecer
+      el cliente a rango abierto (create-marker-btn, save-track).
+    archivos_afectados:
+      - "src/server/routes/api/media/track/create.js"
+      - "src/client/media.coffee"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#15"
+    prioridad_prueba: "SHOULD"
+    nota_industria: >
+      Nielsen #5 (prevencion de errores). Validacion server-side: no confiar solo en el cliente.

@@ -1,0 +1,98 @@
+# Historias de Usuario - Epic Thumbnails Management
+# Solo intencion: US + AC. Los vinculos a tests/riesgos los declara el test
+# (modules/thumbnails/tests.yaml -> refs). AC ids unicos por modulo: THM-AC-N.
+version: 1
+epic: "Thumbnails Management"
+ultima_actualizacion: '2026-06-20'
+
+stories:
+  - id: "US-006"
+    titulo: "Gestionar el thumbnail (portada) y el preview de un media"
+    rol: "administrador de contenido"
+    meta: "elegir la imagen destacada y el preview de un media"
+    beneficio: "presentar el contenido con la portada y el avance correctos en los players"
+    descripcion: |
+      Como administrador de contenido,
+      quiero elegir cual thumbnail es el default, subir uno propio y regenerar el preview,
+      para controlar como se ve mi media en listados y reproductores.
+
+    acceptance_criteria:
+      - id: "THM-AC-1"
+        criterio: "Marcar un thumbnail como default mueve is_default a ese thumbnail (verificable por API)"
+      - id: "THM-AC-2"
+        criterio: "Subir una imagen agrega un thumbnail que persiste y queda seleccionable"
+      - id: "THM-AC-3"
+        criterio: "Regenerar el preview (desde una posicion) encola un job y responde OK con jobId"
+      - id: "THM-AC-4"
+        criterio: "No se puede borrar el ultimo thumbnail; reemplazar preview advierte que el previo se pierde"
+
+    prioridad: "high"
+    tipo: "feature"
+    dependencias:
+      - "auth (sesion iniciada)"
+      - "api/media/:id/thumb, /thumbnail/upload, /preview"
+      - "media transcodificado con thumbnails+preview generados (provisioning self-contained)"
+
+    notas: |
+      La UI agrupa thumbnails por timestamp (muestra un representativo por segundo); is_default
+      aplica al grupo. El upload persiste el thumb antes del crop (crop opcional, Jcrop sin
+      seleccion default). El gate de transcoding del fixture NO garantiza thumbnails/preview listos
+      (pipeline async posterior): los tests esperan readiness con expect.poll. THM-AC-4 sin test
+      automatizado (verificado en exploracion).
+
+  - id: "US-007"
+    titulo: "El sprite de timeline y su VTT tienen dimensiones correctas y consistentes"
+    rol: "espectador / integrador de player"
+    meta: "ver miniaturas correctas al hacer seek (scrubbing) en el reproductor"
+    beneficio: "navegar el video con un preview fiel de cada posicion"
+    descripcion: |
+      Como espectador,
+      quiero que el seek-preview muestre miniaturas correctas y bien recortadas,
+      para ubicar visualmente una posicion del video antes de saltar a ella.
+
+    acceptance_criteria:
+      - id: "THM-AC-5"
+        criterio: "Las dimensiones del sprite JPEG coinciden con la grilla del VTT (cols*tileW x rows*tileH)"
+      - id: "THM-AC-6"
+        criterio: "Todos los tiles del VTT tienen el mismo tamano y cubren el sprite sin overflow ni gaps"
+      - id: "THM-AC-7"
+        criterio: "El numero de cues del VTT es igual al numero de tiles (cols*rows)"
+
+    prioridad: "high"
+    tipo: "feature"
+    dependencias:
+      - "media transcodificado con sprite/VTT generados (provisioning self-contained)"
+      - "CDN THUMBS_HOST (preview_<id>.jpg / .vtt)"
+
+    notas: |
+      El sprite es una grilla fija 10x10 (100 tiles) independiente de la duracion; el tamano de
+      tile observado en dev es 216x122 (aspect ~16:9). Verificado en vivo: JPEG 2160x1220 ==
+      grid del VTT. Los artefactos viven en CDN cross-origin (validar por HTTP, no por sm:).
+
+  - id: "US-008"
+    titulo: "Reemplazar el video de un media actualiza sus imagenes derivadas"
+    rol: "administrador de contenido"
+    meta: "que al reemplazar el video, thumbnails y sprite reflejen el nuevo contenido"
+    beneficio: "no mostrar portadas ni seek-previews del video anterior"
+    descripcion: |
+      Como administrador de contenido,
+      quiero que al reemplazar el video de un media se regeneren sus thumbnails y su sprite de
+      timeline, para que ninguna imagen siga mostrando el video viejo.
+
+    acceptance_criteria:
+      - id: "THM-AC-8"
+        criterio: "Tras replace, los thumbnails generados se regeneran: ninguno referencia metas del video anterior"
+      - id: "THM-AC-9"
+        criterio: "Tras replace, el sprite/VTT de timeline se regeneran (cambian respecto al video anterior)"
+
+    prioridad: "high"
+    tipo: "feature"
+    dependencias:
+      - "replace por ingesta remota (GET /api/media/upload con media_id)"
+      - "media transcodificado de origen (provisioning self-contained)"
+
+    notas: |
+      media_id es estable en replace; el discriminante de thumbnails es el metaId embebido en
+      thumb_<mediaId>_<metaId>_<Ns>.jpg (cambia con el nuevo transcoding). THM-AC-9 esta en rojo
+      (bug AQ2#16): el sprite/VTT NO se regeneran porque vtt_created no se resetea -> test vivo
+      test.fail(). El sprite se discrimina por ETag/bytes (mismas dimensiones fijas).

@@ -1,0 +1,45 @@
+# Selectores del módulo Thumbnails — marcas sm: cosechadas en vivo (dev).
+# Página /media/:id (vista media.coffee). Usar sm()/smPrefix().
+version: 1
+modulo: "thumbnails"
+ultima_actualizacion: '2026-06-20'
+
+thumbnails:
+  container: "thumbs"               # div; los thumbs cargan async vía GET /thumbs
+  thumb: "thumb"                    # ancla por-item, lleva thumb-id (1 por timestamp renderizado)
+  thumb_list: "thumb-list"          # resoluciones del grupo (se llena al click en copy-thumb)
+  new: "new-thumbnail"              # genera desde el playhead (no-op si player en 0)
+  select: "select-thumb"            # "Set as default" -> POST /thumb/:thumb_id (lleva thumb-id)
+  delete: "delete-thumb"            # impide borrar el ultimo ("Cannot delete the last thumbnail")
+  copy: "copy-thumb"                # muestra thumb-list con URLs por resolucion
+  thumb_url: "thumb-url"            # agregar por URL
+  thumb_url_container: "thumb-url-container"
+  upload_modal:                     # "Add Thumbnail" (dropzone form#upload-thumbnail) -> #upload-media
+    root: "#upload-media"
+    file_input: '#media-upload input[type="file"]'   # accept image/*, max 2MB, sin marca sm: (gap)
+    edit_tab: "edit-tab"            # tab de crop (oculto hasta subir)
+    edit_pane: "edit-thumbnail"     # Jcrop; coords en attrs x/y/w/h (0 sin seleccion default)
+    crop_image: "sm-thumbnail-to-edit"
+    save_crop: "save-edited-thumbnail"   # crop OPCIONAL: el upload ya persiste antes del crop
+
+preview:
+  element: "preview"                # <a>/<video loop> del preview.mp4
+  new: "new-preview"               # "Add preview" -> regenera desde playhead, POST /preview (jobId)
+  replace: "replace-preview"        # -> modal #upload-preview (warning: preview previo se pierde)
+  upload_modal:
+    root: "#upload-preview"
+    file_input: '#upload-preview input[type="file"]'  # accept video/*
+    save: "save-new-preview"
+
+# Sprite de timeline + VTT: NO son marcas sm: (artefactos del CDN), se validan por HTTP.
+sprite_timeline:
+  jpg_url: "{THUMBS_HOST}/thumbs/{accountId}/{mediaId}/preview_{mediaId}.jpg"
+  vtt_url: "{THUMBS_HOST}/thumbs/{accountId}/{mediaId}/preview_{mediaId}.vtt"
+  # THUMBS_HOST dev observado: https://devthumbs.cdn.mdstrm.com
+  grid: "10x10 fijo (100 tiles); tile uniforme ~216x122 (16:9); grid == dims del JPEG"
+
+# Replace de media (reusa media_id): dispara por GET, no hay marca sm: del flujo remoto.
+replace_media:
+  endpoint: "GET /api/media/upload?type=remote&media_id={id}&fileUrl=&file_name=&size="
+  ui_modal: ".replace-media (#video-upload, uploader chunked, accept video/*,audio/*)"
+  validacion: "ERROR_DIFFERENT_MEDIA_TYPE (no cambiar video<->audio)"

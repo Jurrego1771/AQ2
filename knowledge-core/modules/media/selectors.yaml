@@ -70,17 +70,54 @@ detalle:
     urls_dash: "metadata-urls-dash"
     copy_embed: "copy-metadata"
   ad_markers:
-    new: "new-ad-marker"
-    create: "create-ad-marker"
-    table: "adMarkers"
-  thumbnails:
-    new: "new-thumbnail"
-    select: "select-thumb"
-    delete: "delete-thumb"
+    new: "new-ad-marker"            # crea YA en player.currentTime (no-op si =0); name fijo "Smart Ad Break"
+    create: "create-ad-marker"      # abre modal #create-marker-modal (entrada manual)
+    table: "adMarkers"              # tbody #ad-markers
+    empty_message: "ad-markers-message"
+    insertion_config: "ad-insertion-google"   # select de ad config a insertar
+    # smart/IA (solo si la cuenta tiene media_smart_ad_markers y dura >= min): "regenerate-smart-ad-markers"
+    modal_manual:
+      root: "#create-marker-modal"
+      time: "marker-time"          # HH:MM:SS, regex ^([0-9]{1,2}):([0-5][0-9]):([0-5][0-9])$
+      duration_help: "marker-duration-help"   # "Media duration: HH:MM:SS"
+      create: "create-marker-btn"
+    # fila (compartida con tracks): trackOffset (HH:mm:ss), trackName (disabled), save-track, delete-track
+    row_offset: "trackOffset"
+    row_name: "trackName"
+    row_save: "save-track"
+    row_delete: "delete-track"
+  # thumbnails / preview / sprite -> módulo aparte: modules/thumbnails/selectors.yaml (PFX THM)
   tracks_subtitles:
-    new_track: "new-track"
-    tracks: "tracks"
-    # subtítulos: formatos .vtt/.ass/.srt (ver overview.md)
+    new_track: "new-track"          # crea "Track N" en player.currentTime (no-op si =0)
+    tracks: "tracks"               # ul #media-tracks
+    tracks_empty: "tracks-message"  # "No tracks have been created"
+    subtitles:
+      container: "subtitles-container"
+      list: "subtitles-list"       # table, oculta si vacío
+      empty: "no-subtitles"        # "No subtitles have been added"
+      search_import: "subtitle-search"
+      # trigger "Upload Subtitles" -> a[href="#upload-subtitle"] (en seccion colapsable)
+      upload_modal:
+        root: "#upload-subtitle"
+        name: "subtitle-name"      # requerido
+        language: "subtitle-language"  # requerido (AutoComplete speech_language)
+        text: "subtitle-text"
+        time: "subtitle-time"
+        save: "save-subtitle"      # disabled hasta: language + name + file. accept=.vtt,.ass,.srt
+        delete: "delete-subtitle"
+      # trigger "Auto Generate" -> a[href="#generate-subtitle"]
+      generate_modal:               # IA speech-to-text
+        root: "#generate-subtitle"
+        name: "sub-name"           # requerido
+        main_language: "sub-main-language"      # requerido
+        secondary_languages: "sub-secondary-languages"
+        generate: "generate-sub"   # disabled hasta name + main_language
+    audio_tracks:                   # multiaudio (modal, oculto por defecto)
+      container: "multiaudio"
+      language: "audio-language"
+      language_name: "audio-language-name"
+      save: "save-new-audio-track"
+      delete_language: null         # handler [sm="delete-audio-language"] (sin marca propia listada)
   ai_studio_tabs:
     persons: "tab-media-persons"
     keywords: "tab-media-keywords"
