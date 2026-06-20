@@ -1,0 +1,95 @@
+# Selectores del módulo Media — marcas sm: cosechadas en vivo (dev).
+# Contrato estable para automatización: usar sm()/smPrefix() sobre estas marcas.
+# No exhaustivo (la página de detalle tiene 233); se listan las útiles por área.
+# Las marcas por-item llevan el id del documento -> usar smPrefix.
+version: 1
+modulo: "media"
+ultima_actualizacion: '2026-06-20'
+
+# Navegación global (layout)
+nav:
+  media: "nav-header-media"
+  dashboard: "nav-header-dashboard"
+  # patrón: nav-header-<modulo>
+
+# Listado /media (vista medias.coffee) — 193 marcas
+listado:
+  toolbar: "media-toolbar"
+  total: "total-medias"            # OJO: duplicada x2 en DOM (#8) -> usar .first()
+  loading: "medias-loading-icon"
+  empty_state: "no-result"
+  busqueda:
+    input: "query-title"
+    submit_visible: "smart-search" # 'search' es el botón oculto de advanced
+  filtros:
+    published: "filter-published"
+    video: "filter-type-video"
+    audio: "filter-type-audio"
+    sin_categoria: "filter-without-category"
+    chips_activos: "chip-filters"
+  vista:
+    grid: "display-grid"
+    list: "display-list"
+    minimal: "display-minimal-list"
+  paginacion:
+    next: "paginator-next"
+    prev: "paginator-prev"
+    # items-por-página: <select> SIN marca sm: (gap) -> localizar por option[value=96]
+  items:
+    card_prefix: "media-container-"   # smPrefix; incluye id
+    title_prefix: "media-title-"
+    description_prefix: "media-description-"
+  # 3 layouts coexisten -> filtrar :visible al contar/leer
+
+# Detalle/edición /media/:id (vista media.coffee) — 233 marcas
+detalle:
+  estructura:
+    location_bar: "location-bar"
+    player: "player"
+    player_container: "player-container"
+    alert: "alert"
+    global_alert: "global-alert"     # mensajes de save/error
+  basic_information:
+    # NOTA: los campos editables NO tienen sm:, usan data-name (#13)
+    root: "basic-information"
+    title: 'input[data-name="title"]'
+    description: 'textarea[data-name="description"]'
+    categories: 'select[data-name="categories"]'   # widget Chosen (jQuery)
+    tags: 'select[data-name="tags"]'
+    permalink: 'input[data-name="permalink"]'
+    metadata_generate: "metadata-generate"
+    moai_settings: "moai-settings-button"          # config de metadata IA
+  acciones:
+    save: "save"
+    delete: "delete"
+    share: "share-action"
+  metadata_embed:
+    embed: "embed"
+    metadata_id: "metadata-id"
+    urls_hls: "metadata-urls-hls"
+    urls_dash: "metadata-urls-dash"
+    copy_embed: "copy-metadata"
+  ad_markers:
+    new: "new-ad-marker"
+    create: "create-ad-marker"
+    table: "adMarkers"
+  thumbnails:
+    new: "new-thumbnail"
+    select: "select-thumb"
+    delete: "delete-thumb"
+  tracks_subtitles:
+    new_track: "new-track"
+    tracks: "tracks"
+    # subtítulos: formatos .vtt/.ass/.srt (ver overview.md)
+  ai_studio_tabs:
+    persons: "tab-media-persons"
+    keywords: "tab-media-keywords"
+    labels: "tab-media-labels"
+    sentiments: "tab-media-sentiments"
+    emotions: "tab-media-emotions"
+    ocr: "tab-media-ocr"
+    captions: "tab-media-captions"
+  generacion_ia:
+    get_chapters: "get-chapters"
+    get_highlights: "get-highlights"
+    generate_transcription: "generate-transcription"
