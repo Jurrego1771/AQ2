@@ -1,0 +1,17 @@
+node_modules/
+
+# Secretos y estado de sesión — NUNCA commitear
+.env
+.env.local
+.auth/
+
+# Artefactos de Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+.playwright-mcp/
+
+# Sistema / editor
+.DS_Store
+*.log

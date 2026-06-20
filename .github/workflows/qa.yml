@@ -1,0 +1,69 @@
+name: QA
+
+on:
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    # Nocturno 02:00 UTC — api + e2e completos
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+env:
+  CI: 'true'
+
+jobs:
+  smoke:
+    name: Smoke (cada PR)
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Run smoke
+        run: npx playwright test --project=setup --project=smoke
+        env:
+          BASE_URL: ${{ secrets.BASE_URL }}
+          API_BASE_URL: ${{ secrets.API_BASE_URL }}
+          QA_USER: ${{ secrets.QA_USER }}
+          QA_PASS: ${{ secrets.QA_PASS }}
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: smoke-report
+          path: playwright-report/
+          retention-days: 7
+
+  nightly:
+    name: API + E2E (nocturno)
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Run api + e2e
+        run: npx playwright test --project=setup --project=api --project=e2e
+        env:
+          BASE_URL: ${{ secrets.BASE_URL }}
+          API_BASE_URL: ${{ secrets.API_BASE_URL }}
+          QA_USER: ${{ secrets.QA_USER }}
+          QA_PASS: ${{ secrets.QA_PASS }}
+          QA_LOWPRIV_USER: ${{ secrets.QA_LOWPRIV_USER }}
+          QA_LOWPRIV_PASS: ${{ secrets.QA_LOWPRIV_PASS }}
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: nightly-report
+          path: playwright-report/
+          retention-days: 14

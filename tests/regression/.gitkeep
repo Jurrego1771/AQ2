@@ -1,0 +1,2 @@
+# Esta carpeta crece con cada bug encontrado.
+# Convención: tests\regression\BUG-<id>.spec.js con @regression y link al ticket.
