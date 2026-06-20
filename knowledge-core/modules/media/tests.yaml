@@ -25,7 +25,7 @@ tests:
     prioridad: "high"
     estado: "active"
     refs:
-      validates: ["AC-1"]
+      validates: ["MED-AC-1"]
       mitigates: []
       story: "US-001"
       spec: "tests/regression/media-search.regression.spec.js"
@@ -37,7 +37,7 @@ tests:
     prioridad: "high"
     estado: "active"
     refs:
-      validates: ["AC-2"]
+      validates: ["MED-AC-2"]
       mitigates: []
       story: "US-001"
       spec: "tests/regression/media-search.regression.spec.js"
@@ -49,7 +49,7 @@ tests:
     prioridad: "high"
     estado: "active"
     refs:
-      validates: ["AC-3"]
+      validates: ["MED-AC-3"]
       mitigates: []
       story: "US-001"
       spec: "tests/regression/media-search.regression.spec.js"
@@ -61,7 +61,7 @@ tests:
     prioridad: "high"
     estado: "active"
     refs:
-      validates: ["AC-5"]
+      validates: ["MED-AC-5"]
       mitigates: ["MED-RISK-002"]
       story: "US-001"
       spec: "tests/regression/media-search.regression.spec.js"
@@ -74,8 +74,69 @@ tests:
     prioridad: "high"
     estado: "active"
     refs:
-      validates: ["AC-4"]
+      validates: ["MED-AC-4"]
       mitigates: ["MED-RISK-003"]
       story: "US-001"
       spec: "tests/regression/media-search.regression.spec.js"
     # test.fail() en el spec: rojo esperado hasta corregir AQ2#2.
+
+  - id: "MED-TC-007"
+    titulo: "Filtrar por tipo Video reduce el listado y marca el chip activo"
+    modulo: "media"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["MED-AC-6"]
+      mitigates: []
+      story: "US-002"
+      spec: "tests/regression/media-list.regression.spec.js"
+
+  - id: "MED-TC-008"
+    titulo: "Quitar el filtro restaura el listado completo"
+    modulo: "media"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["MED-AC-7"]
+      mitigates: []
+      story: "US-002"
+      spec: "tests/regression/media-list.regression.spec.js"
+
+  - id: "MED-TC-009"
+    titulo: "Cambiar items por pagina a 48 muestra mas de una pagina de 12"
+    modulo: "media"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["MED-AC-8"]
+      mitigates: []
+      story: "US-002"
+      spec: "tests/regression/media-list.regression.spec.js"
+
+  - id: "MED-TC-010"
+    titulo: "Next avanza skip en la URL y muestra el resto"
+    modulo: "media"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["MED-AC-9"]
+      mitigates: []
+      story: "US-002"
+      spec: "tests/regression/media-list.regression.spec.js"
+
+  - id: "MED-TC-011"
+    titulo: "El filtro activo se refleja en la URL [prueba viva BUG]"
+    modulo: "media"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["MED-AC-10"]
+      mitigates: ["MED-RISK-006"]
+      story: "US-002"
+      spec: "tests/regression/media-list.regression.spec.js"
+    # test.fail() en el spec: rojo esperado hasta corregir AQ2#11.

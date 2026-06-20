@@ -106,3 +106,25 @@ riesgos:
       - "Jurrego1771/AQ2#7"
     prioridad_prueba: "COULD"
     nota_industria: "Eficiencia de recursos; preferir push (socket) sobre polling continuo."
+
+  - id: "MED-RISK-006"
+    severidad: "medium"
+    probabilidad: "medium"
+    titulo: "Estado de filtros/per-page no en URL: deep-link inconsistente y filtro perdido al recargar"
+    descripcion: >
+      El estado del listado vive en tres mecanismos: URL (skip/sort), localStorage
+      (per-page) y memoria (filtros/busqueda). Recargar una vista filtrada y paginada
+      pierde el filtro pero mantiene el skip, dejando al usuario en otra pagina de
+      otro conjunto sin aviso. La vista no es compartible por enlace.
+    detonador:
+      - "Filtrar por tipo, paginar y recargar la pagina"
+      - "Compartir la URL de una vista filtrada"
+    mitigacion: >
+      Serializar todo el estado (filtros + per-page + termino + skip + sort) en la URL,
+      como ya se hace con skip y sort.
+    archivos_afectados:
+      - "src/client/medias.coffee"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#11"
+    prioridad_prueba: "MUST"
+    nota_industria: "Nielsen #3 y #7. Deep-link de estado de listado estandar en CMS de media."

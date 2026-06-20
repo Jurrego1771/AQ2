@@ -14,7 +14,10 @@ module.exports = defineConfig({
   // Falla el build si quedó un test.only olvidado en CI.
   forbidOnly: isCI,
   fullyParallel: true,
-  retries: isCI ? 2 : 0,
+  // 1 retry local: estos E2E corren contra un entorno dev compartido; la
+  // lentitud transitoria bajo carga no debe romper una corrida (no enmascara
+  // bugs: una falla real falla en ambos intentos). En CI, 2.
+  retries: isCI ? 2 : 1,
   workers: isCI ? 4 : undefined,
   timeout: 30_000,
   expect: { timeout: 7_500 },

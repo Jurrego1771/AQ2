@@ -37,6 +37,20 @@ class MediaPage {
     this.item = (id) => page.locator(sm(`media-container-${id}`));
     /** @param {string} id */
     this.itemTitle = (id) => page.locator(sm(`media-title-${id}`));
+
+    // Filtros y paginación.
+    this.filterPublished = page.locator(sm('filter-published'));
+    this.filterVideo = page.locator(sm('filter-type-video'));
+    this.filterAudio = page.locator(sm('filter-type-audio'));
+    this.filterNoCategory = page.locator(sm('filter-without-category'));
+    this.paginatorNext = page.locator(sm('paginator-next')).first();
+    this.paginatorPrev = page.locator(sm('paginator-prev')).first();
+    // El <select> de items por página NO tiene marca sm: (gap, issue #11);
+    // se localiza por sus opciones "per page".
+    this.perPageSelect = page
+      .locator('select')
+      .filter({ has: page.locator('option[value="96"]') })
+      .first();
   }
 
   /** Navega al listado y espera a que la toolbar sea visible. */
@@ -91,6 +105,38 @@ class MediaPage {
       }
     }
     return null;
+  }
+
+  /**
+   * Aplica (o quita, si ya estaba activo) el filtro de tipo. La accion solo
+   * hace click; el test espera el resultado con expect.poll sobre totalText.
+   * @param {'video'|'audio'} type
+   */
+  async filterByType(type) {
+    await this.page.locator(sm(`filter-type-${type}`)).click();
+  }
+
+  /** @param {'video'|'audio'} type @returns {Promise<boolean>} */
+  async isTypeFilterActive(type) {
+    return this.page
+      .locator(sm(`filter-type-${type}`))
+      .evaluate((el) => /\bactive\b/.test(el.closest('li,a')?.className || ''));
+  }
+
+  /** @param {number} n items por página (12|24|48|96) */
+  async setPerPage(n) {
+    await this.perPageSelect.selectOption(String(n));
+  }
+
+  /** Avanza a la página siguiente. */
+  async nextPage() {
+    await this.paginatorNext.click();
+  }
+
+  /** @returns {number} valor de skip en el hash de la URL. */
+  skip() {
+    const match = /skip=(\d+)/.exec(new URL(this.page.url()).hash);
+    return match ? Number(match[1]) : 0;
   }
 }
 

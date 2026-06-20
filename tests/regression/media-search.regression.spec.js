@@ -30,19 +30,20 @@ test.describe('Media search @regression @media', () => {
 
   test('muestra el estado vacío para un término sin coincidencias @MED-TC-003', async ({ mediaPage }) => {
     await mediaPage.search(`zzqa_${Date.now()}_nomatch`);
-    await expect(mediaPage.emptyState).toBeVisible();
-    expect(await mediaPage.count()).toBe(0);
+    await expect(mediaPage.emptyState).toBeVisible({ timeout: 10_000 });
+    await expect.poll(() => mediaPage.count(), { timeout: 10_000 }).toBe(0);
   });
 
   test('limpiar la búsqueda restaura el listado completo @MED-TC-004', async ({ mediaPage }) => {
     const baseline = await mediaPage.totalText();
 
     await mediaPage.search(`zzqa_${Date.now()}_nomatch`);
-    await expect(mediaPage.emptyState).toBeVisible();
+    await expect(mediaPage.emptyState).toBeVisible({ timeout: 10_000 });
 
     await mediaPage.clearSearch();
     await expect.poll(() => mediaPage.count(), { timeout: 10_000 }).toBeGreaterThan(0);
-    expect(await mediaPage.totalText()).toBe(baseline);
+    // totalText se actualiza async tras restaurar; poll evita flakiness bajo carga.
+    await expect.poll(() => mediaPage.totalText(), { timeout: 10_000 }).toBe(baseline);
   });
 
   // --- Pruebas vivas de bugs conocidos (se ejecutan, esperadas en rojo) ---

@@ -1,6 +1,7 @@
 # Historias de Usuario - Epic Media Management
 # Solo intencion: US + AC. Los vinculos a tests/riesgos los declara el test
 # (tests.yaml -> refs) y los calcula el build. Aqui NO hay reverse-links.
+# AC ids unicos por modulo: MED-AC-N.
 version: 1
 epic: "Media Management"
 ultima_actualizacion: '2026-06-20'
@@ -17,15 +18,15 @@ stories:
       para localizar y operar un media sin paginar manualmente.
 
     acceptance_criteria:
-      - id: "AC-1"
+      - id: "MED-AC-1"
         criterio: "Buscar un termino existente filtra el listado a los medias cuyo titulo coincide"
-      - id: "AC-2"
+      - id: "MED-AC-2"
         criterio: "Una busqueda sin coincidencias muestra un estado vacio claro y 0 cards"
-      - id: "AC-3"
+      - id: "MED-AC-3"
         criterio: "Limpiar la busqueda restaura el listado completo"
-      - id: "AC-4"
+      - id: "MED-AC-4"
         criterio: "El termino de busqueda se refleja en la URL (compartible y persistente al recargar)"
-      - id: "AC-5"
+      - id: "MED-AC-5"
         criterio: "El contador de resultados refleja la cantidad real (0 cuando no hay coincidencias)"
 
     prioridad: "high"
@@ -35,5 +36,37 @@ stories:
       - "api/media"
 
     notas: |
-      AC-4 y AC-5 estan en rojo (bugs AQ2#2 y AQ2#1): sus tests existen como
-      pruebas vivas marcadas test.fail(). Cobertura y vinculos se derivan en el build.
+      MED-AC-4 y MED-AC-5 estan en rojo (bugs AQ2#2 y AQ2#1): sus tests existen
+      como pruebas vivas marcadas test.fail(). Cobertura y vinculos se derivan en el build.
+
+  - id: "US-002"
+    titulo: "Filtrar y paginar el listado de media"
+    rol: "administrador de contenido"
+    meta: "acotar y recorrer el listado por tipo, tamano de pagina y paginas"
+    beneficio: "navegar una biblioteca grande sin saturarse de items"
+    descripcion: |
+      Como administrador de contenido,
+      quiero filtrar el listado por tipo y controlar la paginacion,
+      para encontrar y recorrer mis medias de forma eficiente.
+
+    acceptance_criteria:
+      - id: "MED-AC-6"
+        criterio: "Filtrar por tipo (Video) reduce el listado a ese tipo y marca el filtro como activo"
+      - id: "MED-AC-7"
+        criterio: "Quitar el filtro de tipo restaura el listado completo"
+      - id: "MED-AC-8"
+        criterio: "Cambiar items por pagina ajusta cuantas cards se muestran"
+      - id: "MED-AC-9"
+        criterio: "Avanzar de pagina (Next) navega el conjunto y refleja skip en la URL"
+      - id: "MED-AC-10"
+        criterio: "El estado de filtros se refleja en la URL (compartible y persistente al recargar)"
+
+    prioridad: "high"
+    tipo: "feature"
+    dependencias:
+      - "auth (sesion iniciada)"
+      - "api/media"
+
+    notas: |
+      MED-AC-10 esta en rojo (bug AQ2#11): el estado de filtros/per-page no se
+      serializa en la URL (solo skip/sort). Test vivo marcado test.fail().

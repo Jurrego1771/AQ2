@@ -16,24 +16,41 @@
 Recibir y validar que el requerimiento tiene lo mínimo para iniciar QA.
 
 ### Input
-- User Story / Issue
-- Figma / specs
+- **User Story / Issue** → Análisis funcional
+- **Pull Request / Rama** → Análisis de cambio de código
+- Figma / specs (opcional)
 - Contexto técnico
 
-### Proceso
+### Proceso (según tipo de input)
+
+**Si es User Story / Issue:**
 1. Verificar campos obligatorios
 2. Detectar faltantes
 3. Clasificar por prioridad (P0/P1/P2)
 4. Identificar dependencias externas
 
+**Si es Pull Request / Rama:**
+1. Obtener diff y archivos cambiados
+2. Identificar módulos/archivos afectados
+3. Detectar breaking changes
+4. Evaluar scope del cambio
+5. Clasificar por riesgo de cambio (high/medium/low)
+
 ### Output
 ```yaml
 intake_validado:
-  id: "US-XXX"
+  tipo_input: "user_story|issue|pr|branch"
+  id: "US-XXX | PR-XXX | branch-name"
   estado: "listo_para_analisis" | "bloqueado_faltantes"
-  prioridad: "P0|P1|P2"
+  prioridad: "P0|P1|P2|high|medium|low"
   faltantes: ["..."]
   dependencias: ["..."]
+
+  # Campos específicos para PR/Rama
+  archivos_cambiados: ["src/..."]
+  modulos_afectados: ["media", "billing"]
+  breaking_changes: ["..."]
+  scope_cambio: "high|medium|low"
 ```
 
 ---
