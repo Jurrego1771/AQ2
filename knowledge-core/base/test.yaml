@@ -1,0 +1,95 @@
+# PLANTILLA: Tests - Risk-Based Testing
+# ================================================================
+# Proposito: Guia para documentar tests asociados a un modulo
+# Uso: Copiar y completar para cada modulo del sistema
+# Agentes: Usar esta estructura para generar tests completos
+# ================================================================
+
+version: 1
+modulo: "[NOMBRE_DEL_MODULO]"                    # ej: media, users, billing
+ultima_actualizacion: 'YYYY-MM-DD'
+
+tests:
+  # ------------------------------------------------------------
+  # CAMPO id
+  # Formato: [PREFIX]-TC-[NUMERO]
+  # - PREFIX: 3-4 letras del modulo en mayusculas
+  # - TC: Test Case
+  # - NUMERO: 3 digitos, secuencial por modulo
+  # ------------------------------------------------------------
+  - id: "[PREFIX]-TC-[NUMERO]"
+
+    # ------------------------------------------------------------
+    # CAMPO titulo
+    # Maximo 80 caracteres
+    # Formato: [Accion] + [condicion] + [resultado esperado]
+    # ------------------------------------------------------------
+    titulo: "[Accion que se prueba] con [condicion] devuelve [resultado]"
+
+    # ------------------------------------------------------------
+    # CAMPO modulo
+    # Modulo principal al que pertenece el test
+    # ------------------------------------------------------------
+    modulo: "[modulo-principal]"
+
+    # ------------------------------------------------------------
+    # CAMPO tipo
+    # Valores permitidos:
+    # - smoke: Test rapido de verificacion basic
+    # - regression: Test de regresion funcional
+    # - e2e: Test end-to-end completo
+    # - integration: Test de integracion entre modulos
+    # - security: Test de seguridad
+    # - performance: Test de rendimiento
+    # ------------------------------------------------------------
+    tipo: "[smoke|regression|e2e|integration|security|performance]"
+
+    # ------------------------------------------------------------
+    # CAMPO prioridad
+    # Valores permitidos:
+    # - critical: Test bloqueante, debe pasar siempre
+    # - high: Test importante para release
+    # - medium: Test deseable
+    # - low: Test nice-to-have
+    # ------------------------------------------------------------
+    prioridad: "[critical|high|medium|low]"
+
+    # ------------------------------------------------------------
+    # CAMPO estado
+    # Valores permitidos:
+    # - active: Test en uso activo
+    # - deprecated: Test en desuso
+    # - archived: Test archivado
+    # ------------------------------------------------------------
+    estado: "[active|deprecated|archived]"
+
+    # ------------------------------------------------------------
+    # CAMPO refs (Referencias cruzadas)
+    # Vinculacion con otros artefactos del proyecto
+    # ------------------------------------------------------------
+    refs:
+      ac_ref: "[AC-ID-XXX]"          # Acceptance Criteria asociado
+      risk_ref: "[PREFIX]-RISK-[N]"  # Riesgo que mitiga
+      br_ref: "[BR-ID-XXX]"          # Business Requirement
+      story_ref: "[US-ID-XXX]"       # User Story
+      spec: "[ruta/al/spec.js]"      # Ruta al archivo de spec
+
+    # ------------------------------------------------------------
+    # CAMPO pasos
+    # Pasos de ejecucion del test (opcional)
+    # ------------------------------------------------------------
+    pasos:
+      - "[Paso 1: accion a realizar]"
+      - "[Paso 2: verificacion esperada]"
+      - "[Paso 3: accion siguiente]"
+
+    # ------------------------------------------------------------
+    # CAMPO test_data
+    # Datos de prueba utilizados (opcional)
+    # ------------------------------------------------------------
+    test_data:
+      - escenario: "[nombre del escenario]"
+        datos: "[datos especificos para este escenario]"
+        esperado: "[resultado esperado]"
+
+

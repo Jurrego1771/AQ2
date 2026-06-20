@@ -1,0 +1,117 @@
+# Riesgos - Modulo Media (flujo de busqueda y listado)
+# Poblado desde exploracion en vivo (dev) + codigo sm2. Defectos = issues GitHub.
+version: 1
+modulo: "media"
+ultima_actualizacion: '2026-06-20'
+
+riesgos:
+  - id: "MED-RISK-001"
+    severidad: "medium"
+    probabilidad: "high"
+    titulo: "Busqueda solo por palabra completa: parciales y subcadenas no encuentran media"
+    descripcion: >
+      La busqueda basica matchea solo palabras completas delimitadas (no prefijos
+      ni subcadenas dentro de tokens unidos por "_"), pese a que el parametro se
+      llama titleRules=contains. Un usuario que teclea parte de un titulo, nombre
+      de archivo o ID autogenerado (qa_..._timestamp) obtiene "No results" y asume
+      que el media no existe.
+    detonador:
+      - "Buscar un prefijo de palabra (ej: 'prob' de 'probe')"
+      - "Buscar una subcadena dentro de un token con '_' (ej: 'p7oywycs')"
+    mitigacion: >
+      Implementar match por prefijo/substring para result sets cortos, o ajustar
+      la affordance (placeholder honesto + Advanced Search) y documentar el comportamiento.
+    mitigado_por_test: []          # GAP de cobertura: no hay guarda automatica aun
+    archivos_afectados:
+      - "src/client/partial/smart_searcher.coffee"
+      - "src/client/medias.coffee"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#10"
+    prioridad_prueba: "SHOULD"
+    nota_industria: >
+      Brightcove/JW/YouTube Studio hacen prefijo/substring. Nielsen #2 (match real world) y #6.
+
+  - id: "MED-RISK-002"
+    severidad: "medium"
+    probabilidad: "high"
+    titulo: "Contador de resultados obsoleto en busqueda sin coincidencias"
+    descripcion: >
+      Tras una busqueda sin resultados, el listado muestra el estado vacio pero el
+      contador sigue mostrando el conteo de la busqueda anterior (ej: "of 1") en vez
+      de 0. El estado del sistema es inconsistente con lo que se ve.
+    detonador:
+      - "Buscar un termino con N resultados y luego otro sin coincidencias"
+    mitigacion: >
+      Resetear el contador a 0 (o ocultarlo) cuando el resultado es vacio.
+    mitigado_por_test:
+      - test_id: "MED-TC-005"
+        spec: "tests/regression/media-search.regression.spec.js"
+    archivos_afectados:
+      - "src/client/medias.coffee"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#1"
+    prioridad_prueba: "MUST"
+    nota_industria: "Nielsen #1 - Visibilidad del estado del sistema."
+
+  - id: "MED-RISK-003"
+    severidad: "medium"
+    probabilidad: "medium"
+    titulo: "Estado de busqueda no persiste en URL: no compartible y se pierde al recargar"
+    descripcion: >
+      El termino de busqueda solo vive en estado en memoria; la URL no lo contiene
+      (a diferencia de skip/sort). No se puede compartir la vista filtrada por enlace
+      y un reload duro pierde la busqueda.
+    detonador:
+      - "Buscar y recargar la pagina"
+      - "Copiar la URL para compartir una vista filtrada"
+    mitigacion: >
+      Codificar el termino (y filtros activos) en query/hash, como ya se hace con skip y sort.
+    mitigado_por_test:
+      - test_id: "MED-TC-006"
+        spec: "tests/regression/media-search.regression.spec.js"
+    archivos_afectados:
+      - "src/client/medias.coffee"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#2"
+    prioridad_prueba: "MUST"
+    nota_industria: "Nielsen #3 (control) y #7 (flexibilidad). Deep-link estandar en CMS de media."
+
+  - id: "MED-RISK-004"
+    severidad: "medium"
+    probabilidad: "high"
+    titulo: "Controles solo-icono sin nombre accesible (busqueda, vista, paginacion)"
+    descripcion: >
+      El boton de buscar, los toggles de vista y la paginacion son iconos sin
+      aria-label ni texto. Un lector de pantalla no puede identificarlos.
+    detonador:
+      - "Navegar el modulo Media con un lector de pantalla / por teclado"
+    mitigacion: >
+      Agregar aria-label o texto visualmente oculto a los controles solo-icono.
+    mitigado_por_test: []          # GAP: pendiente test de accesibilidad
+    archivos_afectados:
+      - "views/medias.coffee"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#6"
+    prioridad_prueba: "SHOULD"
+    nota_industria: "WCAG 2.1 - 4.1.2 Name, Role, Value (Nivel A)."
+
+  - id: "MED-RISK-005"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "Polling del encoder cada 5s indefinido aun con cola vacia"
+    descripcion: >
+      update_encoder_queue se reprograma cada 5s y consulta /api/encoder/job_list
+      sin fin mientras se esta en Media, aun con 0 jobs, pese a existir websocket.
+      ~720 requests/hora ociosas por pestania abierta.
+    detonador:
+      - "Permanecer en /media con la cola de encoder vacia"
+    mitigacion: >
+      Usar el websocket existente o hacer back-off/detener el polling cuando la cola
+      esta vacia y en blur de pestania.
+    mitigado_por_test: []          # GAP: pendiente test de performance/red
+    archivos_afectados:
+      - "src/client/medias.coffee"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#7"
+    prioridad_prueba: "COULD"
+    nota_industria: "Eficiencia de recursos; preferir push (socket) sobre polling continuo."

@@ -1,0 +1,117 @@
+# PLANTILLA: Historias de Usuario - Risk-Based Testing
+# ================================================================
+# Proposito: Guia para documentar historias de usuario vinculadas a riesgos
+# Uso: Copiar y completar para cada feature del sistema
+# Agentes: Usar esta estructura para generar user stories completas
+# ================================================================
+
+version: 1
+epic: "[NOMBRE_DE_LA_EPIC]"                      # ej: Video Playback, User Management
+ultima_actualizacion: 'YYYY-MM-DD'
+
+stories:
+  # ------------------------------------------------------------
+  # CAMPO id
+  # Formato: US-[NUMERO]
+  # Numero: 3 digitos, secuencial global
+  # ------------------------------------------------------------
+  - id: "US-[NUMERO]"
+
+    # ------------------------------------------------------------
+    # CAMPO titulo
+    # Maximo 80 caracteres
+    # Formato: [Verbo] + [recurso] + [condicion/valor]
+    # ------------------------------------------------------------
+    titulo: "[Verbo de accion] [recurso] [condicion o beneficio]"
+
+    # ------------------------------------------------------------
+    # CAMPO rol
+    # Quién realiza la accion (contexto del usuario)
+    # ------------------------------------------------------------
+    rol: "[tipo de usuario]"                      # ej: usuario de streaming, admin
+
+    # ------------------------------------------------------------
+    # CAMPO meta
+    # Que quiere lograr el usuario
+    # ------------------------------------------------------------
+    meta: "[accion o resultado que desea obtener]"
+
+    # ------------------------------------------------------------
+    # CAMPO beneficio
+    # Valor de negocio o experiencia
+    # ------------------------------------------------------------
+    beneficio: "[impacto positivo para el usuario o negocio]"
+
+    # ------------------------------------------------------------
+    # CAMPO descripcion
+    # Historia en formato "Como... Quiero... Para...
+    # ------------------------------------------------------------
+    descripcion: |
+      Como [rol del usuario],
+      quiero [功能 o accion],
+      para [beneficio o valor de negocio].
+
+    # ------------------------------------------------------------
+    # CAMPO acceptance_criteria
+    # IMPORTANTE: Cada AC debe tener al menos un test que lo valide
+    # Formato: ID + descripcion + test(s) que lo validan
+    # Esto garantiza trazabilidad: US -> AC -> Test -> Riesgo
+    # ------------------------------------------------------------
+    acceptance_criteria:
+      - id: "AC-[NUMERO]"
+        criterio: "[Criterio medible y verificable]"
+        validado_por_test:
+          - test_id: "[PREFIX]-TC-[NUMERO]"
+            spec: "[ruta/al/spec.js]"
+
+    # ------------------------------------------------------------
+    # CAMPO prioridad
+    # Valores permitidos:
+    # - critical: MVP obligatorio, sin esto no hay release
+    # - high: Importante, debe incluirse
+    # - medium: Deseable para esta iteracion
+    # - low: Nice-to-have, puede esperar
+    # ------------------------------------------------------------
+    prioridad: "[critical|high|medium|low]"
+
+    # ------------------------------------------------------------
+    # CAMPO tipo
+    # Valores permitidos:
+    # - feature: Nueva funcionalidad
+    # - bugfix: Correccion de defecto
+    # - refactor: Mejora tecnica
+    # - spike: Investigacion
+    # ------------------------------------------------------------
+    tipo: "[feature|bugfix|refactor|spike]"
+
+    # ------------------------------------------------------------
+    # CAMPO dependencias
+    # Servicios o modulos de los que depende esta historia
+    # ------------------------------------------------------------
+    dependencias:
+      - "[servicio/modulo-1]"
+      - "[servicio/modulo-2]"
+
+    # ------------------------------------------------------------
+    # CAMPO riesgos_asociados
+    # Riesgos del Knowledge Core que aplican a esta historia
+    # Cada riesgo impacta al menos un AC de esta historia
+    # ------------------------------------------------------------
+    riesgos_asociados:
+      - riesgo_id: "[PREFIX]-RISK-[NUMERO]"
+        impacto: "[Como este riesgo afecta la historia]"
+
+    # ------------------------------------------------------------
+    # CAMPO tests_asociados
+    # Resumen de todos los tests que validan esta historia
+    # Cada test aparece en al menos un AC validado_por_test
+    # ------------------------------------------------------------
+    tests_asociados:
+      - "[PREFIX]-TC-[NUMERO]"
+
+    # ------------------------------------------------------------
+    # CAMPO notas
+    # Informacion adicional relevante
+    # ------------------------------------------------------------
+    notas: |
+      [Decisiones de diseño, constraints tecnicos,等信息 adicional]

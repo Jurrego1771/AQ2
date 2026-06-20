@@ -1,0 +1,75 @@
+# Tests - Modulo Media. Definicion (sin estado de ejecucion: eso es derivado).
+# Cada id es el tag que el spec lleva en su titulo.
+version: 1
+modulo: "media"
+ultima_actualizacion: '2026-06-20'
+
+tests:
+  - id: "MED-TC-001"
+    titulo: "El modulo Media carga para un usuario autenticado"
+    modulo: "media"
+    tipo: "smoke"
+    prioridad: "critical"
+    estado: "active"
+    refs:
+      story_ref: "US-001"
+      spec: "tests/smoke/media.smoke.spec.js"
+
+  - id: "MED-TC-002"
+    titulo: "Buscar por titulo filtra el listado a coincidencias"
+    modulo: "media"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      ac_ref: "AC-1"
+      story_ref: "US-001"
+      spec: "tests/regression/media-search.regression.spec.js"
+
+  - id: "MED-TC-003"
+    titulo: "Busqueda sin coincidencias muestra el estado vacio"
+    modulo: "media"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      ac_ref: "AC-2"
+      story_ref: "US-001"
+      spec: "tests/regression/media-search.regression.spec.js"
+
+  - id: "MED-TC-004"
+    titulo: "Limpiar la busqueda restaura el listado completo"
+    modulo: "media"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      ac_ref: "AC-3"
+      story_ref: "US-001"
+      spec: "tests/regression/media-search.regression.spec.js"
+
+  - id: "MED-TC-005"
+    titulo: "El contador muestra 0 en una busqueda sin resultados [prueba viva BUG]"
+    modulo: "media"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      ac_ref: "AC-5"
+      risk_ref: "MED-RISK-002"
+      story_ref: "US-001"
+      spec: "tests/regression/media-search.regression.spec.js"
+    # Marcado test.fail() en el spec: se espera en rojo hasta que se corrija AQ2#1.
+
+  - id: "MED-TC-006"
+    titulo: "El termino de busqueda se refleja en la URL [prueba viva BUG]"
+    modulo: "media"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      ac_ref: "AC-4"
+      risk_ref: "MED-RISK-003"
+      story_ref: "US-001"
+      spec: "tests/regression/media-search.regression.spec.js"
+    # Marcado test.fail() en el spec: se espera en rojo hasta que se corrija AQ2#2.

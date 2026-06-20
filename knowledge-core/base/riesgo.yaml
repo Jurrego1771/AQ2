@@ -1,0 +1,114 @@
+# PLANTILLA: Riesgos - Risk-Based Testing
+# ================================================================
+# Proposito: Guia para documentar riesgos de un modulo
+# Uso: Copiar y completar para cada modulo del sistema
+# Agentes: Usar esta estructura para generar riesgos completos
+# ================================================================
+
+version: 1
+modulo: "[NOMBRE_DEL_MODULO]"                    # ej: media, users, billing
+ultima_actualizacion: 'YYYY-MM-DD'
+
+riesgos:
+  # ------------------------------------------------------------
+  # CAMPO id
+  # Formato: [PREFIX]-RISK-[NUMERO]
+  # - PREFIX: 3-4 letras del modulo en mayusculas
+  # - NUMERO: 3 digitos, secuencial por modulo
+  # ------------------------------------------------------------
+  - id: "[PREFIX]-RISK-[NUMERO]"
+
+    # ------------------------------------------------------------
+    # CAMPO severidad
+    # Valores permitidos:
+    # - critical: Afecta negocio de manera grave (perdida de datos,
+    #             brecha de seguridad, corrupcion)
+    # - high:    Impacto significativo en funcionalidad core
+    # - medium:  Impacto moderado, workarounds existen
+    # - low:     Impacto menor, inconvenciencia
+    # ------------------------------------------------------------
+    severidad: "[critical|high|medium|low]"
+
+    # ------------------------------------------------------------
+    # CAMPO probabilidad
+    # Valores permitidos:
+    # - high:   Escenarios comunes, datos de produccion lo confirman
+    # - medium: Posible en ciertas condiciones, no confirmado
+    # - low:    Improbable, casos borde extremos
+    # ------------------------------------------------------------
+    probabilidad: "[high|medium|low]"
+
+    # ------------------------------------------------------------
+    # CAMPO titulo
+    # Maximo 80 caracteres
+    # Formato: [Que pasa] + [consecuencia]
+    # ------------------------------------------------------------
+    titulo: "[Descripcion corta del riesgo y su consecuencia]"
+
+    # ------------------------------------------------------------
+    # CAMPO descripcion
+    # Que es el riesgo, por que existe, que puede fallar
+    # ------------------------------------------------------------
+    descripcion: >
+      [Explicacion detallada del riesgo:
+      - Que hace el sistema
+      - Que puede salir mal
+      - Por que es problematico]
+
+    # ------------------------------------------------------------
+    # CAMPO detonador
+    # Condiciones especificas que activan el riesgo
+    # ------------------------------------------------------------
+    detonador:
+      - "[Condicion 1 que dispara el riesgo]"
+      - "[Condicion 2 que dispara el riesgo]"
+
+    # ------------------------------------------------------------
+    # CAMPO mitigacion
+    # Que controles o practicas previenen el riesgo
+    # ------------------------------------------------------------
+    mitigacion: >
+      [Como se previene: validaciones,checks,middleware,etc]
+
+    # ------------------------------------------------------------
+    # CAMPO mitigado_por_test
+    # Test(s) que mitigan este riesgo
+    # Mas util que AC porque dice directamente que spec ejecutar
+    # ------------------------------------------------------------
+    mitigado_por_test:
+      - test_id: "[PREFIX]-TC-[NUMERO]"
+        spec: "[ruta/al/spec.js]"
+
+    # ------------------------------------------------------------
+    # CAMPO archivos_afectados
+    # Rutas relativas desde la raiz del proyecto
+    # ------------------------------------------------------------
+    archivos_afectados:
+      - "[ruta/relativa/archivo1.js]"
+      - "[ruta/relativa/archivo2.js]"
+
+    # ------------------------------------------------------------
+    # CAMPO defectos_relacionados
+    # IDs de bugs/defectos historicos relacionados (si existen)
+    # ------------------------------------------------------------
+    defectos_relacionados:
+      - "[DEF-ID-XXX]"    # Bug historico relacionado, si aplica
+      # - []                # Dejar vacio si no hay historico
+
+    # ------------------------------------------------------------
+    # CAMPO prioridad_prueba
+    # Valores permitidos:
+    # - MUST:   Testeo obligatorio, alto riesgo
+    # - SHOULD: Testeo recomendado
+    # - COULD:  Testeo opcional
+    # - WONT:   No requiere testeo por bajo riesgo
+    # ------------------------------------------------------------
+    prioridad_prueba: "[MUST|SHOULD|COULD|WONT]"
+
+    # ------------------------------------------------------------
+    # CAMPO nota_industria (opcional)
+    # Referencia a estandares, OWASP, mejores practicas
+    # ------------------------------------------------------------
+    nota_industria: >
+      [Referencia a estandares como OWASP, NIST, etc.
+      Incluir URL si aplica]

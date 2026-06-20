@@ -15,7 +15,7 @@ test.describe('Media search @regression @media', () => {
     await mediaPage.goto();
   });
 
-  test('filtra el listado a títulos que contienen el término', async ({ mediaPage }) => {
+  test('filtra el listado a títulos que contienen el término @MED-TC-002 @AC-1 @US-001', async ({ mediaPage }) => {
     const term = await mediaPage.firstResultToken();
     expect(term, 'no se pudo derivar un término del primer resultado').toBeTruthy();
 
@@ -28,13 +28,13 @@ test.describe('Media search @regression @media', () => {
     expect(titles.some((title) => title.toLowerCase().includes(String(term)))).toBeTruthy();
   });
 
-  test('muestra el estado vacío para un término sin coincidencias', async ({ mediaPage }) => {
+  test('muestra el estado vacío para un término sin coincidencias @MED-TC-003 @AC-2 @US-001', async ({ mediaPage }) => {
     await mediaPage.search(`zzqa_${Date.now()}_nomatch`);
     await expect(mediaPage.emptyState).toBeVisible();
     expect(await mediaPage.count()).toBe(0);
   });
 
-  test('limpiar la búsqueda restaura el listado completo', async ({ mediaPage }) => {
+  test('limpiar la búsqueda restaura el listado completo @MED-TC-004 @AC-3 @US-001', async ({ mediaPage }) => {
     const baseline = await mediaPage.totalText();
 
     await mediaPage.search(`zzqa_${Date.now()}_nomatch`);
@@ -47,7 +47,7 @@ test.describe('Media search @regression @media', () => {
 
   // --- Pruebas vivas de bugs conocidos (se ejecutan, esperadas en rojo) ---
 
-  test('el contador muestra 0 en una búsqueda sin resultados [BUG #1]', async ({ mediaPage }) => {
+  test('el contador muestra 0 en una búsqueda sin resultados [BUG #1] @MED-TC-005 @AC-5 @MED-RISK-002 @US-001', async ({ mediaPage }) => {
     test.fail(true, 'BUG #1: el contador queda obsoleto — https://github.com/Jurrego1771/AQ2/issues/1');
 
     const term = await mediaPage.firstResultToken();
@@ -58,7 +58,7 @@ test.describe('Media search @regression @media', () => {
     expect(await mediaPage.totalText()).toBe('0');
   });
 
-  test('el término de búsqueda se refleja en la URL [BUG #2]', async ({ mediaPage, page }) => {
+  test('el término de búsqueda se refleja en la URL [BUG #2] @MED-TC-006 @AC-4 @MED-RISK-003 @US-001', async ({ mediaPage, page }) => {
     test.fail(true, 'BUG #2: la búsqueda no va en la URL — https://github.com/Jurrego1771/AQ2/issues/2');
 
     const term = await mediaPage.firstResultToken();

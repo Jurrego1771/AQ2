@@ -1,0 +1,70 @@
+# Historias de Usuario - Epic Media Management
+version: 1
+epic: "Media Management"
+ultima_actualizacion: '2026-06-20'
+
+stories:
+  - id: "US-001"
+    titulo: "Buscar media por titulo en el listado"
+    rol: "administrador de contenido"
+    meta: "encontrar rapidamente un media por su titulo"
+    beneficio: "gestionar la biblioteca sin recorrer cientos de items"
+    descripcion: |
+      Como administrador de contenido,
+      quiero buscar mis medias por titulo desde el listado,
+      para localizar y operar un media sin paginar manualmente.
+
+    acceptance_criteria:
+      - id: "AC-1"
+        criterio: "Buscar un termino existente filtra el listado a los medias cuyo titulo coincide"
+        validado_por_test:
+          - test_id: "MED-TC-002"
+            spec: "tests/regression/media-search.regression.spec.js"
+      - id: "AC-2"
+        criterio: "Una busqueda sin coincidencias muestra un estado vacio claro y 0 cards"
+        validado_por_test:
+          - test_id: "MED-TC-003"
+            spec: "tests/regression/media-search.regression.spec.js"
+      - id: "AC-3"
+        criterio: "Limpiar la busqueda restaura el listado completo"
+        validado_por_test:
+          - test_id: "MED-TC-004"
+            spec: "tests/regression/media-search.regression.spec.js"
+      - id: "AC-4"
+        criterio: "El termino de busqueda se refleja en la URL (compartible y persistente al recargar)"
+        validado_por_test:
+          - test_id: "MED-TC-006"
+            spec: "tests/regression/media-search.regression.spec.js"
+      - id: "AC-5"
+        criterio: "El contador de resultados refleja la cantidad real (0 cuando no hay coincidencias)"
+        validado_por_test:
+          - test_id: "MED-TC-005"
+            spec: "tests/regression/media-search.regression.spec.js"
+
+    prioridad: "high"
+    tipo: "feature"
+    dependencias:
+      - "auth (sesion iniciada)"
+      - "api/media"
+
+    riesgos_asociados:
+      - riesgo_id: "MED-RISK-001"
+        impacto: "Parciales/substrings no encuentran media (AC-1 incompleto vs expectativa)"
+      - riesgo_id: "MED-RISK-002"
+        impacto: "Contador obsoleto contradice el estado vacio (AC-5)"
+      - riesgo_id: "MED-RISK-003"
+        impacto: "Busqueda no compartible ni persistente (AC-4)"
+      - riesgo_id: "MED-RISK-004"
+        impacto: "Controles de busqueda inaccesibles por teclado/lector"
+
+    tests_asociados:
+      - "MED-TC-002"
+      - "MED-TC-003"
+      - "MED-TC-004"
+      - "MED-TC-005"
+      - "MED-TC-006"
+
+    notas: |
+      AC-4 y AC-5 estan actualmente en rojo (bugs AQ2#2 y AQ2#1): sus tests existen
+      como pruebas vivas marcadas test.fail(). MED-RISK-001 y MED-RISK-004 son GAPs
+      de cobertura (sin test automatizado todavia).
