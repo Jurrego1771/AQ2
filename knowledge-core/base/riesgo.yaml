@@ -70,14 +70,9 @@ riesgos:
     mitigacion: >
       [Como se previene: validaciones,checks,middleware,etc]
 
-    # ------------------------------------------------------------
-    # CAMPO mitigado_por_test
-    # Test(s) que mitigan este riesgo
-    # Mas util que AC porque dice directamente que spec ejecutar
-    # ------------------------------------------------------------
-    mitigado_por_test:
-      - test_id: "[PREFIX]-TC-[NUMERO]"
-        spec: "[ruta/al/spec.js]"
+    # NOTA: que test(s) mitigan este riesgo NO se escribe aqui: es DERIVADO.
+    # El build lo calcula desde tests.yaml -> refs.mitigates. Un riesgo sin
+    # ningun test que lo mitigue es un GAP de cobertura que reporta el build.
 
     # ------------------------------------------------------------
     # CAMPO archivos_afectados

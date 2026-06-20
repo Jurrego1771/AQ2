@@ -21,7 +21,6 @@ riesgos:
     mitigacion: >
       Implementar match por prefijo/substring para result sets cortos, o ajustar
       la affordance (placeholder honesto + Advanced Search) y documentar el comportamiento.
-    mitigado_por_test: []          # GAP de cobertura: no hay guarda automatica aun
     archivos_afectados:
       - "src/client/partial/smart_searcher.coffee"
       - "src/client/medias.coffee"
@@ -43,9 +42,6 @@ riesgos:
       - "Buscar un termino con N resultados y luego otro sin coincidencias"
     mitigacion: >
       Resetear el contador a 0 (o ocultarlo) cuando el resultado es vacio.
-    mitigado_por_test:
-      - test_id: "MED-TC-005"
-        spec: "tests/regression/media-search.regression.spec.js"
     archivos_afectados:
       - "src/client/medias.coffee"
     defectos_relacionados:
@@ -66,9 +62,6 @@ riesgos:
       - "Copiar la URL para compartir una vista filtrada"
     mitigacion: >
       Codificar el termino (y filtros activos) en query/hash, como ya se hace con skip y sort.
-    mitigado_por_test:
-      - test_id: "MED-TC-006"
-        spec: "tests/regression/media-search.regression.spec.js"
     archivos_afectados:
       - "src/client/medias.coffee"
     defectos_relacionados:
@@ -87,7 +80,6 @@ riesgos:
       - "Navegar el modulo Media con un lector de pantalla / por teclado"
     mitigacion: >
       Agregar aria-label o texto visualmente oculto a los controles solo-icono.
-    mitigado_por_test: []          # GAP: pendiente test de accesibilidad
     archivos_afectados:
       - "views/medias.coffee"
     defectos_relacionados:
@@ -108,7 +100,6 @@ riesgos:
     mitigacion: >
       Usar el websocket existente o hacer back-off/detener el polling cuando la cola
       esta vacia y en blur de pestania.
-    mitigado_por_test: []          # GAP: pendiente test de performance/red
     archivos_afectados:
       - "src/client/medias.coffee"
     defectos_relacionados:

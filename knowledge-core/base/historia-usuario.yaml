@@ -53,16 +53,13 @@ stories:
 
     # ------------------------------------------------------------
     # CAMPO acceptance_criteria
-    # IMPORTANTE: Cada AC debe tener al menos un test que lo valide
-    # Formato: ID + descripcion + test(s) que lo validan
-    # Esto garantiza trazabilidad: US -> AC -> Test -> Riesgo
+    # El AC es la INTENCION (comportamiento esperado). Que test lo valida NO
+    # se escribe aqui: es DERIVADO. El build lo calcula desde tests.yaml ->
+    # refs.validates. Un AC sin test que lo valide es un GAP que reporta el build.
     # ------------------------------------------------------------
     acceptance_criteria:
       - id: "AC-[NUMERO]"
         criterio: "[Criterio medible y verificable]"
-        validado_por_test:
-          - test_id: "[PREFIX]-TC-[NUMERO]"
-            spec: "[ruta/al/spec.js]"
 
     # ------------------------------------------------------------
     # CAMPO prioridad
@@ -92,22 +89,8 @@ stories:
       - "[servicio/modulo-1]"
       - "[servicio/modulo-2]"
 
-    # ------------------------------------------------------------
-    # CAMPO riesgos_asociados
-    # Riesgos del Knowledge Core que aplican a esta historia
-    # Cada riesgo impacta al menos un AC de esta historia
-    # ------------------------------------------------------------
-    riesgos_asociados:
-      - riesgo_id: "[PREFIX]-RISK-[NUMERO]"
-        impacto: "[Como este riesgo afecta la historia]"
-
-    # ------------------------------------------------------------
-    # CAMPO tests_asociados
-    # Resumen de todos los tests que validan esta historia
-    # Cada test aparece en al menos un AC validado_por_test
-    # ------------------------------------------------------------
-    tests_asociados:
-      - "[PREFIX]-TC-[NUMERO]"
+    # NOTA: riesgos_asociados y tests_asociados NO se escriben aqui. Los
+    # vinculos los declara el test (tests.yaml -> refs) y los calcula el build.
 
     # ------------------------------------------------------------
     # CAMPO notas

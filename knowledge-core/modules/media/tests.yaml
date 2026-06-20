@@ -1,5 +1,6 @@
 # Tests - Modulo Media. Definicion (sin estado de ejecucion: eso es derivado).
-# Cada id es el tag que el spec lleva en su titulo.
+# refs = FUENTE UNICA de los vinculos. El spec lleva en su titulo solo el id
+# de correlacion @MED-TC-N (+ la capa @smoke/@regression).
 version: 1
 modulo: "media"
 ultima_actualizacion: '2026-06-20'
@@ -12,7 +13,9 @@ tests:
     prioridad: "critical"
     estado: "active"
     refs:
-      story_ref: "US-001"
+      validates: []
+      mitigates: []
+      story: "US-001"
       spec: "tests/smoke/media.smoke.spec.js"
 
   - id: "MED-TC-002"
@@ -22,8 +25,9 @@ tests:
     prioridad: "high"
     estado: "active"
     refs:
-      ac_ref: "AC-1"
-      story_ref: "US-001"
+      validates: ["AC-1"]
+      mitigates: []
+      story: "US-001"
       spec: "tests/regression/media-search.regression.spec.js"
 
   - id: "MED-TC-003"
@@ -33,8 +37,9 @@ tests:
     prioridad: "high"
     estado: "active"
     refs:
-      ac_ref: "AC-2"
-      story_ref: "US-001"
+      validates: ["AC-2"]
+      mitigates: []
+      story: "US-001"
       spec: "tests/regression/media-search.regression.spec.js"
 
   - id: "MED-TC-004"
@@ -44,8 +49,9 @@ tests:
     prioridad: "high"
     estado: "active"
     refs:
-      ac_ref: "AC-3"
-      story_ref: "US-001"
+      validates: ["AC-3"]
+      mitigates: []
+      story: "US-001"
       spec: "tests/regression/media-search.regression.spec.js"
 
   - id: "MED-TC-005"
@@ -55,11 +61,11 @@ tests:
     prioridad: "high"
     estado: "active"
     refs:
-      ac_ref: "AC-5"
-      risk_ref: "MED-RISK-002"
-      story_ref: "US-001"
+      validates: ["AC-5"]
+      mitigates: ["MED-RISK-002"]
+      story: "US-001"
       spec: "tests/regression/media-search.regression.spec.js"
-    # Marcado test.fail() en el spec: se espera en rojo hasta que se corrija AQ2#1.
+    # test.fail() en el spec: rojo esperado hasta corregir AQ2#1.
 
   - id: "MED-TC-006"
     titulo: "El termino de busqueda se refleja en la URL [prueba viva BUG]"
@@ -68,8 +74,8 @@ tests:
     prioridad: "high"
     estado: "active"
     refs:
-      ac_ref: "AC-4"
-      risk_ref: "MED-RISK-003"
-      story_ref: "US-001"
+      validates: ["AC-4"]
+      mitigates: ["MED-RISK-003"]
+      story: "US-001"
       spec: "tests/regression/media-search.regression.spec.js"
-    # Marcado test.fail() en el spec: se espera en rojo hasta que se corrija AQ2#2.
+    # test.fail() en el spec: rojo esperado hasta corregir AQ2#2.

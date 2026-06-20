@@ -6,7 +6,7 @@ const { test, expect } = require('../../src/fixtures');
  * Los smoke validan que cada módulo crítico levanta, no la lógica fina.
  */
 test.describe('Media @smoke', () => {
-  test('el módulo Media carga para un usuario autenticado @MED-TC-001 @US-001', async ({ mediaPage }) => {
+  test('el módulo Media carga para un usuario autenticado @MED-TC-001', async ({ mediaPage }) => {
     await mediaPage.goto();
     await expect(mediaPage.toolbar).toBeVisible();
     // total-medias aparece duplicado en el DOM (smell del producto); first() evita

@@ -64,15 +64,17 @@ tests:
     estado: "[active|deprecated|archived]"
 
     # ------------------------------------------------------------
-    # CAMPO refs (Referencias cruzadas)
-    # Vinculacion con otros artefactos del proyecto
+    # CAMPO refs (FUENTE UNICA de los vinculos del test)
+    # El test declara a que sirve. Todo reverse-link (validado_por_test en
+    # historias, mitigado_por_test en riesgos, cobertura) se DERIVA de aqui.
+    # Listas: un test puede validar varios AC y mitigar varios riesgos (N:N).
+    # El spec lleva en su titulo SOLO el id de correlacion (@PREFIX-TC-N) + la capa.
     # ------------------------------------------------------------
     refs:
-      ac_ref: "[AC-ID-XXX]"          # Acceptance Criteria asociado
-      risk_ref: "[PREFIX]-RISK-[N]"  # Riesgo que mitiga
-      br_ref: "[BR-ID-XXX]"          # Business Requirement
-      story_ref: "[US-ID-XXX]"       # User Story
-      spec: "[ruta/al/spec.js]"      # Ruta al archivo de spec
+      validates: ["[AC-ID-XXX]"]       # AC(s) que valida este test
+      mitigates: ["[PREFIX]-RISK-[N]"] # Riesgo(s) que mitiga (vacio si no aplica)
+      story: "[US-ID-XXX]"             # Historia de usuario
+      spec: "[ruta/al/spec.js]"        # Ruta al archivo de spec
 
     # ------------------------------------------------------------
     # CAMPO pasos
