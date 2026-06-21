@@ -1,0 +1,71 @@
+# Historias de Usuario - Epic Live Stream Management
+# Solo intencion: US + AC. Los vinculos a tests/riesgos los declara el test
+# (tests.yaml -> refs) y los calcula el build. Aqui NO hay reverse-links.
+# AC ids unicos por modulo: LIVE-AC-N.
+version: 1
+epic: "Live Stream Management"
+ultima_actualizacion: '2026-06-21'
+
+stories:
+  - id: "US-009"
+    titulo: "Listar, filtrar por tipo y buscar live streams"
+    rol: "administrador de contenido"
+    meta: "encontrar rapidamente un evento por tipo (Video/Audio) o por nombre"
+    beneficio: "operar la grilla de eventos en vivo sin recorrer manualmente cientos de items"
+    descripcion: |
+      Como administrador de contenido,
+      quiero filtrar y buscar mis live streams desde el listado,
+      para localizar y operar un evento sin paginar manualmente.
+
+    acceptance_criteria:
+      - id: "LIVE-AC-1"
+        criterio: "El modulo Live carga el listado con un contador que refleja el total real (>0)"
+      - id: "LIVE-AC-2"
+        criterio: "Filtrar por tipo (Video/Audio) reduce el listado y marca el chip como activo"
+      - id: "LIVE-AC-3"
+        criterio: "Quitar el filtro de tipo restaura el listado completo"
+      - id: "LIVE-AC-4"
+        criterio: "Una busqueda sin coincidencias vacia el listado (0) y limpiarla lo restaura"
+
+    prioridad: "high"
+    tipo: "feature"
+    dependencias:
+      - "auth (sesion iniciada)"
+      - "api/live-stream"
+
+    notas: |
+      Verificado en vivo (dev): total=79, type=video->77, type=audio->2, query=Radio->1.
+      El conteo se lee del contador `total-live-streams` porque la marca de card
+      `live-container-<id>` existe solo en el layout grid (3 layouts coexisten).
+
+  - id: "US-010"
+    titulo: "Crear un live stream (Video o Audio) y operar sus endpoints de evento"
+    rol: "administrador de contenido"
+    meta: "dar de alta un evento en vivo con sus URLs, token y configuracion por tipo"
+    beneficio: "publicar transmisiones de video o audio con un contrato de endpoints robusto"
+    descripcion: |
+      Como administrador de contenido,
+      quiero crear un live stream de video o de audio y consultar sus recursos,
+      para transmitir un evento y gestionarlo sin errores de plataforma.
+
+    acceptance_criteria:
+      - id: "LIVE-AC-5"
+        criterio: "Los endpoints del evento tratan un id invalido (no-ObjectId) como NOT_FOUND (404), sin responder 500 ni filtrar errores de DB"
+      - id: "LIVE-AC-6"
+        criterio: "Guardar un evento nuevo genera id y slug (server-side) y deja origin/embed URLs con valores reales"
+      - id: "LIVE-AC-7"
+        criterio: "Guardar sin CDN zone pide confirmacion explicita antes de crear un signal inreproducible"
+      - id: "LIVE-AC-8"
+        criterio: "En tipo Audio se expone Icecast (stream URL + metadata mask) y se ocultan los controles de codec/bitrate de video"
+
+    prioridad: "high"
+    tipo: "feature"
+    dependencias:
+      - "auth (sesion iniciada)"
+      - "api/live-stream"
+      - "CDN / encoding (publishing points)"
+
+    notas: |
+      LIVE-AC-6/7/8 estan verificados en vivo pero aun SIN test automatizado (GAP
+      que reporta el build). LIVE-AC-5 esta cubierto por LIVE-TC-5/6 (verde) y por
+      LIVE-TC-7 (prueba viva del bug AQ2#20, /recording 500).

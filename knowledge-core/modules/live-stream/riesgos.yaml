@@ -1,0 +1,141 @@
+# Riesgos - Modulo Live Stream. Poblado desde exploracion en vivo (dev) + codigo sm2.
+# Defectos = issues GitHub (Jurrego1771/AQ2#N). NO se escribe mitigado_por_test (derivado).
+version: 1
+modulo: "live-stream"
+ultima_actualizacion: '2026-06-21'
+
+riesgos:
+  - id: "LIVE-RISK-1"
+    severidad: "medium"
+    probabilidad: "high"
+    titulo: "GET /:id/recording responde 500 y filtra error de DB ante id no-ObjectId"
+    descripcion: >
+      El endpoint /api/live-stream/:id/recording no valida que :id sea un ObjectId.
+      Con un id no-ObjectId (el literal "new", que el form de creacion usa como
+      segmento de ruta) Mongoose lanza un CastError al castear a ObjectId en el path
+      event; el handler cae en su rama if(err) y responde HTTP 500 con el objeto err
+      de Mongoose serializado (DB_ERROR). Se dispara automaticamente en cada carga de
+      /live-stream/new (la seccion Recording pide /api/live-stream/new/recording).
+    detonador:
+      - "Abrir /live-stream/new (o ?type=audio) y observar GET /api/live-stream/new/recording"
+      - "Llamar al endpoint con cualquier id que no sea un ObjectId valido"
+    mitigacion: >
+      Validar :id como ObjectId antes de consultar y devolver 404 NOT_FOUND
+      (consistente con /:id y /:id/schedule-job) o 400; no serializar el objeto err
+      de Mongoose en la respuesta (information disclosure, CWE-209).
+    archivos_afectados:
+      - "src/server/routes/api/live-stream/recording/index.js"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#20"
+    prioridad_prueba: "MUST"
+    nota_industria: >
+      OWASP Improper Error Handling / Information Exposure (CWE-209). Un error de
+      entrada del usuario no debe tratarse como 5xx ni exponer internals de la DB.
+
+  - id: "LIVE-RISK-2"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "El form de creacion muestra 'undefined'/'new' en Origin URL y Embed pre-save"
+    descripcion: >
+      En /live-stream/new, antes del primer guardado, Origin URL muestra
+      http://devorigin-us.cdn.mdstrm.com/undefined/live-stream/undefined/media.m3u8
+      y Embed muestra .../live-stream/new (el segmento de ruta como id). Tras guardar
+      ambos toman valores reales (customer-hash + id), por lo que es cosmetico del
+      estado pre-save, pero puede inducir a copiar una URL invalida.
+    detonador:
+      - "Abrir /live-stream/new y mirar Stream URLs -> Origin URL y la seccion Embed"
+    mitigacion: >
+      Mantener esos campos vacios/deshabilitados/ocultos mientras el evento no exista.
+    archivos_afectados:
+      - "src/client/live_stream.coffee"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#21"
+    prioridad_prueba: "COULD"
+    nota_industria: >
+      Nielsen #2 (correspondencia con el mundo real) y #5 (prevencion de errores).
+
+  - id: "LIVE-RISK-3"
+    severidad: "low"
+    probabilidad: "medium"
+    titulo: "Filtros del listado comparten marca sm (no direccionables individualmente)"
+    descripcion: >
+      En /live-stream, los chips Video/Audio/Favorites comparten sm="top-filter" (3
+      nodos) y Published/Not Published/Online/Offline comparten sm="top-filter-dropdown"
+      (4 nodos). No son seleccionables por sm unico, obligando a los tests a usar
+      indice/orden (fragil ante reordenamiento o i18n). Mismo smell que total-medias x2.
+    detonador:
+      - "Automatizar la seleccion de un filtro especifico del listado por marca sm"
+    mitigacion: >
+      Asignar marcas sm unicas por control (filter-video, filter-audio, filter-favorites,
+      filter-published, etc.).
+    archivos_afectados:
+      - "src/client/live_streams.coffee"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#22"
+    prioridad_prueba: "COULD"
+    nota_industria: >
+      Testabilidad / mantenibilidad de selectores (contrato QA del proyecto: solo sm:).
+
+  - id: "LIVE-RISK-4"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "Renombrar un evento regenera su slug y rompe enlaces compartidos"
+    descripcion: >
+      Editar el nombre de un live-stream regenera su slug desde el nombre en cada
+      guardado, cambiando la URL publica. No hay aviso ni forma de fijar el slug
+      (event-slug es readonly). Un evento publicado/embebido por slug queda con
+      enlaces rotos tras un simple rename.
+    detonador:
+      - "Editar el nombre de un evento existente y guardar"
+    mitigacion: >
+      No regenerar el slug en updates (solo en alta) o permitir fijarlo; avisar del
+      cambio de URL.
+    archivos_afectados:
+      - "src/client/live_stream.coffee"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#17"
+    prioridad_prueba: "SHOULD"
+    nota_industria: >
+      Estabilidad de URLs / SEO: el slug publico es una clave que terceros referencian.
+
+  - id: "LIVE-RISK-5"
+    severidad: "medium"
+    probabilidad: "medium"
+    titulo: "Schedule acepta fecha de fin en el pasado (falta validacion server-side)"
+    descripcion: >
+      POST /api/live-stream/:id/schedule-job con date_end en el pasado responde 200 y
+      crea el schedule. El cliente mapea INVALID_DATE_ERROR_SCHEDULE_END_PAST -> mensaje,
+      pero el server nunca lo devuelve (codigo muerto en el cliente; validacion ausente
+      en backend).
+    detonador:
+      - "Crear un schedule onetime con date_end anterior a la fecha actual"
+    mitigacion: >
+      Validar en el backend que date_end > ahora y devolver el error correspondiente.
+    archivos_afectados:
+      - "src/server/routes/api/live-stream/schedule-job"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#18"
+    prioridad_prueba: "MUST"
+    nota_industria: >
+      Validacion de entrada en el server (no confiar en el cliente).
+
+  - id: "LIVE-RISK-6"
+    severidad: "low"
+    probabilidad: "medium"
+    titulo: "Schedule solapado devuelve 500 en vez de 400 (CustomError perdido en transaccion)"
+    descripcion: >
+      Crear un schedule que solapa fechas con otro existente responde HTTP 500 con
+      INVALID_DATE_ERROR_OVERLAPPED_DATES, cuando es un error de validacion del usuario
+      y deberia ser 400. Tratar un error de usuario como 5xx infla las metricas de error
+      y puede disparar alertas falsas.
+    detonador:
+      - "Crear dos schedules onetime en la misma ventana de fechas"
+    mitigacion: >
+      Preservar el status del CustomError dentro de la transaccion y responder 400.
+    archivos_afectados:
+      - "src/server/routes/api/live-stream/schedule-job"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#19"
+    prioridad_prueba: "SHOULD"
+    nota_industria: >
+      Semantica HTTP correcta: 4xx para errores del cliente, 5xx para fallos del servidor.

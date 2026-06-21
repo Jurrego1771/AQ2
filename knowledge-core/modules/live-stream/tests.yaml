@@ -1,0 +1,94 @@
+# Tests - Modulo Live Stream. Definicion (sin estado de ejecucion: eso es derivado).
+# refs = FUENTE UNICA de los vinculos. El spec lleva en su titulo solo el id de
+# correlacion @LIVE-TC-N (+ la capa @smoke/@regression/@api).
+version: 1
+modulo: "live-stream"
+ultima_actualizacion: '2026-06-21'
+
+tests:
+  # ---- US-009: listado, filtros y busqueda ----
+  - id: "LIVE-TC-1"
+    titulo: "El modulo Live carga el listado con contador real para usuario autenticado"
+    modulo: "live-stream"
+    tipo: "smoke"
+    prioridad: "critical"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-1"]
+      mitigates: []
+      story: "US-009"
+      spec: "tests/smoke/live-stream.smoke.spec.js"
+
+  - id: "LIVE-TC-2"
+    titulo: "Filtrar por Audio reduce el listado y marca el chip activo"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-2"]
+      mitigates: []
+      story: "US-009"
+      spec: "tests/regression/live-stream-list.regression.spec.js"
+
+  - id: "LIVE-TC-3"
+    titulo: "Filtrar por Video reduce y togglear de nuevo restaura el listado"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-2", "LIVE-AC-3"]
+      mitigates: []
+      story: "US-009"
+      spec: "tests/regression/live-stream-list.regression.spec.js"
+
+  - id: "LIVE-TC-4"
+    titulo: "Busqueda sin coincidencias vacia el listado y limpiarla lo restaura"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-4"]
+      mitigates: []
+      story: "US-009"
+      spec: "tests/regression/live-stream-list.regression.spec.js"
+
+  # ---- US-010: creacion y contrato de endpoints del evento ----
+  - id: "LIVE-TC-5"
+    titulo: "GET /:id devuelve 404 NOT_FOUND para id no-ObjectId"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-5"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/api/live-stream.api.spec.js"
+
+  - id: "LIVE-TC-6"
+    titulo: "GET /:id/schedule-job devuelve 404 NOT_FOUND para id no-ObjectId"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-5"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/api/live-stream.api.spec.js"
+
+  - id: "LIVE-TC-7"
+    titulo: "GET /:id/recording no debe responder 500 ante id invalido [prueba viva BUG]"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-5"]
+      mitigates: ["LIVE-RISK-1"]
+      story: "US-010"
+      spec: "tests/api/live-stream.api.spec.js"
+    # test.fail() en el spec: rojo esperado hasta corregir AQ2#20.

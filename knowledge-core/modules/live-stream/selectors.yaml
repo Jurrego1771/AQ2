@@ -1,0 +1,136 @@
+# Selectores del modulo Live Stream — marcas sm: cosechadas en vivo (dev).
+# Listado: /live-stream (live_streams.coffee). Detalle/creacion: /live-stream/:id
+# y /live-stream/new[?type=audio] (live_stream.coffee). Usar sm()/smPrefix().
+version: 1
+modulo: "live-stream"
+ultima_actualizacion: '2026-06-21'
+
+# ---- Listado /live-stream ----
+listado:
+  search_input: "query-event"        # input de busqueda (envia con Enter; param API query=)
+  search_button: "search"
+  total: "total-live-streams"        # strong; total real de la API (señal estable entre layouts)
+  paginator: "paginator"
+  paginator_next: "paginator-next"
+  paginator_prev: "paginator-prev"
+  current_skip: "current-skip"
+  display:
+    grid: "display-grid"
+    list: "display-list"             # layout activo por defecto observado
+    minimal: "display-minimal-list"
+  layout_containers:                 # los 3 coexisten; filtrar :visible
+    grid: "data-grid"                # SOLO aqui viven las marcas live-container-<id>
+    list: "data-list"
+    table: "data-table"
+  card_grid: "live-container-"       # smPrefix; SOLO layout grid
+  card_bookmark: "bookmark-"         # smPrefix; presente en TODOS los layouts (estable) -> id del evento
+  zoom_icon: "zoom-icon-"            # smPrefix
+  quick_edit_form: "quick-edit-form"
+  quick_edit_spinner: "quick-edit-loading-spinner"
+  live_editor_link: "live-editor-link"
+  filtros:
+    # SMELL (AQ2#22): marcas NO unicas; localizar por indice/orden.
+    top_filter: "top-filter"               # 3 nodos: [0]=Video, [1]=Audio, [2]=Favorites
+    top_filter_dropdown: "top-filter-dropdown"  # 4 nodos: Published, Not Published, Online, Offline
+    dropdown_filter: "dropdown-filter"     # 2 botones: "Published:All", "Monitor:All"
+  api:
+    count: "GET /api/live-stream?all=true&limit=12&skip=0&query=&monitor=&online=&count=true"
+    data:  "GET /api/live-stream?all=true&limit=12&skip=0&query=&monitor=&online="
+    type:  "&type=video | &type=audio"     # particiona el total (video+audio==all)
+
+# ---- Detalle / creacion (vista compartida) ----
+detalle:
+  basic_information: "basic-information"
+  event_name: "event-name"           # input Name
+  event_slug: "event-slug"           # slug (server-side; readonly -> AQ2#17 al renombrar)
+  status: "status"                   # toggle Published; nace en "on" (Published) en alta
+  save: "save"                       # boton guardar (la accion "Save changes")
+  wizard:
+    next: "next-step"
+    prev: "previous-step"
+  publishing:
+    encoding_profiles: "encoding-profiles"
+    add_profile: "add-new-profile"
+    open_encoding_modal: "openNewEncodingModal"
+    profile_resolution: "profileResolution"
+    profile_video_bitrate: "profileVideoBitrate"   # oculto en Audio
+    profile_video_codec: "profileVideoCodec"       # oculto en Audio
+    profile_audio_bitrate: "profileAudioBitrate"
+    profile_audio_codec: "profileAudioCodec"
+    profile_form_alert: "profileFormAlert"
+    origin_servers: "origin-servers"
+    origin_servers_webdav: "origin-servers-webdav"
+  stream_urls:
+    hls: "stream-url-hls"
+    embed: "stream-url-embed"
+    mpd: "stream-url-mpd"
+    icecast: "stream-url-icecast"    # AUDIO: streaming Icecast
+    origin_url: "origin-url"         # pre-save muestra .../undefined/...undefined (AQ2#21)
+    publishing_token: "publishing-token"
+    refresh_token: "refresh-publishing-token"
+    confirm_token_refresh: "confirm-token-refresh"
+  captions:
+    add: "add-new-caption"
+    language: "subtitle-language"
+    name: "subtitle-name"
+    alert: "closeCaptionFormAlert"
+  audio_selectors:                   # AUDIO
+    add: "add-new-audio-selector"
+    language: "audio-selector-language"
+  schedules:
+    add: "add-schedule"
+    add_not_allowed: "add-schedule-not-allowed"
+    container: "schedules-container"
+    no_data: "schedules-no-data"
+    last_container: "last-schedules-container"
+    fix_tz: "fix-tz-offset-schedule"
+  recording:
+    button: "recording"
+    errors: "recording-errors"
+    time: "time-recording"
+    # API /api/live-stream/:id/recording -> 500 con id no-ObjectId (AQ2#20)
+  epg:
+    select: "epg"
+    sync: "sync-epg"
+  ads:
+    select: "ads"
+    insertion: "ad-insertion"
+    google_dai_key: "google-dai-asset-key"
+    add_referer: "add-ads-referer"
+    referer_list: "referer-ads-list"
+  encoder:
+    select: "select-encoder"
+    none: "no-encoders"
+    with: "with-encoders"
+    details: "encoder-details"
+    create_job: "create-encoder-job"
+  metadata_icecast_mask: "metadata-icecast-mask"   # AUDIO
+  itg_channel: "itg-channel"
+  playanywhere:
+    project_id: "playanywhere-project-id"
+    program_id: "playanywhere-program-id"
+    switch: "switch-playanywhere"
+  embed:
+    textarea: "embed"
+    autoplay: "embed-option-autoplay"
+    sharing: "embed-option-sharing"
+    dvr: "embed-option-dvr"
+    custom_width: "embed-custom-width"
+    custom_height: "embed-custom-height"
+  logo:
+    image: "logo-image"
+    upload: "logo-upload"
+    position: "logo-live-position"
+  thumbs:
+    container: "thumbs"
+    list: "thumb-list"
+
+# ---- Tipos de evento (verificado en vivo) ----
+tipos:
+  video:
+    ruta: "/live-stream/new"
+    expone: ["profileVideoBitrate", "profileVideoCodec", "encoding-profiles"]
+  audio:
+    ruta: "/live-stream/new?type=audio"
+    expone: ["stream-url-icecast", "metadata-icecast-mask"]
+    oculta: ["profileVideoBitrate", "profileVideoCodec"]   # logica data-type="video"

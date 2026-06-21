@@ -2,7 +2,9 @@
 const base = require('@playwright/test');
 const { MediaPage } = require('../pages/media.page');
 const { MediaDetailPage } = require('../pages/media-detail.page');
+const { LiveStreamPage } = require('../pages/live-stream.page');
 const { MediaClient } = require('../api/media.client');
+const { LiveStreamClient } = require('../api/live-stream.client');
 const { ResourceCleaner } = require('./resource-cleaner');
 const { createTranscodedMedia } = require('../api/media-factory');
 const { env } = require('../utils/env');
@@ -30,6 +32,11 @@ const test = base.test.extend({
     await use(new MediaDetailPage(page));
   },
 
+  // Page Object del listado de Live Stream
+  liveStreamPage: async ({ page }, use) => {
+    await use(new LiveStreamPage(page));
+  },
+
   // APIRequestContext autenticado por SESIÓN (cookies del storageState del
   // login). Autoriza /api/media igual que la app, sin token aparte.
   api: async ({ playwright }, use) => {
@@ -43,6 +50,10 @@ const test = base.test.extend({
 
   mediaClient: async ({ api }, use) => {
     await use(new MediaClient(api));
+  },
+
+  liveStreamClient: async ({ api }, use) => {
+    await use(new LiveStreamClient(api));
   },
 
   // Media REAL self-contained: ingesta remota + gate de transcoding; se borra
