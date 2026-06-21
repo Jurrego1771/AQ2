@@ -49,10 +49,42 @@ Con un id no-ObjectId (el literal `new`):
 - `GET /api/live-stream/new/recording` → **500 DB_ERROR** ❌ (Mongoose CastError filtrado;
   no valida el id) → **bug [[AQ2#20]]** (LIVE-RISK-1). Se dispara en cada carga de `/new`.
 
-## Schedules (de exploración previa — issues ya filados, sin spec aún)
-- `POST /:id/schedule-job` acepta **date_end en el pasado** (200; validación server ausente)
-  → [[AQ2#18]] (LIVE-RISK-5).
-- Schedule **solapado** responde **500** en vez de 400 → [[AQ2#19]] (LIVE-RISK-6).
+## Schedules (US-011) — explorado en vivo, cubierto por API
+Programación de cuándo un live está al aire. Dos tipos: **onetime** y **recurrent**.
+
+### Contrato API (verificado en vivo)
+- **Crear**: `POST /api/live-stream/:id/schedule-job/`.
+- **Actualizar**: `POST /api/live-stream/:id/schedule-job/:sid` (**no** es PUT — el cliente
+  sm2 hace `$.post` al mismo path con el id).
+- **Listar**: `GET /api/live-stream/:id/schedule-job/` — **por defecto filtra `date_end>=now`**;
+  usar `?all=true` (incluye pasados) o `?is_past=true` (solo pasados, limit 10).
+- **Detalle/Borrar**: `GET`/`DELETE .../schedule-job/:sid`.
+- **Campos consultables** (select del server): `name type one_time recurrency date_start
+  date_end for_recording is_featured is_auto_publish not_sellable is_blackout is_future
+  is_past is_current access_rules delayedContent ignoreSongMetadata
+  inherit_ignore_song_metadata show_info`.
+
+### Reglas verificadas (en vivo)
+| Caso | Resultado | Estado |
+|---|---|---|
+| onetime válido futuro | 200, persiste | ✅ LIVE-TC-8 |
+| recurrent válido (≤1 año) | 200, `recurrency` persiste | ✅ LIVE-TC-9 |
+| recurrent **>1 año** | **400** `OVER_MAX_DURATION` | ✅ LIVE-TC-10 (límite 1 año OK) |
+| onetime **fin en pasado** | **200** (`is_past:true`) | 🔴 [[AQ2#18]] LIVE-RISK-5 / LIVE-TC-11 |
+| schedule **solapado** | **500** `OVERLAPPED_DATES` | 🔴 [[AQ2#19]] LIVE-RISK-6 / LIVE-TC-12 |
+| update vacía texto / apaga flag | no persiste (queda valor previo) | 🔴 [[AQ2#23]] LIVE-RISK-7 / LIVE-TC-13 |
+
+- **Solape**: la validación existe (`checkDateConflict` → `CustomError(...,400)`) pero se pierde
+  el status dentro de `mongoose.runInTransaction` → 500. La UI no previene el solape
+  client-side: hace POST y muestra alert según la respuesta del server.
+- **Update no persiste vaciado**: `updateSchedule` aplica campos con guardas `if(body.X)` →
+  `description:''` e `is_featured:false` se ignoran (no se puede limpiar texto ni apagar flags).
+
+### Cobertura UI bloqueada (testabilidad)
+El form New/Edit Schedule **casi no tiene marcas `sm`** (solo `scheduleTitle`, `save`, `delete`,
+`main-information`). Tipo onetime/recurrent, fechas, horas, días de recurrencia, duración y
+opciones (Featured/Blackout/Not Sellable/Monetizable…) **no son direccionables por `sm`**
+→ [[AQ2#24]] (LIVE-RISK-8). Por eso la cobertura de schedules es **solo por API**.
 
 ## Renombrar evento
 - Editar el nombre **regenera el slug** (URL pública cambia); `event-slug` es readonly y no
@@ -68,7 +100,12 @@ Embed. Marcas en `selectors.yaml`.
 
 ## Testabilidad
 - Contar por `total-live-streams` (no por cards: dependen del layout activo).
-- Provisioning self-contained posible vía `POST /api/live-stream/` + `DELETE /api/live-stream/:id`
-  (verificado: DELETE → 200 OK). Limpiar siempre los `[QA-...]` creados (hay mucha data residual
-  en dev de corridas previas — higiene pendiente, no es bug de producto).
+- **Provisioning self-contained**: fixture `liveStream` (crea por `POST /api/live-stream/` y borra
+  por `DELETE /api/live-stream/:id` al terminar, vía `ResourceCleaner` con deleter `live-stream`).
+  El DELETE del live **borra en cascada** sus schedules. Probado por `LIVE-TC-14`.
+- **Timeout del contexto API = 30s** (no el `actionTimeout` de 10s de UI): un `POST` de creación
+  contra el dev compartido bajo carga paralela puede tardar >10s. Sin este ajuste, el create
+  expira en el cliente *después* de crear el recurso en el server → **live huérfano** (causa de la
+  data residual `[QA-AUTO]` de corridas previas; no es bug de producto).
 - Sesión por `storageState`; endpoints autorizados por cookie de sesión (sin token aparte).
+- **Cobertura solo-API** para schedules (form sin marcas `sm`, [[AQ2#24]]).

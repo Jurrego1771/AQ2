@@ -7,6 +7,7 @@ const { MediaClient } = require('../api/media.client');
 const { LiveStreamClient } = require('../api/live-stream.client');
 const { ResourceCleaner } = require('./resource-cleaner');
 const { createTranscodedMedia } = require('../api/media-factory');
+const { createLiveStream } = require('../api/live-stream-factory');
 const { env } = require('../utils/env');
 
 const AUTH_FILE = '.auth/user.json';
@@ -43,6 +44,11 @@ const test = base.test.extend({
     const ctx = await playwright.request.newContext({
       baseURL: env.baseURL,
       storageState: AUTH_FILE,
+      // Timeout propio del contexto API: el actionTimeout (10s) está pensado
+      // para clicks de UI; un POST de escritura contra el dev compartido bajo
+      // carga paralela (crear live/schedule) puede tardar más. 30s no enmascara
+      // bugs (un fallo real responde con status, no timeout de red).
+      timeout: 30_000,
     });
     await use(ctx);
     await ctx.dispose();
@@ -54,6 +60,18 @@ const test = base.test.extend({
 
   liveStreamClient: async ({ api }, use) => {
     await use(new LiveStreamClient(api));
+  },
+
+  // Live-stream REAL self-contained: lo crea por API y lo borra al terminar
+  // (teardown idempotente via ResourceCleaner). El test recibe el id ya creado.
+  // A diferencia de transcodedMedia, no hay gate de transcoding que esperar.
+  liveStream: async ({ api }, use, testInfo) => {
+    const cleaner = new ResourceCleaner(api);
+    const name = `[QA-AUTO] Live ${testInfo.title.slice(0, 40)} ${Date.now()}`;
+    const id = await createLiveStream(api, { name, type: 'video' });
+    cleaner.register('live-stream', id);
+    await use(id);
+    await cleaner.clean();
   },
 
   // Media REAL self-contained: ingesta remota + gate de transcoding; se borra

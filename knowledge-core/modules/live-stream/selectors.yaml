@@ -83,7 +83,35 @@ detalle:
     container: "schedules-container"
     no_data: "schedules-no-data"
     last_container: "last-schedules-container"
+    last_no_data: "last-schedules-no-data"
     fix_tz: "fix-tz-offset-schedule"
+    # --- Form New/Edit Schedule (/live-stream/:id/schedule/new) ---
+    # GAP (AQ2#24): el form casi no tiene marcas sm. Solo:
+    form_title: "scheduleTitle"      # input Title
+    form_save: "save"                # submit
+    form_delete: "delete"            # borrar (disabled en new)
+    form_main: "main-information"
+    save_schedule: "save-schedule"   # boton en la vista de detalle (live_stream.coffee)
+    cancel_schedule: "cancel-schedule"
+    delete_schedule: "delete-schedule"
+    # SIN marca sm (no automatizables por sm) -> cobertura solo por API:
+    # tipo onetime/recurrent (a href #schedule-onetime/#schedule-recurrent),
+    # Start/End Date (por placeholder), selects hora/minuto, dias recurrencia,
+    # duracion, opciones (Featured/Blackout/Not Sellable/Monetizable/...),
+    # geo (radios name=schedule-geo-restriction), custom attributes (por id).
+  schedule_api:
+    list:   "GET  /api/live-stream/:id/schedule-job/    (default filtra date_end>=now)"
+    list_all: "GET ...?all=true  | ?is_past=true"
+    detail: "GET  /api/live-stream/:id/schedule-job/:sid"
+    create: "POST /api/live-stream/:id/schedule-job/"
+    update: "POST /api/live-stream/:id/schedule-job/:sid   (NO es PUT)"
+    remove: "DELETE /api/live-stream/:id/schedule-job/:sid"
+    campos: "name type one_time recurrency date_start date_end for_recording is_featured
+             is_auto_publish not_sellable is_blackout is_future is_past is_current
+             access_rules delayedContent ignoreSongMetadata inherit_ignore_song_metadata show_info"
+    errores: "INVALID_DATE_ERROR_OVER_MAX_DURATION(400, >1ano) ·
+              INVALID_DATE_ERROR_OVERLAPPED_DATES(500, deberia 400 #19) ·
+              fin-pasado: aceptado 200 (#18) · INVALID_RECURRING_DAYS(400)"
   recording:
     button: "recording"
     errors: "recording-errors"

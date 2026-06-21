@@ -36,9 +36,32 @@ class LiveStreamClient extends BaseClient {
   recording(id) {
     return this.get(`/${id}/recording`);
   }
-  /** Schedules onetime/recurrentes del evento (#18/#19 viven aquí). */
+
+  // --- Schedules (onetime / recurrent). Contrato verificado en vivo ---
+
+  /**
+   * Lista los schedules del evento. Por defecto el server filtra
+   * date_end >= now; usar { all: 'true' } para incluir pasados, o
+   * { is_past: 'true' } para solo pasados.
+   */
   scheduleJobs(id, query = {}) {
-    return this.get(`/${id}/schedule-job`, { params: query });
+    return this.get(`/${id}/schedule-job/`, { params: query });
+  }
+  /** Detalle de un schedule. */
+  scheduleJob(id, scheduleJobId) {
+    return this.get(`/${id}/schedule-job/${scheduleJobId}`);
+  }
+  /** Crea un schedule (POST a /schedule-job/). */
+  createScheduleJob(id, payload) {
+    return this.post(`/${id}/schedule-job/`, payload);
+  }
+  /** Actualiza un schedule. OJO: el contrato sm2 es POST a /:scheduleJobId (no PUT). */
+  updateScheduleJob(id, scheduleJobId, payload) {
+    return this.post(`/${id}/schedule-job/${scheduleJobId}`, payload);
+  }
+  /** Borra un schedule. */
+  removeScheduleJob(id, scheduleJobId) {
+    return this.delete(`/${id}/schedule-job/${scheduleJobId}`);
   }
 }
 

@@ -92,3 +92,94 @@ tests:
       story: "US-010"
       spec: "tests/api/live-stream.api.spec.js"
     # test.fail() en el spec: rojo esperado hasta corregir AQ2#20.
+
+  # ---- US-011: schedules (onetime / recurrent) ----
+  - id: "LIVE-TC-8"
+    titulo: "Crear schedule onetime valido persiste y es consultable por API con todos sus campos"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-9"]
+      mitigates: []
+      story: "US-011"
+      spec: "tests/api/live-stream-schedule.api.spec.js"
+
+  - id: "LIVE-TC-9"
+    titulo: "Crear schedule recurrente valido (<=1 ano) persiste la recurrencia"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-10"]
+      mitigates: []
+      story: "US-011"
+      spec: "tests/api/live-stream-schedule.api.spec.js"
+
+  - id: "LIVE-TC-10"
+    titulo: "Schedule recurrente que excede 1 ano es rechazado (400)"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-11"]
+      mitigates: []
+      story: "US-011"
+      spec: "tests/api/live-stream-schedule.api.spec.js"
+
+  - id: "LIVE-TC-11"
+    titulo: "Schedule onetime con fin en el pasado debe rechazarse [prueba viva BUG]"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-12"]
+      mitigates: ["LIVE-RISK-5"]
+      story: "US-011"
+      spec: "tests/api/live-stream-schedule.api.spec.js"
+    # test.fail() en el spec: rojo esperado hasta corregir AQ2#18.
+
+  - id: "LIVE-TC-12"
+    titulo: "Schedule solapado debe responder 400, no 500 [prueba viva BUG]"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-13"]
+      mitigates: ["LIVE-RISK-6"]
+      story: "US-011"
+      spec: "tests/api/live-stream-schedule.api.spec.js"
+    # test.fail() en el spec: rojo esperado hasta corregir AQ2#19.
+
+  - id: "LIVE-TC-13"
+    titulo: "Vaciar texto / apagar flag en update de schedule debe persistir [prueba viva BUG]"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-14"]
+      mitigates: ["LIVE-RISK-7"]
+      story: "US-011"
+      spec: "tests/api/live-stream-schedule.api.spec.js"
+    # test.fail() en el spec: rojo esperado hasta corregir AQ2#23.
+
+  # ---- Infra de tests: prueba del fixture de limpieza ----
+  - id: "LIVE-TC-14"
+    titulo: "ResourceCleaner.clean() borra un live-stream registrado y es idempotente"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: []
+      mitigates: []
+      story: "US-010"
+      spec: "tests/api/resource-cleaner.api.spec.js"
+    # No valida un AC de producto: protege la infraestructura de provisioning
+    # self-contained (los tests no deben dejar recursos huerfanos en dev).

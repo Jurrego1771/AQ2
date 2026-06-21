@@ -139,3 +139,54 @@ riesgos:
     prioridad_prueba: "SHOULD"
     nota_industria: >
       Semantica HTTP correcta: 4xx para errores del cliente, 5xx para fallos del servidor.
+
+  - id: "LIVE-RISK-7"
+    severidad: "medium"
+    probabilidad: "high"
+    titulo: "Update de schedule ignora valores vacios/false: no se puede limpiar texto ni apagar flags"
+    descripcion: >
+      Al actualizar un schedule (POST /schedule-job/:id), el server solo aplica un campo
+      cuando el valor entrante es truthy (guardas if(body.X) en updateSchedule). En
+      consecuencia no se puede vaciar la description (queda el texto previo) ni desactivar
+      is_featured/is_blackout/not_sellable/is_auto_publish/for_recording. El update responde
+      200, dando falsa sensacion de guardado. Verificado en vivo: description:'' e
+      is_featured:false se ignoraron tras releer. En create la description si maneja vacio.
+    detonador:
+      - "Editar un schedule existente vaciando un texto o desmarcando un checkbox y guardar"
+    mitigacion: >
+      En updateSchedule distinguir 'clave presente con valor vacio/false' de 'clave ausente':
+      aplicar description siempre que venga la clave (permitiendo ''), y los booleanos por
+      presencia (permitiendo false); o normalizar el body del form (checkbox desmarcado -> false).
+    archivos_afectados:
+      - "src/server/routes/api/live-stream/schedule-job/utils/index.js"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#23"
+    prioridad_prueba: "MUST"
+    nota_industria: >
+      Semantica de update parcial (PUT/PATCH): un valor explicito no debe descartarse.
+      Nielsen #3 (control y libertad: poder deshacer).
+
+  - id: "LIVE-RISK-8"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "El form de schedule carece de marcas sm: cobertura UI no automatizable"
+    descripcion: >
+      El formulario New/Edit Schedule solo expone marcas sm en Title (scheduleTitle), save,
+      delete y main-information. Tipo onetime/recurrent, Start/End Date, selects de hora/minuto,
+      dias de recurrencia, duracion y las opciones (Featured, Blackout, Not Sellable, etc.) no
+      tienen marca sm. Bajo la regla 'solo sm:' del proyecto, la cobertura UI de schedules
+      (crear onetime/recurrente, validar que la UI impide solapes, persistencia llenado/vaciado)
+      no es automatizable; queda solo cobertura por API.
+    detonador:
+      - "Intentar automatizar el form de schedule por selector sm"
+    mitigacion: >
+      Agregar marcas sm semanticas por control: schedule-type-onetime/recurrent,
+      schedule-date-start/end, schedule-start-hour, schedule-recurrency-days,
+      schedule-duration-hours, schedule-opt-featured/blackout/not-sellable, etc.
+    archivos_afectados:
+      - "src/client/live_stream.coffee"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#24"
+    prioridad_prueba: "COULD"
+    nota_industria: >
+      Testabilidad / contrato QA del proyecto (selectores estables sm:).

@@ -69,3 +69,41 @@ stories:
       LIVE-AC-6/7/8 estan verificados en vivo pero aun SIN test automatizado (GAP
       que reporta el build). LIVE-AC-5 esta cubierto por LIVE-TC-5/6 (verde) y por
       LIVE-TC-7 (prueba viva del bug AQ2#20, /recording 500).
+
+  - id: "US-011"
+    titulo: "Programar transmisiones (schedules) onetime y recurrentes de un live"
+    rol: "administrador de contenido"
+    meta: "agendar cuando un evento esta al aire, una vez o de forma recurrente"
+    beneficio: "automatizar la grilla de emision sin intervencion manual por evento"
+    descripcion: |
+      Como administrador de contenido,
+      quiero programar schedules (onetime o recurrentes) para un live-stream,
+      para controlar cuando esta al aire sin solapamientos ni configuraciones invalidas.
+
+    acceptance_criteria:
+      - id: "LIVE-AC-9"
+        criterio: "Crear un schedule onetime valido (futuro) persiste y es consultable por API con todos sus campos"
+      - id: "LIVE-AC-10"
+        criterio: "Crear un schedule recurrente valido persiste su recurrencia (dias, hora de inicio, duracion)"
+      - id: "LIVE-AC-11"
+        criterio: "Un schedule recurrente cuya ventana excede 1 ano es rechazado (400)"
+      - id: "LIVE-AC-12"
+        criterio: "Un schedule cuya fecha de fin esta en el pasado es rechazado"
+      - id: "LIVE-AC-13"
+        criterio: "Crear un schedule que solapa otro existente responde 400 (error del cliente), no 500"
+      - id: "LIVE-AC-14"
+        criterio: "Al actualizar un schedule, vaciar un texto o apagar un flag booleano persiste el nuevo valor"
+
+    prioridad: "high"
+    tipo: "feature"
+    dependencias:
+      - "auth (sesion iniciada)"
+      - "api/live-stream/schedule-job"
+
+    notas: |
+      Verificado en vivo (dev). LIVE-AC-9/10/11 en verde (LIVE-TC-8/9/10). LIVE-AC-12
+      (AQ2#18), LIVE-AC-13 (AQ2#19) y LIVE-AC-14 (AQ2#23) estan en rojo: sus tests
+      existen como pruebas vivas test.fail() (LIVE-TC-11/12/13). La cobertura UI de
+      schedules esta bloqueada por falta de marcas sm (AQ2#24): solo el campo Title
+      (scheduleTitle), save y delete tienen marca; tipo/fechas/horas/recurrencia/opciones
+      no son direccionables -> cobertura solo por API.
