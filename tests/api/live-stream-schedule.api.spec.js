@@ -1,5 +1,6 @@
 // @ts-check
 const { test, expect } = require('../../src/fixtures');
+const { env } = require('../../src/utils/env');
 
 /**
  * API — Schedules de Live Stream (@api @live-stream).
@@ -31,6 +32,13 @@ const onetime = (name, dateDay, startHour, endHour) => ({
 });
 
 test.describe('Live Stream schedules — contrato API @api @live-stream', () => {
+  // Estos tests CREAN recursos (lives/schedules) -> no se ejecutan contra prod.
+  // El skip va en beforeEach sin tocar el fixture liveStream, así el evento ni
+  // siquiera se crea en prod (el fixture es lazy: no se instancia si se skipea).
+  test.beforeEach(() => {
+    test.skip(env.isProd, 'no se ejecutan escrituras contra prod (prodGuard)');
+  });
+
   test('crear un schedule onetime válido persiste y es consultable por API @LIVE-TC-8', async ({
     liveStreamClient,
     liveStream,

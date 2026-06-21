@@ -2,6 +2,7 @@
 const { test, expect } = require('../../src/fixtures');
 const { ResourceCleaner } = require('../../src/fixtures/resource-cleaner');
 const { createLiveStream } = require('../../src/api/live-stream-factory');
+const { env } = require('../../src/utils/env');
 
 /**
  * API — Prueba del fixture de limpieza (@api). Verifica que ResourceCleaner
@@ -9,6 +10,11 @@ const { createLiveStream } = require('../../src/api/live-stream-factory');
  * los tests self-contained no dejen basura en el entorno compartido.
  */
 test.describe('ResourceCleaner — limpieza de recursos @api', () => {
+  // Crea un live real -> no se ejecuta contra prod (prodGuard).
+  test.beforeEach(() => {
+    test.skip(env.isProd, 'no se ejecutan escrituras contra prod (prodGuard)');
+  });
+
   test('clean() borra un live-stream registrado y es idempotente @LIVE-TC-14', async ({
     api,
     liveStreamClient,
