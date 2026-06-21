@@ -50,7 +50,11 @@ module.exports = defineConfig({
       name: 'api',
       testDir: './tests/api',
       grep: /@api/,
-      // El grueso de las pruebas API no necesita navegador.
+      // No necesita navegador propio, pero el fixture `api` se autentica por
+      // sesión (storageState .auth/user.json) -> debe correr DESPUÉS de setup
+      // (que hace el login y escribe ese archivo). Sin esta dependencia, en un
+      // entorno limpio (CI) los tests api arrancan antes del login -> ENOENT.
+      dependencies: ['setup'],
     },
     {
       name: 'e2e',
