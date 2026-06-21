@@ -1,69 +1,113 @@
 name: QA
 
+# Suite QA standalone (no conectada al código del SUT). Dos modos:
+#  - Gate rápido en push/PR a ESTE repo: valida que los tests nuevos quedan verdes.
+#  - Nightly (cron): corre la suite completa contra el dev en vivo para vigilar
+#    regresiones del producto (es la señal principal, ya que no hay trigger por
+#    cambios de sm2).
+#
+# Entorno: dev compartido (https://dev.platform.mediastre.am). Los tests crean y
+# limpian recursos reales -> un solo run toca dev a la vez (concurrency global).
+#
+# SECRETS REQUERIDOS (Settings > Secrets and variables > Actions). Los nombres
+# DEBEN coincidir con los que lee src/utils/env.js (sufijo _DEV):
+#   - BASE_URL_DEV    (p.ej. https://dev.platform.mediastre.am)  [obligatorio: no tiene fallback]
+#   - TEST_USER_DEV   (usuario QA)
+#   - TEST_PASS_DEV   (password QA)
+# Repo PÚBLICO: GitHub NO expone secrets a PRs desde forks -> el gate con login
+# solo corre en ramas/PRs del mismo repo (los de fork fallarán en auth, esperado).
+
 on:
+  push:
+    branches: [main]
+    paths-ignore: ['**/*.md', 'knowledge-core/**']
   pull_request:
-    branches: [main, develop]
+    paths-ignore: ['**/*.md', 'knowledge-core/**']
   schedule:
-    # Nocturno 02:00 UTC — api + e2e completos
+    # Nightly 02:00 UTC — suite completa contra dev.
     - cron: '0 2 * * *'
   workflow_dispatch:
+    inputs:
+      scope:
+        description: 'Qué correr'
+        type: choice
+        default: gate
+        options: [gate, full, smoke, regression, api, e2e]
+
+# Serializa contra el dev compartido: un solo run a la vez (no cancela en curso
+# para no matar un nightly con un push; los demás esperan turno).
+concurrency:
+  group: live-qa-dev
+  cancel-in-progress: false
 
 env:
   CI: 'true'
+  ENV: dev
+  BASE_URL_DEV: ${{ secrets.BASE_URL_DEV }}
+  TEST_USER_DEV: ${{ secrets.TEST_USER_DEV }}
+  TEST_PASS_DEV: ${{ secrets.TEST_PASS_DEV }}
 
 jobs:
-  smoke:
-    name: Smoke (cada PR)
-    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-      - run: npm ci
-      - run: npx playwright install --with-deps chromium
-      - name: Run smoke
-        run: npx playwright test --project=setup --project=smoke
-        env:
-          BASE_URL: ${{ secrets.BASE_URL }}
-          API_BASE_URL: ${{ secrets.API_BASE_URL }}
-          QA_USER: ${{ secrets.QA_USER }}
-          QA_PASS: ${{ secrets.QA_PASS }}
-      - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
-        with:
-          name: smoke-report
-          path: playwright-report/
-          retention-days: 7
-
-  nightly:
-    name: API + E2E (nocturno)
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+  qa:
+    name: QA (dev en vivo)
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
+
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
-      - name: Run api + e2e
-        run: npx playwright test --project=setup --project=api --project=e2e
-        env:
-          BASE_URL: ${{ secrets.BASE_URL }}
-          API_BASE_URL: ${{ secrets.API_BASE_URL }}
-          QA_USER: ${{ secrets.QA_USER }}
-          QA_PASS: ${{ secrets.QA_PASS }}
-          QA_LOWPRIV_USER: ${{ secrets.QA_LOWPRIV_USER }}
-          QA_LOWPRIV_PASS: ${{ secrets.QA_LOWPRIV_PASS }}
-      - uses: actions/upload-artifact@v4
+
+      # Cache de los browsers de Playwright (~150MB) keyed por versión instalada.
+      - name: Resolver versión de Playwright
+        id: pw
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+      - name: Cache browsers
+        uses: actions/cache@v4
+        id: pw-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}
+      - name: Instalar Chromium (con deps de sistema)
+        run: npx playwright install --with-deps chromium
+
+      # Decide qué projects correr según el evento/scope.
+      #  - schedule            -> suite completa
+      #  - workflow_dispatch   -> según input.scope
+      #  - push / pull_request -> gate (smoke + api)
+      - name: Resolver projects
+        id: scope
+        run: |
+          setup="--project=setup"
+          gate="$setup --project=smoke --project=api"
+          full="$setup --project=smoke --project=regression --project=api --project=e2e"
+          case "${{ github.event_name }}" in
+            schedule) projects="$full" ;;
+            workflow_dispatch)
+              case "${{ github.event.inputs.scope }}" in
+                full)       projects="$full" ;;
+                smoke)      projects="$setup --project=smoke" ;;
+                regression) projects="$setup --project=regression" ;;
+                api)        projects="$setup --project=api" ;;
+                e2e)        projects="$setup --project=e2e" ;;
+                *)          projects="$gate" ;;
+              esac ;;
+            *) projects="$gate" ;;
+          esac
+          echo "projects=$projects" >> "$GITHUB_OUTPUT"
+          echo "Projects: $projects"
+
+      - name: Run Playwright
+        run: npx playwright test ${{ steps.scope.outputs.projects }}
+
+      - name: Subir reporte HTML
+        uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: nightly-report
+          name: playwright-report-${{ github.run_id }}
           path: playwright-report/
-          retention-days: 14
+          retention-days: 7
