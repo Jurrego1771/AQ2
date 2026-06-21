@@ -1,21 +1,17 @@
 name: QA
 
-# Suite QA standalone (no conectada al código del SUT). Dos modos:
-#  - Gate rápido en push/PR a ESTE repo: valida que los tests nuevos quedan verdes.
-#  - Nightly (cron): corre la suite completa contra el dev en vivo para vigilar
-#    regresiones del producto (es la señal principal, ya que no hay trigger por
-#    cambios de sm2).
+# Suite QA standalone (no conectada al código del SUT). Por ahora SOLO dev
+# (los ambientes productivos quedan para después — la groundwork está en
+# knowledge-core/environments.md, src/utils/totp.js y el prodGuard de los specs).
 #
-# Entorno: dev compartido (https://dev.platform.mediastre.am). Los tests crean y
-# limpian recursos reales -> un solo run toca dev a la vez (concurrency global).
+# Estrategia (deploy-aligned; deploys Lun/Jue ~22:00 UTC):
+#  - Gate (push/PR a este repo): valida que los tests nuevos quedan verdes.
+#  - Post-deploy (Mar/Vie 01:00 UTC): regresión completa (caza lo que rompió el deploy).
+#  - Canario diario (12:00 UTC): smoke (liveness barato del producto).
+#  - Manual (workflow_dispatch): elige scope.
 #
-# SECRETS REQUERIDOS (Settings > Secrets and variables > Actions). Los nombres
-# DEBEN coincidir con los que lee src/utils/env.js (sufijo _DEV):
-#   - BASE_URL_DEV    (p.ej. https://dev.platform.mediastre.am)  [obligatorio: no tiene fallback]
-#   - TEST_USER_DEV   (usuario QA)
-#   - TEST_PASS_DEV   (password QA)
-# Repo PÚBLICO: GitHub NO expone secrets a PRs desde forks -> el gate con login
-# solo corre en ramas/PRs del mismo repo (los de fork fallarán en auth, esperado).
+# SECRETS (Settings > Secrets and variables > Actions). Nombres = los que lee
+# src/utils/env.js: BASE_URL_DEV, TEST_USER_DEV, TEST_PASS_DEV.
 
 on:
   push:
@@ -24,8 +20,8 @@ on:
   pull_request:
     paths-ignore: ['**/*.md', 'knowledge-core/**']
   schedule:
-    # Nightly 02:00 UTC — suite completa contra dev.
-    - cron: '0 2 * * *'
+    - cron: '0 1 * * 2,5'   # post-deploy: Mar y Vie 01:00 UTC (tras deploy Lun/Jue)
+    - cron: '0 12 * * *'    # canario diario 12:00 UTC
   workflow_dispatch:
     inputs:
       scope:
@@ -34,8 +30,8 @@ on:
         default: gate
         options: [gate, full, smoke, regression, api, e2e]
 
-# Serializa contra el dev compartido: un solo run a la vez (no cancela en curso
-# para no matar un nightly con un push; los demás esperan turno).
+# Serializa contra el dev compartido: un run a la vez (no cancela en curso para no
+# matar un post-deploy con un push; los demás esperan turno).
 concurrency:
   group: live-qa-dev
   cancel-in-progress: false
@@ -49,36 +45,28 @@ env:
 
 jobs:
   qa:
-    name: QA (dev en vivo)
+    name: QA dev
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-
+        with: { node-version: 20, cache: npm }
       - run: npm ci
-
-      # Cache de los browsers de Playwright (~150MB) keyed por versión instalada.
       - name: Resolver versión de Playwright
         id: pw
         run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
-      - name: Cache browsers
-        uses: actions/cache@v4
-        id: pw-cache
+      - uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}
-      - name: Instalar Chromium (con deps de sistema)
-        run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps chromium
 
-      # Decide qué projects correr según el evento/scope.
-      #  - schedule            -> suite completa
-      #  - workflow_dispatch   -> según input.scope
-      #  - push / pull_request -> gate (smoke + api)
+      # Decide qué projects correr según el evento/cron/scope.
+      #  - cron post-deploy (Mar/Vie) -> suite completa
+      #  - cron diario               -> smoke (canario)
+      #  - workflow_dispatch         -> según input.scope
+      #  - push / pull_request       -> gate (smoke + api)
       - name: Resolver projects
         id: scope
         run: |
@@ -86,26 +74,25 @@ jobs:
           gate="$setup --project=smoke --project=api"
           full="$setup --project=smoke --project=regression --project=api --project=e2e"
           case "${{ github.event_name }}" in
-            schedule) projects="$full" ;;
+            schedule)
+              if [ "${{ github.event.schedule }}" = "0 1 * * 2,5" ]; then projects="$full"; else projects="$setup --project=smoke"; fi ;;
             workflow_dispatch)
               case "${{ github.event.inputs.scope }}" in
-                full)       projects="$full" ;;
-                smoke)      projects="$setup --project=smoke" ;;
+                full) projects="$full" ;;
+                smoke) projects="$setup --project=smoke" ;;
                 regression) projects="$setup --project=regression" ;;
-                api)        projects="$setup --project=api" ;;
-                e2e)        projects="$setup --project=e2e" ;;
-                *)          projects="$gate" ;;
+                api) projects="$setup --project=api" ;;
+                e2e) projects="$setup --project=e2e" ;;
+                *) projects="$gate" ;;
               esac ;;
             *) projects="$gate" ;;
           esac
           echo "projects=$projects" >> "$GITHUB_OUTPUT"
-          echo "Projects: $projects"
+          echo "projects=$projects"
 
-      - name: Run Playwright
-        run: npx playwright test ${{ steps.scope.outputs.projects }}
+      - run: npx playwright test ${{ steps.scope.outputs.projects }}
 
-      - name: Subir reporte HTML
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
           name: playwright-report-${{ github.run_id }}
