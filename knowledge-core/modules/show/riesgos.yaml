@@ -1,0 +1,95 @@
+# Riesgos - Modulo Show. Defectos = issues GitHub AQ2.
+# mitigado_por_test es DERIVADO: no se escribe aqui.
+version: 1
+modulo: "show"
+ultima_actualizacion: '2026-06-23'
+
+riesgos:
+  - id: "SHW-RISK-001"
+    severidad: "medium"
+    probabilidad: "high"
+    titulo: "Season modal: Save vacio lanza TypeError silencioso sin feedback de validacion"
+    descripcion: >
+      Al hacer clic en Save con el campo Title vacio en el modal de Season,
+      la funcion saveSeason() intenta leer .length de un valor undefined,
+      lanzando un TypeError no capturado. El modal permanece abierto sin
+      mostrar ningun mensaje de error. El usuario no sabe por que no funciona.
+    detonador:
+      - "Abrir modal Add Season y hacer clic en Save sin completar el campo Title"
+    mitigacion: >
+      Agregar validacion de campos obligatorios en saveSeason() antes de intentar
+      la llamada de red, y mostrar el mensaje de error en [sm='season-modal-alert'].
+    archivos_afectados:
+      - "js/show/detail.js (linea ~7760 en v7.0.65)"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#25"
+    prioridad_prueba: "MUST"
+    nota_industria: "Nielsen #9 — Ayuda a los usuarios a reconocer, diagnosticar y recuperarse de errores."
+
+  - id: "SHW-RISK-002"
+    severidad: "high"
+    probabilidad: "high"
+    titulo: "POST /show/:id/season falla con ERR_FAILED (CORS): seasons no se pueden crear"
+    descripcion: >
+      La llamada POST a dev-api.platform.mediastre.am/show/:id/season falla con
+      net::ERR_FAILED — error a nivel de red antes de recibir respuesta HTTP.
+      Las peticiones GET al mismo subdominio responden 200 correctamente,
+      lo que es consistente con un rechazo de preflight CORS para el metodo POST.
+      La creacion de seasons queda bloqueada por completo en dev.
+    detonador:
+      - "Intentar guardar cualquier season con datos validos desde el modal"
+    mitigacion: >
+      Revisar la configuracion CORS del servidor de la Show API
+      (dev-api.platform.mediastre.am) para asegurarse de que el metodo POST
+      este permitido desde el origen de la plataforma en dev.
+    archivos_afectados:
+      - "dev-api.platform.mediastre.am (configuracion CORS del servidor)"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#26"
+    prioridad_prueba: "MUST"
+    nota_industria: "CORS RFC 7234 — preflight OPTIONS debe responder con los metodos permitidos."
+
+  - id: "SHW-RISK-003"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "Mensaje de validacion en creacion no especifica que campo falta"
+    descripcion: >
+      El mensaje de error al guardar un show nuevo sin todos los campos requeridos
+      siempre dice 'Title and type are required' independientemente de cuales campos
+      esten vacios. Un usuario que ya ingreso el titulo pero olvido el tipo no sabe
+      exactamente que le falta.
+    detonador:
+      - "Guardar formulario /show/new con titulo pero sin tipo"
+      - "Guardar formulario /show/new con tipo pero sin titulo"
+    mitigacion: >
+      Adaptar el mensaje de validacion al contexto: si solo falta el tipo decir
+      'Type is required', si solo falta el titulo decir 'Title is required'.
+    archivos_afectados:
+      - "js/show/new.js o similar en v7.0.65"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#27"
+    prioridad_prueba: "SHOULD"
+    nota_industria: "Nielsen #9 — Mensajes de error en lenguaje claro que indican el problema preciso."
+
+  - id: "SHW-RISK-004"
+    severidad: "medium"
+    probabilidad: "high"
+    titulo: "Overview del detalle sin marcas sm: — flujos de edicion no automatizables"
+    descripcion: >
+      Los campos del panel Overview del detalle de show (Title, Type, Status,
+      Description, Genre, External ID, IAB Genre, Vertical Content, Free Episodes Count)
+      carecen de atributos sm:, lo que impide automatizarlos con la convencion de
+      selectores del proyecto. La cobertura de los flujos de edicion y publicacion
+      queda con un GAP critico hasta que el front agregue las marcas.
+    detonador:
+      - "Cualquier intento de automatizar la edicion de un show existente"
+      - "Cualquier intento de automatizar el toggle Published/Not Published"
+    mitigacion: >
+      Agregar marcas sm: a los campos del Overview (minimo: show-title, show-type,
+      show-status, show-description, show-first-emision) siguiendo la convencion
+      del proyecto. Similar a issue #13 para Media Basic Information.
+    archivos_afectados:
+      - "js/show/detail.js (template del tab Overview)"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#28"
+    prioridad_prueba: "MUST"

@@ -1,0 +1,79 @@
+# Tests - Modulo Show. Definicion (sin estado de ejecucion: eso es derivado).
+# refs = FUENTE UNICA de los vinculos. El spec lleva en su titulo solo el id
+# de correlacion @SHW-TC-N (+ la capa @smoke/@regression).
+version: 1
+modulo: "show"
+ultima_actualizacion: '2026-06-23'
+
+tests:
+  - id: "SHW-TC-001"
+    titulo: "El modulo Show carga para un usuario autenticado"
+    modulo: "show"
+    tipo: "smoke"
+    prioridad: "critical"
+    estado: "active"
+    refs:
+      validates: ["SHW-AC-1"]
+      mitigates: []
+      story: "US-012"
+      spec: "tests/smoke/show.smoke.spec.js"
+
+  - id: "SHW-TC-002"
+    titulo: "Buscar por titulo reduce el listado de shows"
+    modulo: "show"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["SHW-AC-2"]
+      mitigates: []
+      story: "US-012"
+      spec: "tests/regression/show-list.regression.spec.js"
+
+  - id: "SHW-TC-003"
+    titulo: "Limpiar busqueda restaura el listado completo de shows"
+    modulo: "show"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["SHW-AC-3"]
+      mitigates: []
+      story: "US-012"
+      spec: "tests/regression/show-list.regression.spec.js"
+
+  - id: "SHW-TC-004"
+    titulo: "El panel de busqueda avanzada se abre y cierra"
+    modulo: "show"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["SHW-AC-4"]
+      mitigates: []
+      story: "US-012"
+      spec: "tests/regression/show-list.regression.spec.js"
+
+  - id: "SHW-TC-005"
+    titulo: "Save con season vacia muestra validacion en lugar de TypeError [prueba viva BUG #25]"
+    modulo: "show"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["SHW-AC-12"]
+      mitigates: ["SHW-RISK-001"]
+      story: "US-015"
+      spec: "tests/regression/show-seasons.regression.spec.js"
+
+  - id: "SHW-TC-006"
+    titulo: "POST season con titulo valido retorna 201 [prueba viva BUG #26]"
+    modulo: "show"
+    tipo: "regression"
+    prioridad: "critical"
+    estado: "active"
+    refs:
+      validates: ["SHW-AC-13"]
+      mitigates: ["SHW-RISK-002"]
+      story: "US-015"
+      spec: "tests/regression/show-seasons.regression.spec.js"

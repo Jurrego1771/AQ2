@@ -3,6 +3,7 @@ const base = require('@playwright/test');
 const { MediaPage } = require('../pages/media.page');
 const { MediaDetailPage } = require('../pages/media-detail.page');
 const { LiveStreamPage } = require('../pages/live-stream.page');
+const { ShowPage } = require('../pages/show.page');
 const { MediaClient } = require('../api/media.client');
 const { LiveStreamClient } = require('../api/live-stream.client');
 const { ResourceCleaner } = require('./resource-cleaner');
@@ -36,6 +37,11 @@ const test = base.test.extend({
   // Page Object del listado de Live Stream
   liveStreamPage: async ({ page }, use) => {
     await use(new LiveStreamPage(page));
+  },
+
+  // Page Object del módulo Show (listado + detalle)
+  showPage: async ({ page }, use) => {
+    await use(new ShowPage(page));
   },
 
   // APIRequestContext autenticado por SESIÓN (cookies del storageState del

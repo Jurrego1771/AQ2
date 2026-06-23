@@ -1,0 +1,132 @@
+# Historias de Usuario - Epic Show Management
+# Solo intencion: US + AC. Los vinculos a tests/riesgos los declara el test
+# (tests.yaml -> refs) y los calcula el build. Aqui NO hay reverse-links.
+# AC ids unicos por modulo: SHW-AC-N.
+version: 1
+epic: "Show Management"
+ultima_actualizacion: '2026-06-23'
+
+stories:
+  - id: "US-012"
+    titulo: "Listar y buscar shows en el modulo Show"
+    rol: "administrador de contenido"
+    meta: "encontrar rapidamente un show por titulo u otros criterios"
+    beneficio: "gestionar el catalogo de shows sin recorrer manualmente el listado"
+    descripcion: |
+      Como administrador de contenido,
+      quiero buscar shows por titulo y usar la busqueda avanzada,
+      para localizar y operar un show sin paginar cientos de items.
+
+    acceptance_criteria:
+      - id: "SHW-AC-1"
+        criterio: "El listado de shows carga con al menos una card visible y un contador total"
+      - id: "SHW-AC-2"
+        criterio: "Buscar por titulo reduce el listado a las coincidencias o muestra estado vacio"
+      - id: "SHW-AC-3"
+        criterio: "Limpiar la busqueda restaura el conteo original"
+      - id: "SHW-AC-4"
+        criterio: "El panel de busqueda avanzada se abre al hacer clic en su boton y se cierra al cancelar"
+
+    prioridad: "high"
+    tipo: "feature"
+    dependencias:
+      - "auth (sesion iniciada)"
+      - "dev-api.platform.mediastre.am/show"
+
+    notas: |
+      La UI legada (/show) usa CoffeeScript/jQuery y Chosen.js para selects.
+      La nueva UI (/shows) es React y es automatable via getByRole/getByLabel
+      pero carece de marcas sm: (requiere excepcion documentada igual que login).
+      Ambas apuntan al mismo API (dev-api.platform.mediastre.am).
+
+  - id: "US-013"
+    titulo: "Crear un show con titulo y tipo"
+    rol: "administrador de contenido"
+    meta: "registrar un nuevo show en la plataforma"
+    beneficio: "organizar episodios y contenido bajo una entidad de show"
+    descripcion: |
+      Como administrador de contenido,
+      quiero crear un show especificando al menos titulo y tipo,
+      para poder agregar seasons y episodios bajo esa estructura.
+
+    acceptance_criteria:
+      - id: "SHW-AC-5"
+        criterio: "Guardar sin titulo ni tipo muestra un mensaje de error descriptivo"
+      - id: "SHW-AC-6"
+        criterio: "El mensaje de error indica especificamente que campo falta (no mensaje generico)"
+      - id: "SHW-AC-7"
+        criterio: "Guardar con titulo y tipo redirige al detalle del show creado"
+
+    prioridad: "critical"
+    tipo: "feature"
+    dependencias:
+      - "auth (sesion iniciada)"
+      - "dev-api.platform.mediastre.am/show (POST)"
+
+    notas: |
+      SHW-AC-6 esta en rojo (bug AQ2#27): el mensaje siempre dice 'Title and type
+      are required' sin adaptar el texto al campo que falta.
+      El selector de tipo usa Chosen.js: requiere interaccion click en .chosen-single
+      + click en .chosen-results li (no es seleccionable via browser_select_option
+      sobre el <select> nativo porque esta oculto).
+
+  - id: "US-014"
+    titulo: "Editar el detalle de un show existente"
+    rol: "administrador de contenido"
+    meta: "modificar los metadatos de un show: titulo, tipo, descripcion, categorias, RSS Feed"
+    beneficio: "mantener la informacion del catalogo actualizada y publicada"
+    descripcion: |
+      Como administrador de contenido,
+      quiero editar los campos del detalle de un show y guardar los cambios,
+      para mantener el catalogo actualizado y configurar la distribucion RSS.
+
+    acceptance_criteria:
+      - id: "SHW-AC-8"
+        criterio: "El detalle muestra los campos guardados al regresar a la pagina"
+      - id: "SHW-AC-9"
+        criterio: "La tab Categories permite agregar una categoria con orden y guardarla"
+      - id: "SHW-AC-10"
+        criterio: "La tab RSS Feed permite configurar Owner Name, Email, Copyright y Link"
+      - id: "SHW-AC-11"
+        criterio: "Cambiar el estado a Published refleja el cambio tras guardar"
+
+    prioridad: "high"
+    tipo: "feature"
+    dependencias:
+      - "auth (sesion iniciada)"
+      - "dev-api.platform.mediastre.am/show/:id (PATCH/PUT)"
+
+    notas: |
+      Los campos del Overview (Title, Type, Status, Description, Genre, External ID,
+      IAB Genre, Vertical Content, Free Episodes Count) carecen de marcas sm: (gap AQ2#28).
+      La automatizacion de edicion queda bloqueada hasta que el front agregue las marcas.
+      La tab Next Settings tiene campos sin sm: tambien (Alternative Canonical URL,
+      Episode Display Time).
+
+  - id: "US-015"
+    titulo: "Gestionar seasons de un show"
+    rol: "administrador de contenido"
+    meta: "agregar y organizar temporadas bajo un show"
+    beneficio: "estructurar el contenido episodico por temporadas"
+    descripcion: |
+      Como administrador de contenido,
+      quiero crear seasons para un show desde su pagina de detalle,
+      para organizar episodios en temporadas.
+
+    acceptance_criteria:
+      - id: "SHW-AC-12"
+        criterio: "Intentar guardar un season sin titulo muestra un mensaje de validacion en el modal"
+      - id: "SHW-AC-13"
+        criterio: "Guardar un season con titulo lo crea y aparece en el listado de seasons"
+
+    prioridad: "critical"
+    tipo: "feature"
+    dependencias:
+      - "auth (sesion iniciada)"
+      - "dev-api.platform.mediastre.am/show/:id/season (POST)"
+
+    notas: |
+      SHW-AC-12 en rojo (bug AQ2#25): Save vacio lanza TypeError en saveSeason(), el
+      season-modal-alert permanece oculto.
+      SHW-AC-13 en rojo (bug AQ2#26): POST /show/:id/season falla con ERR_FAILED
+      (CORS/network en dev). Bloquea la creacion de seasons por completo.

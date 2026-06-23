@@ -1,0 +1,166 @@
+# Selectores - Modulo Show
+# Marcas sm: cosechadas en vivo contra dev.platform.mediastre.am (2026-06-23).
+# Fuente canonica: querySelectorAll('[sm]') con Playwright MCP.
+# NUNCA inferir de .coffee — la verdad es el entorno vivo.
+version: 1
+modulo: "show"
+ultima_actualizacion: '2026-06-23'
+
+# Gaps documentados (campos sin sm: mark):
+# - Todos los campos del Overview: Title, Type, Status, First Emision, Description,
+#   Genre, External ID, IAB Genre, Ads content, Vertical Content, Free Episodes Count
+# - Boton "New Show" (href=/show/new sin atributo sm:)
+# - Titulos de cards (show-title-<id> no existe; solo show-container-<id>)
+# - Tabs del detalle (ninguna tiene sm:, excepto rss-feed-tab)
+# - Campos de Next Settings (Alternative Canonical URL, Episode Display Time)
+# Ver issues: AQ2#28
+
+selectors:
+  # --- Listado /show ---
+  - sm: "query-title"
+    tag: "input"
+    descripcion: "Input de busqueda por titulo (compartido con Media)"
+    pagina: "/show"
+
+  - sm: "smart-search"
+    tag: "button"
+    descripcion: "Boton de busqueda basica (lupa)"
+    pagina: "/show"
+
+  - sm: "btn-advanced-smart-search"
+    tag: "button"
+    descripcion: "Boton que abre el panel de busqueda avanzada"
+    pagina: "/show"
+
+  - sm: "search-filter-container"
+    tag: "div"
+    descripcion: "Panel de busqueda avanzada (oculto por defecto)"
+    pagina: "/show"
+
+  - sm: "advance-search-button"
+    tag: "button"
+    descripcion: "Boton para aplicar la busqueda avanzada"
+    pagina: "/show"
+
+  - sm: "cancel-search-button"
+    tag: "button"
+    descripcion: "Boton para cancelar/cerrar la busqueda avanzada"
+    pagina: "/show"
+
+  - sm: "total-medias"
+    tag: "strong"
+    descripcion: "Contador total de shows (mismo nombre que Media, reutilizado)"
+    pagina: "/show"
+
+  - sm: "current-skip"
+    tag: "strong"
+    descripcion: "Offset de paginacion actual"
+    pagina: "/show"
+
+  - sm: "paginator-next"
+    tag: "li"
+    descripcion: "Boton para avanzar pagina"
+    pagina: "/show"
+
+  - sm: "paginator-prev"
+    tag: "li"
+    descripcion: "Boton para retroceder pagina"
+    pagina: "/show"
+
+  - sm: "medias-loading-icon"
+    tag: "div"
+    descripcion: "Icono de carga mientras los shows se recuperan por XHR"
+    pagina: "/show"
+
+  - sm: "show-container-{id}"
+    tag: "div"
+    descripcion: "Card de show; el id es el ObjectId del show. Usar smPrefix('show-container-')"
+    pagina: "/show"
+    patron: "prefix"
+
+  # --- Detalle /show/:id ---
+  - sm: "save-show"
+    tag: "button"
+    descripcion: "Boton Save del detalle del show"
+    pagina: "/show/:id"
+
+  - sm: "delete-show"
+    tag: "button"
+    descripcion: "Boton Delete del detalle del show"
+    pagina: "/show/:id"
+
+  - sm: "add-season"
+    tag: "a"
+    descripcion: "Boton + Add Season"
+    pagina: "/show/:id"
+
+  - sm: "add-episode"
+    tag: "a"
+    descripcion: "Boton + Add Episode"
+    pagina: "/show/:id"
+
+  - sm: "rss-feed-tab"
+    tag: "li"
+    descripcion: "Tab RSS Feed (unica tab con sm: en el tablist del detalle)"
+    pagina: "/show/:id"
+
+  - sm: "basic-information"
+    tag: "div"
+    descripcion: "Seccion Basic Information del modal de Season (tab activo por defecto)"
+    pagina: "/show/:id (modal season)"
+
+  - sm: "import-podcast-from-feed"
+    tag: "div"
+    descripcion: "Seccion de importacion desde RSS (visible condicionalmente, tipo podcast)"
+    pagina: "/show/:id (tab Overview)"
+    nota: "display:none en entorno dev/sandbox explorado — posible feature flag"
+
+  - sm: "container-localization-season"
+    tag: "div"
+    descripcion: "Contenedor del modal de Season Info"
+    pagina: "/show/:id"
+
+  - sm: "season-modal-alert"
+    tag: "div"
+    descripcion: "Alert de validacion/error dentro del modal de Season"
+    pagina: "/show/:id (modal season)"
+
+  - sm: "save-season"
+    tag: "button"
+    descripcion: "Boton Save dentro del modal de Season"
+    pagina: "/show/:id (modal season)"
+
+  - sm: "container-localization-season-episode"
+    tag: "div"
+    descripcion: "Contenedor del modal de Episode Info"
+    pagina: "/show/:id"
+
+  - sm: "episode-modal-alert"
+    tag: "div"
+    descripcion: "Alert de validacion/error dentro del modal de Episode"
+    pagina: "/show/:id (modal episode)"
+
+  - sm: "save-season-episode"
+    tag: "button"
+    descripcion: "Boton Save dentro del modal de Episode"
+    pagina: "/show/:id (modal episode)"
+
+  - sm: "add-category"
+    tag: "button"
+    descripcion: "Boton Add Category en la tab Categories"
+    pagina: "/show/:id (tab Categories)"
+
+  - sm: "order-category"
+    tag: "input"
+    descripcion: "Input de orden para nueva categoria"
+    pagina: "/show/:id (tab Categories)"
+
+  - sm: "tab-content-categories-table"
+    tag: "tbody"
+    descripcion: "Tabla de categorias asignadas al show"
+    pagina: "/show/:id (tab Categories)"
+
+  - sm: "global-alert"
+    tag: "div"
+    descripcion: "Toast global de validacion y errores (compartido con toda la app)"
+    pagina: "global"
