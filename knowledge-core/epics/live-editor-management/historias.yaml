@@ -27,6 +27,8 @@ stories:
         criterio: "Generar un preview sin los campos requeridos (id/type/meta_id) responde 400 BAD_REQUEST"
       - id: "LEDT-AC-4"
         criterio: "El endpoint de datos del editor trata un id invalido como 404 NOT_FOUND"
+      - id: "LEDT-AC-7"
+        criterio: "Crear media (POST /api/dvr) desde un clip que excede MAX_DURATION_HOURS o con URL sin inicio/fin es rechazado con 400, sin crear media"
 
     prioridad: "high"
     tipo: "feature"
@@ -34,15 +36,19 @@ stories:
       - "auth (sesion iniciada)"
       - "api/editor"
       - "api/live-editor"
+      - "api/dvr (crear media desde clip)"
       - "cuenta con cdn_zone + evento con DVR retention"
 
     notas: |
       Verificado en vivo (dev v7.0.67) sobre el live de video "Live Dai QA"
-      (6a15a4e5a23b8b92586beb63). El contrato es robusto: ningun id/body invalido
-      filtra un 500 (contraste con live-stream /recording, bug AQ2#20). LEDT-AC-1..4
-      en verde (LEDT-TC-1..6). Los flujos de UI del editor (navegacion del DVR,
-      seleccion+corte de clip, lista de clips, crear media desde clip) dependen de
-      que el DVR acumule buffer y se exploran en una fase posterior -> GAP conocido.
+      (6a15a4e5a23b8b92586beb63). El contrato del family /api/editor es robusto:
+      ningun id/body invalido filtra un 500 (contraste con live-stream /recording,
+      bug AQ2#20). LEDT-AC-1..4 en verde (LEDT-TC-1..6). En cambio, el endpoint que
+      el editor usa REALMENTE para crear media es POST /api/dvr/:id (no /api/editor),
+      y su validacion de duracion esta anulada: LEDT-AC-7 en rojo (LEDT-TC-10,
+      test.fail AQ2#32). Los flujos de UI del editor (navegacion del DVR,
+      seleccion+corte de clip, lista de clips) dependen de buffer DVR y se exploran
+      en una fase posterior -> GAP conocido.
 
   - id: "US-017"
     titulo: "Operar la toolbar del timeline del editor de forma accesible y consistente"

@@ -79,6 +79,20 @@ tests:
       story: "US-016"
       spec: "tests/api/live-editor.api.spec.js"
 
+  - id: "LEDT-TC-10"
+    titulo: "POST /api/dvr rechaza un clip que excede MAX_DURATION_HOURS [prueba viva BUG]"
+    modulo: "live-editor"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LEDT-AC-7"]
+      mitigates: ["LEDT-RISK-5"]
+      story: "US-016"
+      spec: "tests/api/live-editor.api.spec.js"
+    # test.fail() en el spec: rojo esperado hasta corregir AQ2#32. Crea 1 media por
+    # corrida (validacion anulada) y la limpia en teardown (ResourceCleaner).
+
   # ---- US-017: toolbar del timeline (UX/a11y, capa UI) ----
   - id: "LEDT-TC-7"
     titulo: "Los controles de zoom exponen nombre accesible [prueba viva BUG]"

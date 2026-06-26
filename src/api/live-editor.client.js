@@ -38,6 +38,27 @@ class EditorClient extends BaseClient {
 }
 
 /**
+ * Cliente REST de la **creación de media desde el DVR** (`/api/dvr/:id`), que es
+ * el endpoint que el client del Live Editor usa al pulsar "New Media" (no
+ * `/api/editor`). Crea un job de transcoding a partir de las URLs de clip.
+ */
+class DvrClient extends BaseClient {
+  /** @param {import('@playwright/test').APIRequestContext} ctx */
+  constructor(ctx) {
+    super(ctx, '/api/dvr');
+  }
+
+  /**
+   * Crea media desde uno o más clips del DVR de un evento.
+   * @param {string} liveStreamId
+   * @param {{ url: string[], transcriptionJobIds?: string[], template?: object|null }} payload
+   */
+  createMedia(liveStreamId, payload) {
+    return this.post(`/${liveStreamId}`, payload);
+  }
+}
+
+/**
  * Cliente REST de los **datos** del Live Editor (familia `/api/live-editor`):
  * carga del editor de un evento, momentos, clips, thumbs, share y transcripción.
  */
@@ -58,4 +79,4 @@ class LiveEditorClient extends BaseClient {
   }
 }
 
-module.exports = { EditorClient, LiveEditorClient };
+module.exports = { EditorClient, LiveEditorClient, DvrClient };

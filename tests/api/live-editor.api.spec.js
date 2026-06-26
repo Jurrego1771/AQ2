@@ -1,5 +1,7 @@
 // @ts-check
 const { test, expect } = require('../../src/fixtures');
+const { ResourceCleaner } = require('../../src/fixtures/resource-cleaner');
+const { env } = require('../../src/utils/env');
 
 /**
  * API — Live Editor: contrato de los endpoints de clip/edición (@api @live-editor).
@@ -68,5 +70,44 @@ test.describe('Live Editor API — contrato de clips @api @live-editor', () => {
     const res = await liveEditorClient.getByLiveId('notanid');
     expect(res.status()).toBe(404);
     expect((await res.json()).data).toBe('NOT_FOUND');
+  });
+
+  // --- Prueba viva del bug #32 ---
+  // POST /api/dvr no aplica el límite MAX_DURATION_HOURS: la función cutDurations
+  // tiene la guarda invertida (`|| query.start`) que hace `return` del callback de
+  // forEach ANTES de acumular la duración, así que totalDuration queda en 0 y todo
+  // clip pasa el chequeo. Un clip de 24h (>10h máx en dev) debería responder 400 y
+  // NO crear media; hoy responde 200 y crea media. Roja-esperada hasta corregir #32.
+  //
+  // Como el bug crea una media por corrida, la registramos en ResourceCleaner y la
+  // borramos en el teardown (igual patrón que el fixture transcodedMedia). Cuando se
+  // corrija, la respuesta será 400 sin mediaId y no habrá nada que limpiar.
+  test('POST /api/dvr rechaza un clip que excede MAX_DURATION_HOURS [BUG #32] @LEDT-TC-10', async ({
+    dvrClient,
+    api,
+  }) => {
+    test.skip(env.isProd, 'no se ejecutan escrituras contra prod (prodGuard)');
+    test.fail(
+      true,
+      'BUG #32: /api/dvr no valida la duración del clip — https://github.com/Jurrego1771/AQ2/issues/32'
+    );
+    const cleaner = new ResourceCleaner(api);
+    // Clip de 24h sobre el live de video real (supera los 10h de MAX_DURATION_HOURS).
+    const overMaxClip =
+      `https://dev-embed.mdstrm.com/live-stream-playlist/${VIDEO_LIVE_ID}.m3u8` +
+      '?start=2026-06-26T00:00:00.000Z&end=2026-06-27T00:00:00.000Z&dvr=true';
+    try {
+      const res = await dvrClient.createMedia(VIDEO_LIVE_ID, { url: [overMaxClip] });
+      if (res.ok()) {
+        const mediaId = (await res.json())?.data?.mediaId;
+        if (mediaId) cleaner.register('media', mediaId);
+      }
+      expect(
+        res.status(),
+        'un clip que excede la duración máxima debe rechazarse con 400, no crear media'
+      ).toBe(400);
+    } finally {
+      await cleaner.clean();
+    }
   });
 });

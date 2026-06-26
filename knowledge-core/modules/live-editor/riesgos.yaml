@@ -84,6 +84,36 @@ riesgos:
     nota_industria: >
       Nielsen #2 (correspondencia con el mundo real / lenguaje correcto).
 
+  - id: "LEDT-RISK-5"
+    severidad: "medium"
+    probabilidad: "medium"
+    titulo: "POST /api/dvr no valida duracion ni inicio/fin del clip (validacion anulada)"
+    descripcion: >
+      La funcion cutDurations en routes/api/dvr/create.js tiene la guarda invertida
+      (`if (!query?.end || query?.start)`) y ademas hace `return` dentro de un forEach
+      (que solo sale del callback, no de la funcion). Efecto combinado: para toda URL
+      de clip real (que siempre lleva `start`) se salta la acumulacion de duracion ->
+      totalDuration queda en 0 -> el chequeo `totalDuration <= MAX_DURATION` siempre
+      pasa. Resultado: el limite MAX_DURATION_HOURS (10h en dev) NO se aplica y el
+      error CUT_MEDIA_MUST_HAVE_BEGIN_AND_END nunca se emite. Verificado en vivo: 4
+      payloads invalidos (clip 24h, sin start, sin end, sin querystring) devolvieron
+      200 y crearon media. Las media de prueba creadas se borraron tras verificar.
+    detonador:
+      - "POST /api/dvr/:id con clip cuya duracion excede MAX_DURATION_HOURS"
+      - "POST /api/dvr/:id con URL de clip sin start o sin end"
+    mitigacion: >
+      Corregir la guarda a `if (!query?.end || !query?.start)` y reemplazar el forEach
+      por un for...of / some() que corte cutDurations al primer clip invalido. Cubierto
+      como prueba viva por LEDT-TC-10 (test.fail, rojo esperado; crea+limpia 1 media).
+    archivos_afectados:
+      - "src/server/routes/api/dvr/create.js"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#32"
+    prioridad_prueba: "MUST"
+    nota_industria: >
+      OWASP API8:2023 (validacion de entrada del lado servidor / defensa en
+      profundidad). Dead code + condicion invertida.
+
   - id: "LEDT-RISK-4"
     severidad: "low"
     probabilidad: "medium"

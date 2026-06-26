@@ -7,7 +7,7 @@ const { ShowPage } = require('../pages/show.page');
 const { LiveEditorPage } = require('../pages/live-editor.page');
 const { MediaClient } = require('../api/media.client');
 const { LiveStreamClient } = require('../api/live-stream.client');
-const { EditorClient, LiveEditorClient } = require('../api/live-editor.client');
+const { EditorClient, LiveEditorClient, DvrClient } = require('../api/live-editor.client');
 const { ResourceCleaner } = require('./resource-cleaner');
 const { createTranscodedMedia } = require('../api/media-factory');
 const { createLiveStream } = require('../api/live-stream-factory');
@@ -83,6 +83,11 @@ const test = base.test.extend({
   // Datos del Live Editor (/api/live-editor).
   liveEditorClient: async ({ api }, use) => {
     await use(new LiveEditorClient(api));
+  },
+
+  // Creación de media desde el DVR (/api/dvr/:id).
+  dvrClient: async ({ api }, use) => {
+    await use(new DvrClient(api));
   },
 
   // Live-stream REAL self-contained: lo crea por API y lo borra al terminar

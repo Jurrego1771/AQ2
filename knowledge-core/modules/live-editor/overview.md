@@ -24,11 +24,23 @@ Prefijo de IDs: **LEDT** · Épica: `live-editor-management`. Entorno verificado
   audio `6a15a149cedcd6929d34cc78` ("Radio QA"). Ambos retention 1h.
 
 ## Contrato API (verificado en vivo)
-Familia **`/api/editor`** (clips):
-- `POST /api/editor` — crea job de clip. Body `{ type, id, url[], media_edit_type, template }`.
-  Solo procesa `type:'media'` (genera media desde el DVR); `type:'live'` u objeto inexistente
-  -> **400 `INVALID_VIDEO_OBJECT`**. Sin cdn_zone -> **500 `NO_CDN_ZONE_AVAILABLE`**. OK ->
-  `{ status:'OK', data:{ mediaId, jobId } }`.
+
+> **Crear media desde clips usa `POST /api/dvr/:id`, NO `/api/editor`.** El client del
+> editor (`detail.coffee:2326`) hace `$.post("/api/dvr/#{event_id}", { url:[clip urls] })`
+> al pulsar "New Media". `/api/editor` es un endpoint hermano (edición de media existente).
+
+Creación de media — **`POST /api/dvr/:live_stream_id`**:
+- Body `{ url: [clipUrl], transcriptionJobIds?, template? }`. Cada clipUrl lleva
+  `?start=...&end=...&dvr=...`. OK -> `{ status:'OK', data:{ mediaId, vms_job_request_id } }`.
+- Sin cdn_zone -> **500 `NO_CDN_ZONE_AVAILABLE`**; evento inexistente -> **404 `LIVESTREAM_NOT_FOUND`**.
+- **BUG AQ2#32 (LEDT-RISK-5)**: `cutDurations` tiene la guarda invertida + `return` dentro de
+  `forEach` → la validación de duración está **anulada**. Un clip >`MAX_DURATION_HOURS` (10h) o
+  una URL sin `start`/`end` devuelven **200 y crean media** (debería ser 400). Prueba viva LEDT-TC-10.
+
+Familia **`/api/editor`** (edición de media; robusto):
+- `POST /api/editor` — crea job de edición. Body `{ type, id, url[], media_edit_type, template }`.
+  Solo procesa `type:'media'`; `type:'live'` u objeto inexistente -> **400 `INVALID_VIDEO_OBJECT`**.
+  Sin cdn_zone -> **500 `NO_CDN_ZONE_AVAILABLE`**. OK -> `{ status:'OK', data:{ mediaId, jobId } }`.
 - `GET /api/editor/media/:media_id/job-status` — id no-ObjectId -> **404 `INVALID_MEDIA`**
   (rama else, ignora el CastError; **no** 500). ObjectId válido sin jobs -> **200 `{data:[]}`**.
 - `POST /api/editor/create-preview` — requiere `id`,`type`,`meta_id`; si falta -> **400 `BAD_REQUEST`**.
@@ -76,6 +88,10 @@ Familia **`/api/live-editor`** (datos del editor):
   `tests/regression/live-editor.regression.spec.js`. Cliente API: `src/api/live-editor.client.js`.
 
 ## Hallazgos filados (GitHub)
+- **AQ2#32** (bug, medium): `POST /api/dvr` no valida duración ni inicio/fin del clip —
+  `cutDurations` con guarda invertida + `return` en `forEach` (`create.js:20-49`). Crea media
+  con payloads inválidos (>MAX_DURATION_HOURS, sin start/end). Prueba viva LEDT-TC-10. Riesgo
+  LEDT-RISK-5. **MUST**.
 - **AQ2#29** (a11y, low): `zoomIn`/`zoomOut` `<div>` sin nombre accesible ni foco/tabindex
   (WCAG 4.1.2/2.1.1). Prueba viva LEDT-TC-7. Riesgo LEDT-RISK-2.
 - **AQ2#30** (ux, low): typo `title="Move selection rigth"` en `move-forward`. Prueba viva
