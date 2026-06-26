@@ -69,19 +69,27 @@ Familia **`/api/live-editor`** (datos del editor):
 
 ## Flujos (inventario F1)
 1. Acceso/carga editor + picker — **cubierto por API** (LEDT-TC-6, contrato).
-2. Navegación DVR/timeline — **depende de DVR buffer** (GAP).
-3. Selección + corte de clip — **depende de DVR buffer** (GAP).
-4. Lista de clips (play/delete/continue) — **depende de DVR buffer** (GAP).
-5. Crear media desde clips (+ MoAI, template) — **depende de DVR buffer**; contrato de borde
-   cubierto (LEDT-TC-1/2/5).
-6. Metadata settings — no explorado a fondo (GAP).
-7. Social share (Twitter/Live Moments) — no explorado a fondo (GAP).
-8. Descargas / 9. Notificaciones de job — derivados de 5 (GAP).
+2. Navegación DVR/timeline — **explorado en vivo** (date-picker + Go, zoom, move). UX/a11y
+   cubierto (LEDT-TC-7/8/9); navegación sin defectos nuevos.
+3. Selección + corte de clip — **cubierto** (LEDT-TC-11/12, ruta real i/o/c).
+4. Lista de clips (multi-clip + delete) — **cubierto** (LEDT-TC-11/13: suma de duración).
+5. Crear media desde clips — **explorado en vivo**: "New Media" hace `POST /api/dvr/:id` y
+   crea media **de inmediato**; el form de metadata es para editar mientras transcodifica.
+   Contrato de borde cubierto (LEDT-TC-1/2/5/10). Hallazgo #34 (ver abajo).
+6. Progreso/job-status del editor — la UI lo deriva de `GET /api/live-editor/:id/media/:media_id`
+   (+ `/thumbs`), **no** de `/api/editor/.../job-status`. Explorado.
+7. Metadata settings / social share / descargas — no explorados a fondo (GAP).
+
+> **Paridad video/audio (verificada en vivo 2026-06-26):** el editor de audio (`Radio QA`)
+> se comporta igual que el de video. Multi-clip, creación y contrato idénticos; #29/#30/#34
+> reproducen en ambos → son **globales** del módulo, no dependientes del tipo de señal.
+> Evidencia: `reports/live-editor/audio-2026-06-26/`.
 
 ## Testabilidad
-- **Cobertura actual:** capa de contrato API (LEDT-TC-1..6, verdes) + UX/a11y de la toolbar
-  (LEDT-TC-7/8 vivos rojo-esperado, LEDT-TC-9 verde). Los flujos de UI DVR-dependientes esperan
-  a que el buffer se llene (retention 1h) y se exploran en fase posterior.
+- **Cobertura actual:** contrato API (LEDT-TC-1..6, verdes) + prueba viva del bug #32
+  (LEDT-TC-10, rojo-esperado) + UX/a11y de la toolbar (LEDT-TC-7/8 vivos, LEDT-TC-9 verde) +
+  flujo de corte UI (LEDT-TC-11/12 verdes) y multi-clip/suma (LEDT-TC-13 verde). Los specs
+  UI DVR-dependientes hacen `skip` si el buffer no está listo (no fallan en falso).
 - Endpoints autorizados por **cookie de sesión** (storageState), sin token aparte.
 - Probes de contrato no-destructivos (ids inválidos / body incompleto fallan antes de crear nada).
 - POM: `src/pages/live-editor.page.js` (solo `sm()`). Specs: `tests/api/live-editor.api.spec.js`,
@@ -98,3 +106,10 @@ Familia **`/api/live-editor`** (datos del editor):
   LEDT-TC-8. Riesgo LEDT-RISK-3.
 - **AQ2#31** (ux, low): pluralización `"Retention: 1 hours"` por redondeo en el borde de 1h
   (`detail.coffee:198-199`). Riesgo LEDT-RISK-4. **GAP** (sin test vivo: depende del borde de buffer).
+- **AQ2#33** (tech-debt, low): debug code en prod — la tecla `<` abre `editMedia` con un
+  mediaId hardcodeado (`detail.coffee`). Riesgo LEDT-RISK-6. **GAP** (disparar editMedia
+  traería un media ajeno).
+- **AQ2#34** (ux, low): "New Media" crea y persiste media de inmediato sin confirmación y
+  "Back" no la elimina → media huérfana (reproduce en video y audio). Riesgo LEDT-RISK-7,
+  AC LEDT-AC-12. **GAP** (remedio abierto; test UI pesado/acoplado). Evidencia en
+  `reports/live-editor/audio-2026-06-26/`.
