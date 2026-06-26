@@ -131,3 +131,44 @@ tests:
       mitigates: []
       story: "US-017"
       spec: "tests/regression/live-editor.regression.spec.js"
+
+  # ---- US-018: flujo de corte de clips (capa UI, client-side) ----
+  - id: "LEDT-TC-11"
+    titulo: "Cortar un clip lo agrega a la lista y habilita New Media; borrarlo lo quita"
+    modulo: "live-editor"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LEDT-AC-8", "LEDT-AC-9"]
+      mitigates: []
+      story: "US-018"
+      spec: "tests/regression/live-editor-cut.regression.spec.js"
+    # Conduce el corte por UI real (date-picker + atajos i/o/c). Skip si el DVR
+    # no tiene buffer (player no listo). No crea media (corte = client-side).
+
+  - id: "LEDT-TC-12"
+    titulo: "cut-out sin cut-in no crea clip (guarda de seleccion)"
+    modulo: "live-editor"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LEDT-AC-10"]
+      mitigates: []
+      story: "US-018"
+      spec: "tests/regression/live-editor-cut.regression.spec.js"
+
+  - id: "LEDT-TC-13"
+    titulo: "Cortar dos clips acumula la duracion total (suma multi-clip)"
+    modulo: "live-editor"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LEDT-AC-8"]
+      mitigates: []
+      story: "US-018"
+      spec: "tests/regression/live-editor-cut.regression.spec.js"
+    # Corta 2 clips por UI real y verifica que "Main Media duration" acumula la suma.
+    # Skip si el DVR no tiene buffer. No crea media (corte = client-side).

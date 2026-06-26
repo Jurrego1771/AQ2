@@ -114,6 +114,30 @@ riesgos:
       OWASP API8:2023 (validacion de entrada del lado servidor / defensa en
       profundidad). Dead code + condicion invertida.
 
+  - id: "LEDT-RISK-6"
+    severidad: "low"
+    probabilidad: "low"
+    titulo: "Codigo de depuracion en produccion: tecla '<' abre editMedia con mediaId hardcodeado"
+    descripcion: >
+      El handler keydown del editor tiene un case 188 ('<') que invoca
+      editMedia('5a08dad51ea95c138e831437') simulando un job completado. No esta
+      detras de ningun flag (is_dev/is_qa). En cualquier cuenta/entorno, pulsar '<'
+      abre la vista de edicion de un media ajeno (o un estado roto si no existe).
+      Debug code enviado al bundle de produccion.
+    detonador:
+      - "Pulsar la tecla '<' (Shift+,) con el foco fuera de un input"
+    mitigacion: >
+      Eliminar el case 188 del handler keydown o gatearlo tras window.SM.is_dev.
+      SIN test vivo: disparar el atajo cargaria un media ajeno en la UI -> GAP
+      (se documenta el riesgo; el build lo reporta sin test que lo mitigue).
+    archivos_afectados:
+      - "src/client/live_editor/detail.coffee"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#33"
+    prioridad_prueba: "COULD"
+    nota_industria: >
+      Buenas practicas de release: no enviar debug/test hooks a produccion.
+
   - id: "LEDT-RISK-4"
     severidad: "low"
     probabilidad: "medium"
@@ -137,3 +161,36 @@ riesgos:
     prioridad_prueba: "COULD"
     nota_industria: >
       Nielsen #2 (correspondencia con el mundo real). Severidad baja.
+
+  - id: "LEDT-RISK-7"
+    severidad: "low"
+    probabilidad: "medium"
+    titulo: "'New Media' crea media de inmediato sin confirmacion y 'Back' no la elimina (media huerfana)"
+    descripcion: >
+      Los botones "New Media" / "New Media With Template" del editor disparan
+      POST /api/dvr/:id y crean+persisten una media real con un solo click, sin
+      confirmacion. El "Back" del form de metadata (marca dvr-media-back-without-save)
+      solo descarta los cambios de METADATA, no la media: tras pulsarlo la media sigue
+      existiendo (GET /api/media/:id -> 200, transcodificada). No hay forma de abortar
+      la creacion desde el editor -> media huerfana en la libreria + cuota de
+      transcoding consumida por cada creacion abandonada. Verificado en vivo (dev
+      v7.0.67): mediaId 6a3ec82a... persistio tras Back; las media de prueba se
+      borraron con DELETE /api/media/:id tras verificar.
+    detonador:
+      - "Click en 'New Media' para ver el form y luego 'Back' (sin guardar)"
+    mitigacion: >
+      Pedir confirmacion antes de crear, o que 'Back' (sin guardar) elimine la media
+      recien creada, o aclarar que 'New Media' commitea la creacion. SIN test vivo:
+      el remedio es abierto y un test UI crearia+transcodificaria media por corrida
+      (pesado) y quedaria acoplado a un remedio concreto -> GAP (se documenta el
+      riesgo; el build lo reporta sin test que lo mitigue).
+    archivos_afectados:
+      - "src/client/live_editor/detail.coffee"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#34"
+    prioridad_prueba: "COULD"
+    nota_industria: >
+      Nielsen #3 (control y libertad del usuario / deshacer) y #5 (prevencion de
+      errores). Comportamiento "crear-luego-editar" intencional; el hallazgo es la
+      falta de confirmacion/undo, no la inmediatez en si. Severidad baja (media nace
+      despublicada, iniciada por el usuario, borrable).

@@ -80,3 +80,50 @@ stories:
       AQ2#30: title="Move selection rigth") y la pluralizacion "Retention: 1 hours"
       (AQ2#31, sin test vivo: depende del borde de buffer DVR -> GAP). LEDT-TC-9
       (verde) protege el par bien escrito move-backward "Move selection left".
+
+  - id: "US-018"
+    titulo: "Cortar clips del DVR (seleccion in/out) y gestionarlos antes de crear media"
+    rol: "administrador de contenido"
+    meta: "marcar segmentos del DVR como clips y depurarlos antes de generarlos como media"
+    beneficio: "producir recortes precisos del directo sin generar media de prueba"
+    descripcion: |
+      Como administrador de contenido,
+      quiero seleccionar un rango (cut-in/cut-out) del DVR y cortarlo como clip,
+      verlo en la lista y poder borrarlo, para preparar los recortes antes de
+      crear la media final.
+
+    acceptance_criteria:
+      - id: "LEDT-AC-8"
+        criterio: "Cortar un clip con seleccion valida lo agrega a la lista, suma su duracion y habilita 'New Media'"
+      - id: "LEDT-AC-9"
+        criterio: "Borrar un clip de la lista lo quita; sin clips, 'New Media' queda deshabilitado"
+      - id: "LEDT-AC-10"
+        criterio: "Una seleccion sin cut-in previo (o de duracion cero) no crea clip"
+      - id: "LEDT-AC-11"
+        criterio: "El editor de produccion no expone atajos de depuracion (no debe abrir media ajenos por teclado)"
+      - id: "LEDT-AC-12"
+        criterio: "Abortar la creacion de media con 'Back' (sin guardar) no debe dejar una media huerfana en la libreria"
+
+    prioridad: "high"
+    tipo: "feature"
+    dependencias:
+      - "auth (sesion iniciada)"
+      - "cuenta con cdn_zone + evento con DVR retention (buffer)"
+
+    notas: |
+      Verificado en vivo (dev v7.0.67) sobre "Live Dai QA". El flujo de corte es
+      100% client-side (sessionStorage) hasta crear media (US-016 / AC-7, /api/dvr).
+      Robusto: happy path, guarda de duracion <=0 (shine rojo), cut-out sin cut-in
+      (alerta "Please, select an input first."), seleccion invertida (intercambia,
+      duracion positiva) y corte de MULTIPLES clips (la duracion total acumula la suma)
+      funcionan. LEDT-AC-8/9/10 en verde (LEDT-TC-11/12/13: TC-13 valida la suma
+      multi-clip). LEDT-AC-11 en rojo: la tecla "<" abre editMedia con un mediaId
+      hardcodeado (AQ2#33, debug code en prod), sin test vivo (disparar editMedia
+      traeria un media ajeno) -> GAP. LEDT-AC-12 (nuevo) en rojo: "New Media" crea y
+      persiste la media de inmediato sin confirmacion y "Back" NO la elimina -> queda
+      huerfana (AQ2#34). SIN test vivo: el remedio es abierto (confirmacion vs.
+      borrar-en-Back) y un test UI seria pesado (crea+transcodifica media por corrida)
+      y acoplado a un remedio concreto -> GAP documentado (LEDT-RISK-7).
+      RETRACTADO: un "TypeError: reading 'end'" observado al conducir el corte por la
+      via interna getCutPosition() NO reproduce por la ruta UI real (date-picker+i/o/c)
+      -> era artefacto del driving sintetico, no un bug de producto.
