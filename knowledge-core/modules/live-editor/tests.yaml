@@ -1,0 +1,119 @@
+# Tests - Modulo Live Editor. Definicion (sin estado de ejecucion: eso es derivado).
+# refs = FUENTE UNICA de los vinculos. El spec lleva en su titulo solo el id de
+# correlacion @LEDT-TC-N (+ la capa @api).
+version: 1
+modulo: "live-editor"
+ultima_actualizacion: '2026-06-26'
+
+tests:
+  # ---- US-016: contrato de endpoints del editor (capa API) ----
+  - id: "LEDT-TC-1"
+    titulo: "POST /api/editor con media inexistente devuelve 400 INVALID_VIDEO_OBJECT"
+    modulo: "live-editor"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LEDT-AC-1"]
+      mitigates: ["LEDT-RISK-1"]
+      story: "US-016"
+      spec: "tests/api/live-editor.api.spec.js"
+
+  - id: "LEDT-TC-2"
+    titulo: "POST /api/editor con type=live (no soportado) devuelve 400 INVALID_VIDEO_OBJECT"
+    modulo: "live-editor"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LEDT-AC-1"]
+      mitigates: ["LEDT-RISK-1"]
+      story: "US-016"
+      spec: "tests/api/live-editor.api.spec.js"
+
+  - id: "LEDT-TC-3"
+    titulo: "GET job-status con id no-ObjectId devuelve 404 INVALID_MEDIA (no 500)"
+    modulo: "live-editor"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LEDT-AC-2"]
+      mitigates: ["LEDT-RISK-1"]
+      story: "US-016"
+      spec: "tests/api/live-editor.api.spec.js"
+
+  - id: "LEDT-TC-4"
+    titulo: "GET job-status con ObjectId valido sin jobs devuelve 200 y lista vacia"
+    modulo: "live-editor"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LEDT-AC-2"]
+      mitigates: []
+      story: "US-016"
+      spec: "tests/api/live-editor.api.spec.js"
+
+  - id: "LEDT-TC-5"
+    titulo: "POST /api/editor/create-preview sin campos requeridos devuelve 400 BAD_REQUEST"
+    modulo: "live-editor"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LEDT-AC-3"]
+      mitigates: ["LEDT-RISK-1"]
+      story: "US-016"
+      spec: "tests/api/live-editor.api.spec.js"
+
+  - id: "LEDT-TC-6"
+    titulo: "GET /api/live-editor/:id con id invalido devuelve 404 NOT_FOUND"
+    modulo: "live-editor"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LEDT-AC-4"]
+      mitigates: ["LEDT-RISK-1"]
+      story: "US-016"
+      spec: "tests/api/live-editor.api.spec.js"
+
+  # ---- US-017: toolbar del timeline (UX/a11y, capa UI) ----
+  - id: "LEDT-TC-7"
+    titulo: "Los controles de zoom exponen nombre accesible [prueba viva BUG]"
+    modulo: "live-editor"
+    tipo: "regression"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LEDT-AC-5"]
+      mitigates: ["LEDT-RISK-2"]
+      story: "US-017"
+      spec: "tests/regression/live-editor.regression.spec.js"
+    # test.fail() en el spec: rojo esperado hasta corregir AQ2#29.
+
+  - id: "LEDT-TC-8"
+    titulo: "El title de move-forward no debe tener el typo 'rigth' [prueba viva BUG]"
+    modulo: "live-editor"
+    tipo: "regression"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LEDT-AC-6"]
+      mitigates: ["LEDT-RISK-3"]
+      story: "US-017"
+      spec: "tests/regression/live-editor.regression.spec.js"
+    # test.fail() en el spec: rojo esperado hasta corregir AQ2#30.
+
+  - id: "LEDT-TC-9"
+    titulo: "move-backward expone un title correcto ('Move selection left')"
+    modulo: "live-editor"
+    tipo: "regression"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LEDT-AC-6"]
+      mitigates: []
+      story: "US-017"
+      spec: "tests/regression/live-editor.regression.spec.js"

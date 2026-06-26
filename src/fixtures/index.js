@@ -4,8 +4,10 @@ const { MediaPage } = require('../pages/media.page');
 const { MediaDetailPage } = require('../pages/media-detail.page');
 const { LiveStreamPage } = require('../pages/live-stream.page');
 const { ShowPage } = require('../pages/show.page');
+const { LiveEditorPage } = require('../pages/live-editor.page');
 const { MediaClient } = require('../api/media.client');
 const { LiveStreamClient } = require('../api/live-stream.client');
+const { EditorClient, LiveEditorClient } = require('../api/live-editor.client');
 const { ResourceCleaner } = require('./resource-cleaner');
 const { createTranscodedMedia } = require('../api/media-factory');
 const { createLiveStream } = require('../api/live-stream-factory');
@@ -44,6 +46,11 @@ const test = base.test.extend({
     await use(new ShowPage(page));
   },
 
+  // Page Object del editor de un evento (live editor detail)
+  liveEditorPage: async ({ page }, use) => {
+    await use(new LiveEditorPage(page));
+  },
+
   // APIRequestContext autenticado por SESIÓN (cookies del storageState del
   // login). Autoriza /api/media igual que la app, sin token aparte.
   api: async ({ playwright }, use) => {
@@ -66,6 +73,16 @@ const test = base.test.extend({
 
   liveStreamClient: async ({ api }, use) => {
     await use(new LiveStreamClient(api));
+  },
+
+  // Contrato de clips del Live Editor (/api/editor).
+  editorClient: async ({ api }, use) => {
+    await use(new EditorClient(api));
+  },
+
+  // Datos del Live Editor (/api/live-editor).
+  liveEditorClient: async ({ api }, use) => {
+    await use(new LiveEditorClient(api));
   },
 
   // Live-stream REAL self-contained: lo crea por API y lo borra al terminar
