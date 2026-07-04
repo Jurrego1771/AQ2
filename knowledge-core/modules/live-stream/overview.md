@@ -9,6 +9,9 @@ Prefijo de IDs: **LIVE** · Rutas: listado `/live-stream` (vista `live_streams.c
 detalle/creación `/live-stream/:id` y `/live-stream/new[?type=audio]` (vista
 `live_stream.coffee`, ~2.9k líneas). POM del listado: `src/pages/live-stream.page.js`.
 Cliente API: `src/api/live-stream.client.js`. Entorno verificado: dev, v7.0.65.
+**Regla al explorar en vivo**: crear un live nuevo por API (fixture `liveStream` en tests, o
+`POST /api/live-stream/` directo al explorar con MCP) y borrarlo al terminar — nunca reusar
+lives existentes en el entorno (pueden estar en uso para otros tests).
 
 ## Dos tipos de evento (no confundir)
 Diferenciados por `isAudio` en el cliente (`@eventType = 'audio' | 'video'`).
@@ -96,7 +99,31 @@ Recording, AI Live Transcription, Schedules/EPG, Advertising (Default/Referrer) 
 Distribution Policy, PlayAnywhere, Basic Information, Producers, Playout, Metadata (Icecast),
 ITG, Next Settings, Custom Attributes, Encoder, Publishing (Encoding Profiles, Rendition Rules,
 publishing points RTMP/WebDAV/MediaPackage/Cloud Transcoding, Stream URLs, Publishing Token),
-Embed. Marcas en `selectors.yaml`.
+Embed. Marcas en `selectors.yaml`. **Quiz Manager** (pestaña propia del detalle) se movió a
+módulo aparte, explorado en vivo — ver `modules/quiz-manager/` (PFX QUIZ), compartido con media.
+
+## Distribution Policy / "Show in OTT" — investigación (2026-07-03)
+Disparado por un reporte de cliente (TV Azteca): un campo "Show in OTT" volvió a `false` al
+aplicar una política de distribución no relacionada, en un evento en vivo crítico. Se creó un
+live-stream nuevo por API (`POST /api/live-stream/`, borrado al terminar — nunca se reusan
+lives existentes para esto) y se exploró en vivo `[sm="distribution-policy"]`:
+- El `<select>` de Distribution Policy (`sm="distribution-policy"`) SÍ tiene marca `sm:` propia.
+- **Descartado**: el toggle `sm="status"` (Published/Not Published) NO participa del flujo de
+  guardado general — es una acción independiente que dispara `POST /toggle-online` de inmediato,
+  confirmado leyendo `live_stream.coffee` (`save()` nunca envía este campo).
+- **Descartado**: `next_settings.always_on` (candidato inicial por nombre) está protegido
+  server-side con guardas `if (req.body?.campo)` — si el campo no llega en el POST, el server no
+  lo toca. No reproduce el patrón "hidratación incompleta → se resetea a false".
+- **No se encontró** ningún campo literal "OTT" en el DOM ni en la respuesta cruda de
+  `GET /api/live-stream/:id` de un live nuevo en la cuenta de dev/QA.
+- **Hipótesis más fuerte** (confirmada por lectura de código, no por UI): "Show in OTT" es
+  probablemente un **Custom Attribute** configurado específicamente para la cuenta TV Azteca
+  (no existe en dev genérico, que no tiene custom attributes configurados). Ver
+  `cross-cutting/custom-attributes/` — el mecanismo de guardado automático e incondicional de
+  custom attributes en cada Save Changes, sin control de concurrencia, es el candidato más
+  plausible a mecanismo real del incidente. Riesgo compartido: **LIVE-RISK-9** → `ATTR-RISK-001`.
+- **Pendiente**: confirmar el nombre literal del campo o conseguir acceso a una cuenta con
+  custom attributes configurados para explorar en vivo y escribir un test real.
 
 ## Testabilidad
 - Contar por `total-live-streams` (no por cards: dependen del layout activo).
