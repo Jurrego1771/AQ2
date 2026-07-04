@@ -7,7 +7,7 @@ epic: "Token Profiles Management"
 ultima_actualizacion: '2026-07-03'
 
 stories:
-  - id: "US-014"
+  - id: "US-018"
     titulo: "Restringir el acceso de un API token al modulo de categorias"
     rol: "administrador de plataforma / integrador externo"
     meta: "que un API token con perfil restringido pueda leer /api/category"

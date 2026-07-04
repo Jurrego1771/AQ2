@@ -9,7 +9,7 @@ const { ResourceCleaner } = require('../../src/fixtures/resource-cleaner');
  * (mediastream/sm2#8032) @api @quiz-manager.
  *
  * Contrato verificado en vivo antes de escribir estos specs (ver
- * knowledge-core/modules/quiz-manager). Cubre 3 de las 4 AC de US-016;
+ * knowledge-core/modules/quiz-manager). Cubre 3 de las 4 AC de US-020;
  * QUIZ-AC-4 (controles de UI) queda pendiente, ver tests.yaml.
  *
  * El entorno dev muestra propagación eventual entre un POST de creación y el

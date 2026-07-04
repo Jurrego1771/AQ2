@@ -15,7 +15,7 @@ tests:
     refs:
       validates: ["QUIZ-AC-1", "QUIZ-AC-2"]
       mitigates: ["QUIZ-RISK-2"]
-      story: "US-016"
+      story: "US-020"
       spec: "tests/api/quiz-pagination.api.spec.js"
     # Self-contained: fixture liveStream. Cubre modo legado (sin params),
     # paginas intermedias/ultima, pagina fuera de rango (200 vacio) y clamp
@@ -31,7 +31,7 @@ tests:
     refs:
       validates: ["QUIZ-AC-1", "QUIZ-AC-2"]
       mitigates: []
-      story: "US-016"
+      story: "US-020"
       spec: "tests/api/quiz-pagination.api.spec.js"
     # Self-contained: fixture transcodedMedia (waitTranscoding:false, no
     # necesita el gate de transcoding para este test). Los quizzes se crean
@@ -48,7 +48,7 @@ tests:
     refs:
       validates: ["QUIZ-AC-3"]
       mitigates: []
-      story: "US-016"
+      story: "US-020"
       spec: "tests/api/quiz-pagination.api.spec.js"
     # Self-contained: fixture transcodedMedia. Prueba el limite exacto (no
     # solo el caso obvio): a distancia estrictamente menor al intervalo

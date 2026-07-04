@@ -7,7 +7,7 @@ epic: "Quiz Management"
 ultima_actualizacion: '2026-07-04'
 
 stories:
-  - id: "US-016"
+  - id: "US-020"
     titulo: "Navegar el historial de quizzes de un Live o Media sin importar cuantos haya"
     rol: "administrador de contenido / ad ops"
     meta: "ver, crear y editar quizzes de un live/media con muchos registros historicos"

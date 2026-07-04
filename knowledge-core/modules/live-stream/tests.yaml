@@ -184,7 +184,7 @@ tests:
     # No valida un AC de producto: protege la infraestructura de provisioning
     # self-contained (los tests no deben dejar recursos huerfanos en dev).
 
-  # ---- US-015 (cross-cutting): alerta "changed by another user" ----
+  # ---- US-019 (cross-cutting): alerta "changed by another user" ----
   - id: "LIVE-TC-15"
     titulo: "Guardar un live-stream desde otra sesion muestra el banner de aviso"
     modulo: "live-stream"
@@ -194,7 +194,7 @@ tests:
     refs:
       validates: ["LIVE-AC-15"]
       mitigates: []
-      story: "US-015"
+      story: "US-019"
       spec: "tests/regression/changed-by-other-user-alert.regression.spec.js"
     # Verificado en vivo con dos sesiones reales antes de escribir el test.
     # Requiere TEST_USER2_DEV/TEST_PASS2_DEV en .env (se skipea si faltan).

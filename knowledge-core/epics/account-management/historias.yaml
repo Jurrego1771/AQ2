@@ -6,7 +6,7 @@ epic: "Account Management"
 ultima_actualizacion: '2026-07-04'
 
 stories:
-  - id: "US-017"
+  - id: "US-021"
     titulo: "El feed DFP de una cuenta no debe crashear ante datos inválidos"
     rol: "sistema externo (Google DFP) / operador"
     meta: "que el feed RSS de anuncios de una cuenta responda de forma predecible"

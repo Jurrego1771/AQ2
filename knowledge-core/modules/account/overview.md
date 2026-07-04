@@ -22,7 +22,7 @@ marcas `sm:`, sin flujo de UI — no aplica `selectors.yaml` para este módulo.
   `TypeError: Cannot read properties of null (reading 'dfp')`.
 
 ## Otros hallazgos del mismo PR (sm2#8423), NO cubiertos por test automatizado aquí
-Ver `epics/account-management/historias.yaml` (notas de US-017) para el detalle de por qué cada
+Ver `epics/account-management/historias.yaml` (notas de US-021) para el detalle de por qué cada
 uno no es alcanzable de forma confiable con el harness actual de AQ2 (gRPC, Redis directo,
 condición de carrera, o Show/Season/Episode sin API REST de creación). El más relevante —
 `event_schedule.js`, con riesgo de mutar el episodio equivocado— quedó documentado como

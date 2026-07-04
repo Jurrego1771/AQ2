@@ -37,8 +37,8 @@ Prefijo de IDs: **MED** · Rutas UI: `/media` (listado), `/media/:id` (detalle/e
 | # | Clúster | Estado QA | Notas |
 |---|---------|-----------|-------|
 | 1 | Basic Information (título/descripción/categoría/fechas/permalink) | ✅ cubierto (US-003) | campos por `data-name`, no `sm:` (#13) |
-| 1b | Status (Published/Not Published, toggle) | ✅ cubierto (US-012) | consistente con listado y API; toggle sin `sm:` (#35) |
-| 1c | Show/Seasons/Episodes (asignación de show) | ✅ cubierto (US-013) | picker sin `sm:` (`data-name="shows"`) |
+| 1b | Status (Published/Not Published, toggle) | ✅ cubierto (US-016) | consistente con listado y API; toggle sin `sm:` (#35) |
+| 1c | Show/Seasons/Episodes (asignación de show) | ✅ cubierto (US-017) | picker sin `sm:` (`data-name="shows"`) |
 | 2 | Metadata & Embed (copiar embed/ID/URLs HLS-DASH) | ⬜ pendiente | |
 | 3 | Thumbnails / Preview | ↗ módulo aparte | ver módulo **thumbnails** (PFX THM) |
 | 4 | Ad Markers (preroll/midroll) | ✅ cubierto (US-005) | manual+modal; bugs #14 #15 |
@@ -60,7 +60,7 @@ Cubierto: búsqueda (US-001), filtros+paginación (US-002).
   pero **despublicado** al abrir su detalle. Verificado en vivo (2026-07-03, dev): publicando y
   despublicando un media real por el toggle del detalle, las 3 vistas del listado (grid/list/
   minimal) y el detalle reabierto reflejan siempre `is_published` de una carga fresca por API —
-  **no se reprodujo la desincronización**. Cubierto por MED-TC-021 (US-012).
+  **no se reprodujo la desincronización**. Cubierto por MED-TC-021 (US-016).
 - **Gap de testabilidad** (no bug): ningún indicador de estado (ícono/badge del listado, toggle
   del detalle) tiene marca `sm:` → [[AQ2#35]]. Los Page Objects usan una excepción documentada
   (mismo patrón que `data-name`, #13): leer texto del card por su marca real (`media-container-`)

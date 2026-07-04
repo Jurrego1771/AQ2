@@ -163,7 +163,7 @@ stories:
       new-ad-marker crea desde player.currentTime sin confirmacion; create-ad-marker abre modal
       manual. Ad markers cargan async (socket load-ad-tracks) -> esperar con expect.poll.
 
-  - id: "US-012"
+  - id: "US-016"
     titulo: "Publicar y despublicar un media desde el detalle"
     rol: "administrador de contenido"
     meta: "cambiar el estado Published de un media y confiar en que se refleje igual en todo el admin"
@@ -196,7 +196,7 @@ stories:
       force_category_fill activo, un media sin categoria bloquea el guardado
       del toggle Published en silencio (sin error visible).
 
-  - id: "US-013"
+  - id: "US-017"
     titulo: "Asignar un Show a un media sin ver entradas duplicadas o borradas"
     rol: "administrador de contenido"
     meta: "elegir el show correcto en el selector del detalle sin ambiguedad"

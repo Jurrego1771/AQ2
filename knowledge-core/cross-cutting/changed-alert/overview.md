@@ -1,7 +1,7 @@
 # Alerta "changed by another user" — grafo transversal
 
 > Mecanismo compartido por varios recursos (live-stream, media, article), origen
-> `mediastream/sm2#8317`. Ver `epics/collaboration-alerts-management/historias.yaml` (US-015)
+> `mediastream/sm2#8317`. Ver `epics/collaboration-alerts-management/historias.yaml` (US-019)
 > para las historias/AC, y `cross-cutting/custom-attributes/riesgos.yaml` (ATTR-RISK-001) para
 > el riesgo de fondo que esta feature mitiga parcialmente (no lo resuelve estructuralmente).
 

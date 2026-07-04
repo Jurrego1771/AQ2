@@ -9,7 +9,7 @@ epic: "Collaboration Alerts Management"
 ultima_actualizacion: '2026-07-03'
 
 stories:
-  - id: "US-015"
+  - id: "US-019"
     titulo: "Avisar cuando otro usuario edito el mismo registro"
     rol: "administrador de contenido"
     meta: "saber si alguien mas cambio el registro que tengo abierto"

@@ -255,7 +255,7 @@ tests:
       spec: "tests/regression/media-ad-markers.regression.spec.js"
     # test.fail() en el spec: rojo esperado hasta corregir AQ2#14.
 
-  # ---- US-012: Consistencia de estado Published ----
+  # ---- US-016: Consistencia de estado Published ----
   - id: "MED-TC-021"
     titulo: "Publicar y despublicar se refleja igual en grid, lista, minimal y detalle"
     modulo: "media"
@@ -265,7 +265,7 @@ tests:
     refs:
       validates: ["MED-AC-21"]
       mitigates: []
-      story: "US-012"
+      story: "US-016"
       spec: "tests/regression/media-publish-consistency.regression.spec.js"
     # Self-contained: fixture transcodedMedia. Verificado en vivo (2026-07-03):
     # no se reprodujo el reporte de desincronizacion; test verde, protege el
@@ -273,7 +273,7 @@ tests:
     # en los indicadores de Published; el spec usa la excepcion documentada
     # en media-detail.page.js, mismo patron que data-name / #13).
 
-  # ---- US-013: Selector de Show sin shows borrados ----
+  # ---- US-017: Selector de Show sin shows borrados ----
   - id: "MED-TC-022"
     titulo: "GET /api/show/list filtra por status (sin all=true solo OK)"
     modulo: "media"
@@ -283,7 +283,7 @@ tests:
     refs:
       validates: ["MED-AC-22"]
       mitigates: ["MED-RISK-010"]
-      story: "US-013"
+      story: "US-017"
       spec: "tests/regression/media-show-picker.regression.spec.js"
     # Contrato de API: defensa mas directa contra la causa raiz (all=true).
 
@@ -296,12 +296,12 @@ tests:
     refs:
       validates: ["MED-AC-22"]
       mitigates: ["MED-RISK-010"]
-      story: "US-013"
+      story: "US-017"
       spec: "tests/regression/media-show-picker.regression.spec.js"
     # Deriva del entorno los titulos exclusivos de shows borrados (no hardcodea
     # un titulo); verificado en vivo (2026-07-03), test verde (fix ya en dev).
 
-  # ---- US-015 (cross-cutting): alerta "changed by another user" ----
+  # ---- US-019 (cross-cutting): alerta "changed by another user" ----
   - id: "MED-TC-024"
     titulo: "Guardar un media desde otra sesion muestra el banner de aviso"
     modulo: "media"
@@ -311,7 +311,7 @@ tests:
     refs:
       validates: ["MED-AC-23"]
       mitigates: []
-      story: "US-015"
+      story: "US-019"
       spec: "tests/regression/changed-by-other-user-alert.regression.spec.js"
     # Verificado en vivo con dos sesiones reales antes de escribir el test.
     # Requiere TEST_USER2_DEV/TEST_PASS2_DEV en .env (se skipea si faltan).
