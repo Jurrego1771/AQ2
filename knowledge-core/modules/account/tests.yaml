@@ -1,0 +1,19 @@
+# Tests - Modulo Account. Definicion (sin estado de ejecucion: eso es derivado).
+version: 1
+modulo: "account"
+ultima_actualizacion: '2026-07-04'
+
+tests:
+  - id: "ACC-TC-1"
+    titulo: "GET dfp/full con account_id inexistente no crashea"
+    modulo: "account"
+    tipo: "api"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["ACC-AC-1"]
+      mitigates: ["ACC-RISK-1"]
+      story: "US-017"
+      spec: "tests/api/account-dfp.api.spec.js"
+    # Lectura pura, sin fixtures ni cleanup (no crea datos). Corre en
+    # cualquier entorno -no requiere prodGuard-.

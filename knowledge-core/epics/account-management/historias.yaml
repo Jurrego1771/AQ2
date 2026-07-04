@@ -1,0 +1,51 @@
+# Historias de Usuario - Epic Account Management
+# Modulo nuevo, minimo a proposito: un solo endpoint backend sin superficie
+# de UI en el admin SM2 (feed DFP consumido externamente).
+version: 1
+epic: "Account Management"
+ultima_actualizacion: '2026-07-04'
+
+stories:
+  - id: "US-017"
+    titulo: "El feed DFP de una cuenta no debe crashear ante datos inválidos"
+    rol: "sistema externo (Google DFP) / operador"
+    meta: "que el feed RSS de anuncios de una cuenta responda de forma predecible"
+    beneficio: "evitar errores no controlados que generan ruido en CloudWatch y cortan el feed"
+    descripcion: |
+      Como consumidor externo del feed DFP de una cuenta,
+      quiero que el endpoint responda de forma predecible incluso ante
+      condiciones inesperadas (cuenta inexistente, error de DB),
+      para no depender de un endpoint que crashea silenciosamente.
+
+    acceptance_criteria:
+      - id: "ACC-AC-1"
+        criterio: "GET /api/account/:account_id/dfp/full con un account_id inexistente responde 200 con {status:401, data:'Not Allowed'}, sin lanzar una excepción no controlada"
+
+    prioridad: "low"
+    tipo: "bug-fix"
+    dependencias:
+      - "api/account/:account_id/dfp/full"
+
+    notas: |
+      Origen: mediastream/sm2#8417 (issue: "Mitigación de errores en Cloud
+      Watch") / mediastream/sm2#8423 (PR, bundlea 5 fixes defensivos
+      independientes en distintas rutas backend). Solo este endpoint
+      (dfp/full.js) es alcanzable de forma confiable con el harness HTTP de
+      AQ2 -es lectura pura, sin condiciones de carrera-.
+      Los otros 4 fixes del mismo PR NO se automatizaron aquí:
+      - grpc/services/show.js: requiere cliente gRPC, no disponible en AQ2.
+      - routes/api/-/live-stream/status.js: requiere manipular Redis
+        directamente, no disponible en el harness.
+      - routes/api/dvr/create.js: solo reproducible forzando una condición
+        de carrera (borrar el media a mitad del flujo) -demasiado frágil
+        para un test automatizado-.
+      - model/schemas/event_schedule.js: el más importante de los 4 sin
+        cubrir -ver LIVE-RISK-10-. No es alcanzable via API porque Show/
+        Season/Episode en sm2 se gestionan por gRPC interno, sin ruta
+        /api/show|season|episode de creación (confirmado leyendo app.js:
+        el único endpoint es GET /api/show/list).
+      Nota aparte, no introducida por este fix: la respuesta de error usa
+      `res.send({status:401,...})` sin `res.status(401)`, asi que el HTTP
+      status real sigue siendo 200 pese a que el body diga 401 -contrato
+      pre-existente, confirmado en el test que valida exactamente ese
+      comportamiento actual, no lo que "debería" ser-.

@@ -1,0 +1,31 @@
+# Riesgos - Modulo Account. Poblado desde lectura de codigo + verificacion en
+# vivo (dev, 2026-07-04). Defectos = issues GitHub.
+version: 1
+modulo: "account"
+ultima_actualizacion: '2026-07-04'
+
+riesgos:
+  - id: "ACC-RISK-1"
+    severidad: "low"
+    probabilidad: "low"
+    titulo: "Feed DFP crasheaba ante account_id inexistente [CORREGIDO]"
+    descripcion: >
+      Riesgo HISTORICO, ya corregido por mediastream/sm2#8423 (verificado en
+      vivo, 2026-07-04). `account?.dfp?.enabled` reemplaza a
+      `account.dfp?.enabled` -sin el account_id existiendo, el acceso
+      directo lanzaba TypeError no controlado. Documentado por
+      trazabilidad, no por accion pendiente.
+    detonador:
+      - "GET /api/account/:account_id/dfp/full con un account_id que no existe en la cuenta"
+    mitigacion: >
+      Ya aplicada: optional chaining agregado, cae al branch existente
+      (200, body {status:401,...}).
+    archivos_afectados:
+      - "src/server/routes/api/account/dfp/full.js"
+    defectos_relacionados:
+      - "mediastream/sm2#8417"
+      - "mediastream/sm2#8423"
+    prioridad_prueba: "SHOULD"
+    nota_industria: >
+      Robustez de entrada: un ID externo (no controlado por el propio
+      sistema, en este caso un segmento de URL) nunca debe asumirse valido.

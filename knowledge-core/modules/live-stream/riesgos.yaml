@@ -2,7 +2,7 @@
 # Defectos = issues GitHub (Jurrego1771/AQ2#N). NO se escribe mitigado_por_test (derivado).
 version: 1
 modulo: "live-stream"
-ultima_actualizacion: '2026-06-21'
+ultima_actualizacion: '2026-07-04'
 
 riesgos:
   - id: "LIVE-RISK-1"
@@ -190,3 +190,78 @@ riesgos:
     prioridad_prueba: "COULD"
     nota_industria: >
       Testabilidad / contrato QA del proyecto (selectores estables sm:).
+
+  - id: "LIVE-RISK-9"
+    severidad: "high"
+    probabilidad: "medium"
+    titulo: "Guardar el detalle puede pisar en silencio un Custom Attribute cambiado por otra sesion"
+    descripcion: >
+      Riesgo COMPARTIDO, ver definicion completa en
+      cross-cutting/custom-attributes/riesgos.yaml -> ATTR-RISK-001 (no duplicar aqui).
+      Confirmado en codigo que live_stream.coffee integra CustomAttributes y llama
+      @customAttribute.save() de forma incondicional en cada Save Changes (linea 1920-1921),
+      reenviando el snapshot completo del DOM. Sin control de concurrencia server-side,
+      esto puede pisar un custom attribute cambiado por otra sesion mientras la pagina
+      actual estaba abierta. Hipotesis de causa raiz del incidente TV Azteca (campo
+      "Show in OTT", no confirmado como custom attribute en vivo).
+    detonador:
+      - "Ver ATTR-RISK-001"
+    mitigacion: >
+      Ver ATTR-RISK-001. Mitigacion parcial via notificacion websocket
+      (mediastream/sm2#8317), no bloquea el guardado.
+    archivos_afectados:
+      - "src/client/live_stream.coffee"
+      - "cross-cutting/custom-attributes/ (mecanismo compartido)"
+    defectos_relacionados:
+      - "mediastream/sm2#8317 (mitigacion parcial, no fix)"
+    prioridad_prueba: "MUST"
+    nota_industria: >
+      Ver ATTR-RISK-001 (patron "lost update" por ausencia de optimistic locking).
+
+  - id: "LIVE-RISK-10"
+    severidad: "medium"
+    probabilidad: "low"
+    titulo: "addNewEpisode podria mutar un episodio distinto al pretendido si episodeId es invalido"
+    descripcion: >
+      Hallado leyendo model/schemas/event_schedule.js (mediastream/sm2#8423,
+      linea 406). addNewEpisode(doc) se dispara en el hook postCommit('save')
+      de EventSchedule cuando show_info.showId + seasonId existen, no es
+      fast_channel_schedule_id, no esta recording/recorded, y el
+      EventScheduleJob asociado es type:'onetime'. En la rama default del
+      switch (cualquier show_info.episodeId que no sea el literal 'new'),
+      el codigo pre-fix llegaba a
+      `SeasonEpisode.findOne({ account: doc.account, _id: doc.show_info.episodeId })`
+      con episodeId potencialmente undefined/null/invalido. Mongoose
+      descarta las claves con valor undefined de una condicion de query en
+      vez de fallar el cast -eso reduce el filtro a
+      `findOne({ account: doc.account })`, que puede matchear CUALQUIER
+      episodio de esa cuenta (el primero que devuelva Mongo) y mutarlo
+      (content.push, first_emision, .save()). El fix agrega
+      `if (!mongoose.isValidObjectId(doc.show_info?.episodeId)) return`
+      antes de llegar a ese find, cerrando el hueco.
+      El PR que lo introduce (sm2#8423) trae un code-review embebido de
+      otra IA que califica este cambio como "funcionalmente neutro /
+      hardening de costo cero" -analisis incompleto: solo verifica que
+      show_info existe (garantizado por el if de la linea 377), no que
+      episodeId sea un ObjectId valido, que es lo que el guard nuevo
+      realmente protege-.
+    detonador:
+      - "Guardar un EventSchedule con show_info.showId+seasonId validos, show_info.episodeId ausente/invalido (no 'new'), EventScheduleJob type:'onetime', y al menos otro episodio existente en la misma cuenta"
+    mitigacion: >
+      Ya aplicada en sm2#8423 (guard de isValidObjectId antes del find).
+      Verificacion en vivo NO realizada: Show/Season/Episode en sm2 se
+      gestionan por gRPC interno (grpc/services/seasonEpisode.js,
+      showSeason.js), sin ruta /api/show|season|episode de creacion
+      -confirmado leyendo app.js: el unico endpoint /api/show es
+      GET /api/show/list-. No hay forma de armar el fixture (Show -> Season
+      -> Episodio) con el harness HTTP de AQ2 sin un cliente gRPC.
+    archivos_afectados:
+      - "src/server/model/schemas/event_schedule.js"
+    defectos_relacionados:
+      - "mediastream/sm2#8417"
+      - "mediastream/sm2#8423"
+    prioridad_prueba: "COULD"
+    nota_industria: >
+      Un filtro de query con un campo undefined no es "sin filtro en ese
+      campo" en la intencion del desarrollador, pero Mongoose lo trata asi
+      -mismatch entre lo esperado y el comportamiento real de la libreria-.
