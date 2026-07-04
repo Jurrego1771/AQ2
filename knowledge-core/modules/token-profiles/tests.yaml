@@ -1,0 +1,22 @@
+# Tests - Modulo Token Profiles. Definicion (sin estado de ejecucion: eso es derivado).
+# refs = FUENTE UNICA de los vinculos. El spec lleva en su titulo solo el id
+# de correlacion @TOK-TC-N (+ la capa @api).
+version: 1
+modulo: "token-profiles"
+ultima_actualizacion: '2026-07-03'
+
+# Sin tests todavia. Se escribio y elimino un intento (ver TOK-RISK-001): un
+# token creado por la cuenta QA sin permisos especiales NUNCA tiene
+# TokenProfile asignado (la UI esconde ese campo salvo is_admin), por lo que
+# cualquier request con ese token nunca ejercita el codigo de module-access.js
+# que el PR sm2#8451 cambia -> un test asi da un falso positivo, no cobertura
+# real. Bloqueado hasta conseguir el setup de TOK-RISK-001 (dos TokenProfile
+# ids + modulo api_tokens habilitado en la cuenta).
+#
+# Cuando el acceso este disponible, agregar:
+#   TOK-TC-001 (valida TOK-AC-1): token con profile=TOKEN_PROFILE_ID_WITH_CATEGORY
+#     -> GET /api/category responde 200.
+#   TOK-TC-002 (valida TOK-AC-2): token con profile=TOKEN_PROFILE_ID_WITHOUT_CATEGORY
+#     -> GET /api/category responde 403.
+
+tests: []

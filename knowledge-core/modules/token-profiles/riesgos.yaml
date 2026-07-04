@@ -1,0 +1,75 @@
+# Riesgos - Modulo Token Profiles. Poblado desde lectura de codigo (mediastream/sm2)
+# + verificacion en vivo de permisos (dev). Defectos = issues GitHub.
+version: 1
+modulo: "token-profiles"
+ultima_actualizacion: '2026-07-03'
+
+riesgos:
+  - id: "TOK-RISK-001"
+    severidad: "medium"
+    probabilidad: "high"
+    titulo: "TOK-AC-1 y TOK-AC-2 sin cobertura: no se puede crear un token CON perfil sin admin"
+    descripcion: >
+      Ningun token creable por la cuenta QA actual puede tener un
+      TokenProfile asignado. La UI (/settings/api) esconde el campo Profile
+      salvo USER.is_admin=true (views/settings/api.coffee linea 46). Sin
+      perfil, res.locals.TOKEN_PROFILE queda vacio y el middleware
+      module-access.js nunca evalua la restriccion por modulo -> cualquier
+      GET /api/category con un token asi devuelve 200 por una razon
+      completamente distinta (modulo media activo a nivel de cuenta), no
+      porque el gate de Token Profiles funcione. Un test que usara ese token
+      como prueba de TOK-AC-1 seria un falso positivo (se escribio y se
+      elimino en esta sesion al descubrirlo). Sin un TokenProfile real (con
+      y sin media.category) tampoco se puede probar TOK-AC-2 (403). Ambos AC
+      quedan sin ejercitar el codigo que el PR sm2#8451 realmente cambia.
+    detonador:
+      - "Intentar validar TOK-AC-1/TOK-AC-2 con un token creado via /settings/api por un usuario sin is_admin"
+    mitigacion: >
+      Pedido de acceso minimo, una sola vez (no requiere repetirse por
+      corrida): (1) un admin de plataforma crea dos documentos TokenProfile
+      -uno con 'media.category' en modules, otro sin el-; (2) un admin
+      habilita el modulo de cuenta api_tokens en la cuenta QA de dev. Con
+      eso, POST /api/account/token SI acepta el campo profile para un
+      usuario normal (AUTH_ADMIN_MODULE no exige is_admin, es un OR con el
+      permiso de cuenta) -> AQ2 puede crear/borrar tokens self-contained por
+      test, sin depender de la UI. Ids esperados en .env:
+      TOKEN_PROFILE_ID_WITH_CATEGORY_DEV / TOKEN_PROFILE_ID_WITHOUT_CATEGORY_DEV.
+    archivos_afectados:
+      - "views/settings/api.coffee (gating de UI, no del server)"
+      - "src/server/routes/api/account/token/update.js (server SI acepta profile sin is_admin)"
+      - "src/server/middleware/auth-admin-module.js"
+    defectos_relacionados: []
+    prioridad_prueba: "SHOULD"
+    nota_industria: >
+      Testing de autorizacion (RBAC): un test que no ejercita la rama de
+      codigo bajo prueba da falsa confianza (peor que no tener test). El gate
+      real (creacion de TokenProfile) requiere admin sin excepcion; la
+      asignacion a un token NO, aunque la UI lo sugiera.
+
+  - id: "TOK-RISK-002"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "Gestion de documentos TokenProfile no explorable por QA (permisos de plataforma)"
+    descripcion: >
+      /admin/account (UI) y /api/admin/platform/token-profiles (API) exigen
+      USER.is_admin (staff de plataforma), sin ninguna via alternativa -a
+      diferencia de la asignacion de perfil a un token, que si tiene un
+      camino de cuenta normal (ver TOK-RISK-001)-. Confirmado en vivo: 403 en
+      ambos con el bot QA. La superficie de creacion/edicion de perfiles
+      (definir que modulos incluye cada perfil) queda permanentemente fuera
+      de exploracion/cobertura de AQ2 salvo que la cuenta QA obtenga
+      is_admin, algo que probablemente no se otorgue por ser un flag de
+      staff de Mediastream, no de cliente.
+    detonador:
+      - "Cualquier intento de crear/editar/listar TokenProfile con la cuenta QA actual"
+    mitigacion: >
+      No aplica mitigacion desde AQ2 (fuera de su alcance por diseno). Los
+      dos TokenProfile necesarios para TOK-RISK-001 se piden como setup
+      manual, una sola vez, no como parte de la suite automatizada.
+    archivos_afectados: []
+    defectos_relacionados: []
+    prioridad_prueba: "WONT"
+    nota_industria: >
+      No es un defecto de producto: es una separacion de privilegios
+      intencional (plataforma vs. cuenta). Documentado para no
+      re-investigar el mismo bloqueo en el futuro.
