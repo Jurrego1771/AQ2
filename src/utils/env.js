@@ -21,9 +21,20 @@ const env = {
   baseURL: pick('BASE_URL'),
   user: pick('TEST_USER', process.env.TEST_USER || ''),
   pass: pick('TEST_PASS', process.env.TEST_PASS || ''),
+  // Segundo usuario (misma cuenta): solo para probar edicion concurrente
+  // entre dos sesiones reales (alerta "changed by another user", sm2#8317).
+  user2: pick('TEST_USER2'),
+  pass2: pick('TEST_PASS2'),
   totpSecret: pick('TOTP_SECRET'),
   // prod-us / prod-eu bloquean mutaciones (prodGuard en specs que escriben).
   isProd: ENV.startsWith('prod'),
+  // Token Profiles (sm2#8451): ids de TokenProfile pre-creados una sola vez por un
+  // admin de plataforma (is_admin) -> ver .env.example. Con esos ids + el módulo de
+  // cuenta api_tokens habilitado, AQ2 puede crear/borrar sus propios tokens self-
+  // contained por test (POST /api/account/token no exige is_admin para el campo
+  // profile, solo la UI lo hace). Vacíos -> los specs de token profile se skipean.
+  tokenProfileIdWithCategory: pick('TOKEN_PROFILE_ID_WITH_CATEGORY'),
+  tokenProfileIdWithoutCategory: pick('TOKEN_PROFILE_ID_WITHOUT_CATEGORY'),
 };
 
 module.exports = { env };

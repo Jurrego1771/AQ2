@@ -1,0 +1,44 @@
+# Historias de Usuario - Epic Collaboration Alerts Management
+# Feature transversal (no exclusiva de un modulo): mismo mecanismo en varios
+# recursos (live-stream, media, article). Los AC quedan por modulo (LIVE-AC-N,
+# MED-AC-N) porque cada spec vive en el tests.yaml de su propio modulo, pero
+# comparten esta unica historia. Ver cross-cutting/changed-alert/overview.md
+# para el mecanismo compartido.
+version: 1
+epic: "Collaboration Alerts Management"
+ultima_actualizacion: '2026-07-03'
+
+stories:
+  - id: "US-015"
+    titulo: "Avisar cuando otro usuario edito el mismo registro"
+    rol: "administrador de contenido"
+    meta: "saber si alguien mas cambio el registro que tengo abierto"
+    beneficio: "no pisar cambios ajenos guardando sobre datos desactualizados"
+    descripcion: |
+      Como administrador de contenido,
+      quiero ver un aviso si otro usuario edito y guardo el mismo registro
+      mientras yo lo tenia abierto,
+      para poder refrescar antes de guardar y no perder su cambio.
+
+    acceptance_criteria:
+      - id: "LIVE-AC-15"
+        criterio: "Al guardar un live-stream, cualquier otra sesion con ese mismo detalle abierto ve un banner de warning invitando a refrescar (salvo que sea su propio guardado)"
+      - id: "MED-AC-23"
+        criterio: "Al guardar un media, cualquier otra sesion con ese mismo detalle abierto ve un banner de warning invitando a refrescar (salvo que sea su propio guardado)"
+
+    prioridad: "medium"
+    tipo: "feature"
+    dependencias:
+      - "auth (sesion iniciada, dos usuarios reales)"
+      - "websocket (canal /{recurso}/:id/changed)"
+
+    notas: |
+      Origen: mediastream/sm2#8317. Mitigacion de UX para el riesgo de "lost
+      update" documentado en cross-cutting/custom-attributes (ATTR-RISK-001) y
+      en el incidente reportado por TV Azteca -no lo previene estructuralmente
+      (no bloquea el guardado ni hace merge de campos), solo avisa-.
+      Verificado en vivo con dos sesiones reales (botqa + un segundo usuario)
+      en live-stream y media: la alerta aparece SOLO para la sesion ajena, no
+      para quien guarda su propio cambio. Articulo no probado en vivo (mismo
+      codigo exacto, alta confianza por analogia) -GAP menor, no bloqueante-.
+      Cubierto por LIVE-TC-15 y MED-TC-024.
