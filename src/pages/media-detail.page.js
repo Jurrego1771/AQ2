@@ -18,6 +18,17 @@ class MediaDetailPage {
     this.titleInput = page.locator('input[data-name="title"]')
     this.descriptionInput = page.locator('textarea[data-name="description"]')
     this.categoriesSelect = page.locator('select[data-name="categories"]')
+    // Selector "Show" (sección Show/Seasons/Episodes), mismo patrón data-name.
+    this.showSelect = page.locator('select[data-name="shows"]')
+
+    // Toggle "Status" (Published/Not Published), tab Basic Information.
+    // EXCEPCIÓN documentada (mismo patrón que data-name arriba, ver #13/#35):
+    // es un widget bootstrap-toggle genérico sin marca sm:, y la página tiene
+    // varios `.toggle` más (ITG Enabled, Ads, Access Restrictions). Se localiza
+    // por el checkbox subyacente vía su atributo data-on="Published" (estable,
+    // análogo semántico a data-name), no por texto ni por índice de clase.
+    this.publishCheckbox = page.locator('input[type="checkbox"][data-on="Published"]')
+    this.publishToggleWidget = page.locator('.toggle', { has: this.publishCheckbox })
 
     // Acciones (sm: real).
     this.saveButton = page.locator(sm('save'))
@@ -200,6 +211,27 @@ class MediaDetailPage {
   async alertText() {
     if (!(await this.globalAlert.isVisible())) return ''
     return (await this.globalAlert.innerText()).replace(/^×/, '').trim()
+  }
+
+  // ===== Status (Published/Not Published) =====
+
+  /**
+   * Alterna el toggle Published/Not Published. NO guarda (usar save() después)
+   * ni asume persistencia: con force_category_fill activo y sin categoría, el
+   * save queda bloqueado client-side en silencio (hallazgo aparte, sin issue).
+   */
+  async togglePublished() {
+    await this.publishToggleWidget.click()
+  }
+
+  /**
+   * Estado actual del toggle leído del checkbox real (evita ambigüedad visual:
+   * bootstrap-toggle mantiene ambos labels "Published"/"Not Published" en el
+   * DOM con dimensiones reales, solo uno queda dentro del recorte visible).
+   * @returns {Promise<boolean>}
+   */
+  async isPublishedOn() {
+    return this.publishCheckbox.isChecked()
   }
 }
 

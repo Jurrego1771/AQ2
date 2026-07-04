@@ -2,7 +2,7 @@
 # Poblado desde exploracion en vivo (dev) + codigo sm2. Defectos = issues GitHub.
 version: 1
 modulo: "media"
-ultima_actualizacion: '2026-06-20'
+ultima_actualizacion: '2026-07-03'
 
 riesgos:
   - id: "MED-RISK-001"
@@ -198,3 +198,64 @@ riesgos:
     prioridad_prueba: "SHOULD"
     nota_industria: >
       Nielsen #5 (prevencion de errores). Validacion server-side: no confiar solo en el cliente.
+
+  - id: "MED-RISK-010"
+    severidad: "medium"
+    probabilidad: "high"
+    titulo: "Selector de Show en Media podia listar shows borrados/duplicados (all=true)"
+    descripcion: >
+      El picker de Show del detalle de media pedia GET /api/show/list?all=true,
+      que el server interpreta como "incluir shows de cualquier status" (no
+      solo OK). Cuando varios shows borrados compartian titulo entre si o con
+      uno activo, el dropdown los mostraba repetidos, arriesgando que el
+      admin asignara la entrada equivocada (un show borrado en vez del activo).
+      Reportado por un cliente (no hallado por QA).
+    detonador:
+      - "Abrir el detalle de un media y expandir el selector de Show"
+      - "Que exista >=1 show con status DELETE compartiendo titulo con otro (activo o borrado)"
+    mitigacion: >
+      Quitar el parametro all=true del picker cuando el tipo es 'media'
+      (src/client/partial/show_options.coffee). Complementado con una guarda
+      server-side en media/update.js que evita desvincular en silencio un
+      media de un show borrado al guardar sin show seleccionado.
+    archivos_afectados:
+      - "src/client/partial/show_options.coffee"
+      - "src/server/routes/api/media/update.js"
+      - "src/server/routes/api/show/list.js"
+    defectos_relacionados:
+      - "mediastream/sm2#8442"
+      - "mediastream/sm2#8443"
+    prioridad_prueba: "MUST"
+    nota_industria: >
+      Nielsen #1 (visibilidad de estado real) y #4 (consistencia): dos entradas
+      identicas en un selector rompen la confianza de que representan cosas
+      distintas. Verificado en vivo (2026-07-03): fix ya desplegado en dev
+      (branch fix/issue-8442 -> staging, PR sin mergear en GitHub al momento
+      de verificar); test MED-TC-022/023 protege la regresion.
+
+  - id: "MED-RISK-011"
+    severidad: "high"
+    probabilidad: "medium"
+    titulo: "Guardar el detalle puede pisar en silencio un Custom Attribute cambiado por otra sesion"
+    descripcion: >
+      Riesgo COMPARTIDO, ver definicion completa en
+      cross-cutting/custom-attributes/riesgos.yaml -> ATTR-RISK-001 (no duplicar aqui).
+      Confirmado en codigo que media.coffee integra CustomAttributes y llama
+      @customAttribute.save() de forma incondicional en cada Save Changes (linea 2124-2125),
+      reenviando el snapshot completo del DOM. Sin control de concurrencia server-side,
+      esto puede pisar un custom attribute cambiado por otra sesion mientras la pagina
+      actual estaba abierta. Cluster 10 "Custom Attributes" (overview.md) sigue pendiente
+      de exploracion en vivo (la cuenta de dev no tiene custom attributes configurados).
+    detonador:
+      - "Ver ATTR-RISK-001"
+    mitigacion: >
+      Ver ATTR-RISK-001. Mitigacion parcial via notificacion websocket
+      (mediastream/sm2#8317), no bloquea el guardado.
+    archivos_afectados:
+      - "src/client/media.coffee"
+      - "cross-cutting/custom-attributes/ (mecanismo compartido)"
+    defectos_relacionados:
+      - "mediastream/sm2#8317 (mitigacion parcial, no fix)"
+    prioridad_prueba: "MUST"
+    nota_industria: >
+      Ver ATTR-RISK-001 (patron "lost update" por ausencia de optimistic locking).

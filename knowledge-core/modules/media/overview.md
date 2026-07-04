@@ -37,6 +37,8 @@ Prefijo de IDs: **MED** · Rutas UI: `/media` (listado), `/media/:id` (detalle/e
 | # | Clúster | Estado QA | Notas |
 |---|---------|-----------|-------|
 | 1 | Basic Information (título/descripción/categoría/fechas/permalink) | ✅ cubierto (US-003) | campos por `data-name`, no `sm:` (#13) |
+| 1b | Status (Published/Not Published, toggle) | ✅ cubierto (US-012) | consistente con listado y API; toggle sin `sm:` (#35) |
+| 1c | Show/Seasons/Episodes (asignación de show) | ✅ cubierto (US-013) | picker sin `sm:` (`data-name="shows"`) |
 | 2 | Metadata & Embed (copiar embed/ID/URLs HLS-DASH) | ⬜ pendiente | |
 | 3 | Thumbnails / Preview | ↗ módulo aparte | ver módulo **thumbnails** (PFX THM) |
 | 4 | Ad Markers (preroll/midroll) | ✅ cubierto (US-005) | manual+modal; bugs #14 #15 |
@@ -44,14 +46,54 @@ Prefijo de IDs: **MED** · Rutas UI: `/media` (listado), `/media/:id` (detalle/e
 | 6 | AI Studio (persons/keywords/labels/sentiments/emotions/OCR/captions) | ⬜ pendiente | async/IA, caro |
 | 7 | Chapters / Highlights / Transcription | ⬜ pendiente | async/IA |
 | 8 | Renditions (lista de calidades) | ⬜ pendiente | lectura |
-| 9 | Quiz Manager | ⬜ pendiente | |
-| 10 | Custom Attributes | ⬜ pendiente | |
+| 9 | Quiz Manager | ↗ módulo aparte | ver módulo **quiz-manager** (PFX QUIZ) — explorado en vivo, sin tests automatizados aún |
+| 10 | Custom Attributes | ⬜ pendiente (exploración UI) / ⚠️ riesgo identificado por código | ver `cross-cutting/custom-attributes/` — MED-RISK-011 |
 | 11 | Share / Replace / Delete | ⬜ pendiente | acciones destructivas |
 
 ## Listado (/media) — áreas
 Búsqueda (whole-word, #10), filtros (Published/Video/Audio/No Category), per-page (12/24/48/96),
 paginación (skip en URL), 3 layouts (grid/list/minimal coexisten → usar `:visible`, #8).
 Cubierto: búsqueda (US-001), filtros+paginación (US-002).
+
+## Status / Published (cluster 1b) — comportamiento (verificado en vivo)
+- Se reportó un caso de un media visto como **Published** (ícono verde) en la grilla del listado
+  pero **despublicado** al abrir su detalle. Verificado en vivo (2026-07-03, dev): publicando y
+  despublicando un media real por el toggle del detalle, las 3 vistas del listado (grid/list/
+  minimal) y el detalle reabierto reflejan siempre `is_published` de una carga fresca por API —
+  **no se reprodujo la desincronización**. Cubierto por MED-TC-021 (US-012).
+- **Gap de testabilidad** (no bug): ningún indicador de estado (ícono/badge del listado, toggle
+  del detalle) tiene marca `sm:` → [[AQ2#35]]. Los Page Objects usan una excepción documentada
+  (mismo patrón que `data-name`, #13): leer texto del card por su marca real (`media-container-`)
+  y localizar el toggle por `input[data-on="Published"]` (hay varios `.toggle` más en la página:
+  ITG, Ads, Access Restrictions).
+- **Hallazgo aparte** (sin issue filado aún): con la cuenta en `force_category_fill`, un media
+  **sin categoría** bloquea el guardado del toggle Published en el cliente **sin ningún error
+  visible** — el toggle queda visualmente en el nuevo estado pero nunca se persiste. Distinto del
+  bug reportado (no es desincronización entre vistas), pero produce el mismo síntoma percibido.
+
+## Show/Seasons/Episodes (cluster 1c) — comportamiento (verificado en vivo)
+- **Reporte de cliente** (no hallado por QA): al asignar un Show desde el detalle de un media,
+  un mismo show (ej. "Capital, la Bolsa y la Vida") aparecía listado 3 veces, aunque el módulo
+  Show solo tiene 1 registro con ese nombre.
+- **Causa raíz**: el picker de Show en Media pedía `GET /api/show/list?all=true`. El server
+  (`src/server/routes/api/show/list.js`) interpreta `all=true` como "sin filtrar por status"
+  (sin ese parámetro, filtra `status: 'OK'`). Con shows borrados (`status: DELETE`) compartiendo
+  título entre sí o con uno activo, el dropdown los mostraba todos como entradas separadas.
+  Verificado en dev (2026-07-03): 481 shows `OK` vs. **5896 shows `DELETE`** vía `all=true`;
+  títulos como "Prueba Show api" (×5) y "Updated Show Title QA Test" (×4) existen **solo** como
+  registros borrados — antes del fix habrían aparecido repetidos en el picker.
+- **Fix**: [[mediastream/sm2#8442]] (issue) / [[mediastream/sm2#8443]] (PR, branch
+  `fix/issue-8442` → `staging`, **sin mergear** en GitHub al momento de verificar) quita
+  `?all=true` del picker cuando `@type is 'media'`. **Verificado en vivo (2026-07-03): el fix
+  YA está desplegado en dev** — el request real no lleva `all=true` y el `<select>` no incluye
+  ninguno de los shows borrados conocidos (0/482 opciones, vs. 6377 si se pidiera con `all=true`).
+- El mismo PR agrega una guarda server-side (`media/update.js`): si al guardar se limpia
+  `show_info.showId` y el show previamente asignado está `DELETE`, restaura el link anterior en
+  vez de dejarlo en null — evita desvincular medias en silencio ahora que los shows borrados no
+  aparecen en el picker. **No cubierto** por los tests de este módulo (fuera del alcance del
+  reporte original); GAP conocido, sin issue filado.
+- Cubierto por MED-TC-022 (contrato de `/api/show/list`) y MED-TC-023 (selector real del
+  detalle, deriva del entorno los títulos exclusivos de shows borrados).
 
 ## Ad Markers (cluster 4) — comportamiento (verificado en vivo)
 - Dos vías de creación: **`new-ad-marker`** crea YA un break en `player.currentTime` (POST

@@ -4,7 +4,7 @@
 # AC ids unicos por modulo: MED-AC-N.
 version: 1
 epic: "Media Management"
-ultima_actualizacion: '2026-06-20'
+ultima_actualizacion: '2026-07-03'
 
 stories:
   - id: "US-001"
@@ -162,5 +162,78 @@ stories:
       MED-AC-19 y MED-AC-20 estan en rojo (bugs #15 y #14): tests vivos test.fail().
       new-ad-marker crea desde player.currentTime sin confirmacion; create-ad-marker abre modal
       manual. Ad markers cargan async (socket load-ad-tracks) -> esperar con expect.poll.
+
+  - id: "US-012"
+    titulo: "Publicar y despublicar un media desde el detalle"
+    rol: "administrador de contenido"
+    meta: "cambiar el estado Published de un media y confiar en que se refleje igual en todo el admin"
+    beneficio: "controlar la visibilidad del contenido sin dudar de si el cambio realmente se aplico"
+    descripcion: |
+      Como administrador de contenido,
+      quiero publicar o despublicar un media desde su detalle,
+      para que el estado se refleje de forma consistente en el listado (grid,
+      lista, minimal list) y al reabrir el detalle.
+
+    acceptance_criteria:
+      - id: "MED-AC-21"
+        criterio: "Al publicar o despublicar y guardar, el estado Published/Not Published mostrado coincide en las 3 vistas del listado y en el detalle (reabierto), sin desincronizacion"
+
+    prioridad: "medium"
+    tipo: "feature"
+    dependencias:
+      - "auth (sesion iniciada)"
+      - "api/media (provisioning self-contained: ingesta remota + transcoding)"
+
+    notas: |
+      Se reporto un caso de un media que se veia Published en la grilla pero
+      despublicado al abrir el detalle. Verificado en vivo (2026-07-03): no se
+      reprodujo la desincronizacion, is_published viene siempre de una carga
+      fresca por API en las 4 vistas. AC-21 protege ese comportamiento contra
+      regresion. Gap de testabilidad relacionado: ningun indicador de estado
+      Published tiene marca sm: (ver [[AQ2#35]]), los Page Objects usan una
+      excepcion documentada (mismo patron que data-name, #13).
+      Hallazgo aparte (no cubierto por este AC, sin issue filado aun): con
+      force_category_fill activo, un media sin categoria bloquea el guardado
+      del toggle Published en silencio (sin error visible).
+
+  - id: "US-013"
+    titulo: "Asignar un Show a un media sin ver entradas duplicadas o borradas"
+    rol: "administrador de contenido"
+    meta: "elegir el show correcto en el selector del detalle sin ambiguedad"
+    beneficio: "asignar el show sin arriesgarme a elegir una entrada borrada o duplicada"
+    descripcion: |
+      Como administrador de contenido,
+      quiero que el selector de Show del detalle de un media liste cada show
+      una sola vez y solo shows activos,
+      para asignar el show correcto sin confundirme con entradas borradas.
+
+    acceptance_criteria:
+      - id: "MED-AC-22"
+        criterio: "El selector de Show del detalle no incluye shows con status distinto de OK (ej. DELETE), aunque compartan titulo con uno activo o entre si"
+
+    prioridad: "high"
+    tipo: "bugfix"
+    dependencias:
+      - "auth (sesion iniciada)"
+      - "api/show/list"
+
+    notas: |
+      Reporte de cliente (no encontrado por QA): un show aparecia listado 3
+      veces al asignarlo desde Media, aunque en el modulo Show solo existe 1
+      con ese nombre. Causa raiz: el picker de Show en Media pedia
+      GET /api/show/list?all=true, que el server incluye shows con cualquier
+      status (incluye DELETE); con varios shows borrados compartiendo titulo
+      (dato real en dev: "Prueba Show api" x5, "Updated Show Title QA Test" x4,
+      de un total de 5896 shows status=DELETE) el dropdown los mostraba todos.
+      Fix: mediastream/sm2#8442 (issue) / mediastream/sm2#8443 (PR, sin mergear
+      al momento de verificar, branch fix/issue-8442 -> staging). Verificado en
+      vivo en dev (2026-07-03): el fix YA esta desplegado, el request real no
+      lleva all=true y el selector no incluye ningun show borrado. MED-AC-22
+      protege este comportamiento.
+      El PR tambien agrega una guarda server-side (media/update.js): si al
+      guardar se limpia show_info.showId y el show previo esta DELETE, restaura
+      el link anterior en vez de dejarlo en null (evita desvincular medias en
+      silencio ahora que los shows borrados no aparecen en el picker). No
+      cubierto por MED-AC-22 (fuera del alcance del reporte); GAP conocido.
 
   # US-006 (thumbnails/preview) se movio al epic thumbnails-management (modulo thumbnails, PFX THM).

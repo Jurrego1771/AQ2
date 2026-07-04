@@ -1,0 +1,46 @@
+# Selectores - Cross-cutting: Custom Attributes
+# Contrato compartido por todos los recursos que integran CustomAttributes
+# (src/client/partial/custom_attribute.coffee). NO cosechado en vivo todavia (la cuenta
+# de dev/QA no tiene custom attributes configurados) -> derivado de lectura de codigo
+# fuente (mediastream/sm2). Verificar contra el DOM real la primera vez que se explore
+# un recurso con custom attributes configurados, y actualizar este archivo.
+version: 1
+modulo: "cross-cutting/custom-attributes"
+ultima_actualizacion: '2026-07-03'
+
+# Contenedor raiz, igual en todos los recursos (instanciado por CustomAttributes()).
+contenedor_principal: "custom-attributes-main-container"
+
+# Campos individuales: NO tienen sm: propio segun el codigo fuente leido. Se generan
+# dinamicamente por atributo con id `custom-attribute-<code>`, donde <code> es el
+# slug del nombre del atributo, especifico de cada cuenta (no hardcodeable). Ejemplo
+# de codigo cliente que los lee: $("#custom-attribute-#{attribute.code}", @container).
+# GAP DE TESTABILIDAD (a filar como issue si se confirma en vivo): sin sm:, hay que
+# depender del id generado, que requiere conocer el code exacto configurado en la
+# cuenta -no derivable de forma generica como se hace con otras colecciones (ej.
+# media-container-<id>, que si usa sm:).
+campo_por_atributo:
+  patron_id: "#custom-attribute-{code}"
+  code: "slug de attribute.name, especifico de la cuenta (ver CustomAttributeSchema.pre('save'))"
+
+# Tipos soportados y su selector/template (fuente: custom_attribute.coffee @template).
+# El campo renderizado varia de tag segun el tipo:
+tipos:
+  boolean: "checkbox — input[type=checkbox]#custom-attribute-{code}"
+  text: "input#custom-attribute-{code}"
+  textarea: "textarea#custom-attribute-{code}"
+  date: "input#custom-attribute-{code} + datetimepicker (formato YYYY-MM-DD HH:mm:ss)"
+  day: "input#custom-attribute-{code} + datetimepicker (formato YYYY-MM-DD)"
+  file: "input[type=file] dentro de #file-{code}-container"
+  list: "select#custom-attribute-{code}"
+  listmultiselect: "select[multiple]#custom-attribute-{code} + widget Chosen"
+  autocomplete: "select#custom-attribute-{code} + AutoComplete.add"
+  tags: "select#custom-attribute-{code} + AutoComplete.add (search_tag)"
+  richtext: "div.rtfeditor#custom-attribute-{code} (widget Summernote)"
+  category: "select#custom-attribute-{code} + AutoComplete.add (full_category o parent scoped)"
+  distributor: "select#custom-attribute-{code} + AutoComplete.add (distributor)"
+  product: "select#custom-attribute-{code} + AutoComplete.add (product)"
+  comscore: "subtipo derivado (boolean/number/day/time/list) segun attribute.options"
+
+# Endpoint compartido (no hay sm: involucrado, pero relevante para verificacion por API).
+endpoint: "POST /api/custom-attribute/:module/:module_id  (module en {article,media,schedule,playlist,category,live-stream,product,show,show-season,show-episode,show-related})"

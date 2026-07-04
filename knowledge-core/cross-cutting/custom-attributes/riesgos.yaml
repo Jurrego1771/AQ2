@@ -1,0 +1,58 @@
+# Riesgos - Cross-cutting: Custom Attributes
+# Distinto de modules/*/riesgos.yaml: este riesgo es COMPARTIDO por varios recursos
+# (media, live-stream, article, show, ...) porque nace del mismo mecanismo de codigo,
+# no de un modulo de UI especifico. Los modulos afectados referencian este id en vez
+# de duplicar el riesgo (ver modules/media/riesgos.yaml y modules/live-stream/riesgos.yaml).
+# Poblado desde lectura de codigo (mediastream/sm2), NO exploracion en vivo (ver overview.md
+# -> "Estado de verificacion" antes de asumir esto confirmado en un entorno real).
+version: 1
+modulo: "cross-cutting/custom-attributes"
+ultima_actualizacion: '2026-07-03'
+
+riesgos:
+  - id: "ATTR-RISK-001"
+    severidad: "high"
+    probabilidad: "medium"
+    titulo: "Guardado de Custom Attributes pisa cambios ajenos en silencio (sin control de concurrencia)"
+    descripcion: >
+      El guardado de custom attributes se dispara automaticamente en cada "Save Changes"
+      del recurso padre (media, live-stream, ...), sin importar que seccion del form
+      toco el usuario. El cliente (CustomAttributes.get(), src/client/partial/
+      custom_attribute.coffee) envia el estado ACTUAL DEL DOM de todos los campos
+      renderizados -no un diff desde la ultima interaccion del usuario-: para un booleano
+      siempre manda true o false explicito. El servidor
+      (CustomAttribute.setAttributes, src/server/model/schemas/custom_attribute.js)
+      compara ese valor contra el valor actual en DB y aplica $set si difieren, sin
+      ningun chequeo de version/timestamp que distinga "el usuario cambio esto a
+      proposito" de "esto es lo que habia en el DOM desde que la pagina cargo". Si la
+      pagina de un usuario quedo abierta con datos desactualizados (otra sesion cambio
+      un custom attribute mientras tanto) y ese usuario guarda por CUALQUIER motivo no
+      relacionado, el custom attribute stale se reenvia y pisa el cambio ajeno.
+    detonador:
+      - "Usuario A cambia un custom attribute (ej. un booleano) y guarda"
+      - "Usuario B tiene la misma pagina abierta desde ANTES del cambio de A (snapshot stale)"
+      - "Usuario B guarda por cualquier motivo (incluso una seccion no relacionada, ej. politica de distribucion)"
+      - "-> el valor de A se sobrescribe con el valor stale que B tenia en el DOM"
+    mitigacion: >
+      No implementada a nivel de campo. El PR mediastream/sm2#8317 agrega una notificacion
+      websocket "changed by another user" (banner de warning) en media/live-stream/article,
+      pero es solo UX -no bloquea el guardado ni hace merge de campos-: si el usuario no ve
+      el banner a tiempo o guarda igual, el pisado ocurre igual. Mitigacion real requeriria
+      version/timestamp por documento (optimistic locking) o excluir custom attributes no
+      tocados del payload de guardado (diff real en vez de snapshot completo del DOM).
+    archivos_afectados:
+      - "src/client/partial/custom_attribute.coffee"
+      - "src/server/routes/api/custom-attribute/update.js"
+      - "src/server/model/schemas/custom_attribute.js"
+      - "src/client/media.coffee (integracion confirmada)"
+      - "src/client/live_stream.coffee (integracion confirmada)"
+    defectos_relacionados:
+      - "mediastream/sm2#8317 (mitigacion parcial, no fix)"
+    prioridad_prueba: "MUST"
+    nota_industria: >
+      Nielsen #1 (visibilidad de estado) y #5 (prevencion de errores). Patron clasico de
+      "lost update" (concurrencia): la ausencia de optimistic locking a nivel de campo
+      permite que el ultimo write gane sin importar cual es realmente el mas reciente
+      desde la perspectiva del usuario. Hipotesis de causa raiz para el incidente reportado
+      por TV Azteca (campo "Show in OTT" reseteado a false al aplicar una politica de
+      distribucion no relacionada) -no confirmado en vivo, ver overview.md.

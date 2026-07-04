@@ -4,7 +4,10 @@
 # Las marcas por-item llevan el id del documento -> usar smPrefix.
 version: 1
 modulo: "media"
-ultima_actualizacion: '2026-06-20'
+ultima_actualizacion: '2026-07-03'
+# nota: /api/show/list?all=true incluye shows de cualquier status (no solo OK);
+# el picker de Show en media lo usaba y listaba shows borrados/duplicados
+# (mediastream/sm2#8442, fix en sm2#8443). Ver riesgos.yaml MED-RISK-010.
 
 # Navegación global (layout)
 nav:
@@ -39,6 +42,10 @@ listado:
     card_prefix: "media-container-"   # smPrefix; incluye id
     title_prefix: "media-title-"
     description_prefix: "media-description-"
+    # Estado Published/Not Published: texto plano dentro del card
+    # (.label-published / .label-unpublished en list/minimal; ícono de color
+    # .content-icon-status en grid), pero SIN marca sm: propia (gap, AQ2#35).
+    # Leer vía innerText del card (marca real: card_prefix) en vez de por clase.
   # 3 layouts coexisten -> filtrar :visible al contar/leer
 
 # Detalle/edición /media/:id (vista media.coffee) — 233 marcas
@@ -55,6 +62,11 @@ detalle:
     title: 'input[data-name="title"]'
     description: 'textarea[data-name="description"]'
     categories: 'select[data-name="categories"]'   # widget Chosen (jQuery)
+    shows: 'select[data-name="shows"]'   # picker de Show (seccion Show/Seasons/Episodes)
+    # Toggle Status (Published/Not Published): bootstrap-toggle generico SIN
+    # marca sm: (gap, AQ2#35). Hay varios .toggle mas en la pagina (ITG, Ads,
+    # Access Restrictions); se localiza por el checkbox con data-on="Published".
+    status_toggle: 'input[type="checkbox"][data-on="Published"]'
     tags: 'select[data-name="tags"]'
     permalink: 'input[data-name="permalink"]'
     metadata_generate: "metadata-generate"

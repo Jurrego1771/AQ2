@@ -27,6 +27,7 @@ class MediaPage {
     // Modos de vista.
     this.displayGrid = page.locator(sm('display-grid'));
     this.displayList = page.locator(sm('display-list'));
+    this.displayMinimalList = page.locator(sm('display-minimal-list'));
 
     // Items del listado: la marca incluye el id del media. La página renderiza
     // los 3 layouts (grid/list/minimal) a la vez, así que filtramos :visible
@@ -149,6 +150,23 @@ class MediaPage {
     const mark = await this.items.first().getAttribute('sm');
     const match = mark && /media-container-(.+)$/.exec(mark);
     return match ? match[1] : null;
+  }
+
+  /**
+   * Estado Published/Not Published mostrado para un media en el layout
+   * actualmente visible (grid/list/minimal). Los 3 layouts renderizan el badge
+   * como texto plano ("Published"/"Not Published") dentro del card, pero el
+   * badge en sí NO tiene marca sm: (gap de testabilidad, ver #35) — se ancla
+   * en la marca real `media-container-<id>` (sm:) y se lee el texto del card,
+   * no se selecciona por clase.
+   * @param {string} id
+   * @returns {Promise<'Published'|'Not Published'>}
+   */
+  async publishLabel(id) {
+    const container = this.page.locator(`${sm(`media-container-${id}`)}:visible`);
+    await container.waitFor({ state: 'visible', timeout: 10_000 });
+    const text = await container.innerText();
+    return /Not Published/.test(text) ? 'Not Published' : 'Published';
   }
 }
 
