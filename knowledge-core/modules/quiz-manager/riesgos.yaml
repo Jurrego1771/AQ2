@@ -1,0 +1,62 @@
+# Riesgos - Modulo Quiz Manager. Poblado desde exploracion en vivo (dev, 2026-07-04)
+# + lectura de codigo (mediastream/sm2#8032). Defectos = issues GitHub.
+version: 1
+modulo: "quiz-manager"
+ultima_actualizacion: '2026-07-04'
+
+riesgos:
+  - id: "QUIZ-RISK-1"
+    severidad: "low"
+    probabilidad: "medium"
+    titulo: "Inconsistencia de campo id/_id entre POST (crear) y GET (listar) quizzes"
+    descripcion: >
+      POST .../quizzes devuelve el quiz creado con el campo transformado `id`.
+      GET .../quizzes devuelve documentos Mongoose crudos (.lean()) con `_id`,
+      sin `id`. La UI ya maneja esto correctamente (no es un bug visible para
+      el usuario final), pero es una trampa real para cualquier integracion o
+      test que consuma la API directamente esperando el mismo shape en ambas
+      respuestas. Verificado en vivo: usar `quiz.id` de una respuesta de GET
+      produce un 500 de Mongoose (Cast to ObjectId failed for value "undefined").
+    detonador:
+      - "Listar quizzes por API, tomar el campo `id` de un item, usarlo para editar/borrar"
+    mitigacion: >
+      Normalizar el shape de respuesta (agregar `id` tambien en el listado, o
+      documentar explicitamente que el campo es `_id` ahi). Bajo impacto real
+      porque la UI no lo sufre; principalmente relevante para integradores/QA.
+    archivos_afectados:
+      - "src/server/routes/api/live-stream/quizzes/index.js"
+      - "src/server/routes/api/media/quizzes/index.js"
+      - "src/server/routes/api/live-stream/quizzes/create.js"
+      - "src/server/routes/api/media/quizzes/create.js"
+    defectos_relacionados: []
+    prioridad_prueba: "COULD"
+    nota_industria: >
+      Consistencia de contrato de API: el mismo recurso deberia serializarse
+      igual sin importar el endpoint que lo devuelva.
+
+  - id: "QUIZ-RISK-2"
+    severidad: "low"
+    probabilidad: "low"
+    titulo: "Historial de quizzes sin scroll/paginacion truncaba datos en silencio [CORREGIDO]"
+    descripcion: >
+      Riesgo HISTORICO, ya corregido por mediastream/sm2#8032 (verificado en
+      vivo, 2026-07-04). Documentado por trazabilidad: antes del fix, el
+      backend limitaba el listado a 100 registros sin exponerlo (sin campo de
+      total ni paginacion), por lo que una cuenta con mas de 100 quizzes
+      historicos en un live perdia acceso silencioso a los mas antiguos -mas
+      alla del problema de UI (sin scroll) reportado originalmente. El fix
+      sube el techo del modo legado a 200 y agrega paginacion real opt-in.
+    detonador:
+      - "Ver mediastream/sm2#7654 (issue original)"
+    mitigacion: >
+      Ya aplicada: paginacion real vía page/items_per_page (QUIZ-AC-1).
+    archivos_afectados:
+      - "src/server/routes/api/live-stream/quizzes/index.js"
+      - "src/server/routes/api/media/quizzes/index.js"
+    defectos_relacionados:
+      - "mediastream/sm2#7654"
+      - "mediastream/sm2#8032"
+    prioridad_prueba: "MUST"
+    nota_industria: >
+      Nielsen #1 (visibilidad del estado real): un listado que trunca datos
+      sin avisar es peor que uno lento -el usuario no sabe que falta algo-.

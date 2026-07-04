@@ -1,0 +1,62 @@
+# Tests - Modulo Quiz Manager. Definicion (sin estado de ejecucion: eso es derivado).
+# refs = FUENTE UNICA de los vinculos. El spec lleva en su titulo solo el id
+# de correlacion @QUIZ-TC-N (+ la capa @api).
+version: 1
+modulo: "quiz-manager"
+ultima_actualizacion: '2026-07-04'
+
+tests:
+  - id: "QUIZ-TC-1"
+    titulo: "Paginacion de quizzes de un live-stream: contrato completo"
+    modulo: "quiz-manager"
+    tipo: "api"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["QUIZ-AC-1", "QUIZ-AC-2"]
+      mitigates: ["QUIZ-RISK-2"]
+      story: "US-016"
+      spec: "tests/api/quiz-pagination.api.spec.js"
+    # Self-contained: fixture liveStream. Cubre modo legado (sin params),
+    # paginas intermedias/ultima, pagina fuera de rango (200 vacio) y clamp
+    # de items_per_page a 100. Usa expect.poll: el entorno dev muestra
+    # propagacion eventual entre un POST de creacion y el GET siguiente.
+
+  - id: "QUIZ-TC-2"
+    titulo: "Paginacion de quizzes de un media: orden por linea de tiempo, no por creacion"
+    modulo: "quiz-manager"
+    tipo: "api"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["QUIZ-AC-1", "QUIZ-AC-2"]
+      mitigates: []
+      story: "US-016"
+      spec: "tests/api/quiz-pagination.api.spec.js"
+    # Self-contained: fixture transcodedMedia (waitTranscoding:false, no
+    # necesita el gate de transcoding para este test). Los quizzes se crean
+    # deliberadamente FUERA de orden de creacion (300s, 100s, 200s) para que
+    # el test falle si el endpoint ordenara por date_created en vez de
+    # trigger_time -diferencia real con LIVE-side, ver QUIZ-TC-1-.
+
+  - id: "QUIZ-TC-3"
+    titulo: "Media: intervalo minimo entre quizzes se valida en el servidor, limite exacto se acepta"
+    modulo: "quiz-manager"
+    tipo: "api"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["QUIZ-AC-3"]
+      mitigates: []
+      story: "US-016"
+      spec: "tests/api/quiz-pagination.api.spec.js"
+    # Self-contained: fixture transcodedMedia. Prueba el limite exacto (no
+    # solo el caso obvio): a distancia estrictamente menor al intervalo
+    # rechaza 400, a distancia EXACTAMENTE igual acepta 201 (frontera
+    # documentada en el propio codigo fuente). Tambien cubre update.js:
+    # editar el quiz base sin cambiar su timestamp sigue permitido
+    # (excludeQuizId se excluye a si mismo del chequeo).
+
+  # QUIZ-TC-4 (valida QUIZ-AC-4, controles de UI) sin escribir todavia -
+  # requiere interaccion real de browser (botones, confirm() nativo al
+  # borrar, verificar reset de pagina). Candidato @regression, no @api.

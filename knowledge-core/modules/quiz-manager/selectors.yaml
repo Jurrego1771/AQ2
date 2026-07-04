@@ -1,0 +1,55 @@
+# Selectores del módulo Quiz Manager — marcas sm: cosechadas en vivo (dev, 2026-07-04).
+# Compartido entre /live-stream/:id y /media/:id (mismo cliente QuizManager,
+# mismo partial de vista views/partial/quiz.coffee).
+version: 1
+modulo: "quiz-manager"
+ultima_actualizacion: '2026-07-04'
+
+tab:
+  # La sección vive en un tab propio del detalle, no siempre visible por defecto.
+  tab_label: "Quiz Manager"   # sin marca sm: propia, se localiza por texto del tab (gap menor)
+
+listado:
+  container: "quiz-content"
+  list: "quiz-list"
+  list_empty: "quiz-list-empty"
+  add_quiz_button: "add-quiz"
+  # Item de la lista (por quiz):
+  item_send: "send-quiz"      # solo live-stream (icono avion de papel)
+  item_edit: "edit-quiz"
+  item_delete: "delete-quiz"  # dispara un confirm() NATIVO del navegador, no un modal -
+                               # usar browser_handle_dialog (MCP) o page.on('dialog') (Playwright test)
+
+paginacion:
+  container: "quiz-pagination"
+  loader: "quiz-loader"                 # clase .show-loader cuando esta activo
+  current_skip: "quiz-current-skip"     # texto "N - M"
+  total: "quiz-total"                   # texto "N"
+  page_size_select: "quiz-page-size"    # <select>, opciones [5,10,15,20], default visual 5
+  paginator_prev: "paginator-prev"      # <li>, clase .disabled en el extremo; <a> adentro es el target de click
+  paginator_next: "paginator-next"      # idem
+
+editor:
+  root: "quiz-editor"
+  editor_title: "editor-title"          # "New Quiz" / "Editing"
+  back_to_list: "back-to-list"
+  save_quiz: "save-quiz"
+  quiz_title_input: "quiz-title"
+  questions_container: "quiz-questions"
+  add_question: "add-question"
+  # Dentro de cada pregunta (sin marca sm: propia, usar atributos data-* / name):
+  question_item_wrapper: ".question-item"          # clase CSS, no sm: (gap)
+  question_text_input: 'input[name^="question-"]'  # gap: sin sm:
+  remove_question: "remove-question"               # sm: real, con data-question-id
+  # Dentro de cada opcion (sin marca sm: propia):
+  option_correct_checkbox: 'input[name^="correct-"]'  # gap: sin sm:
+  option_text_input: 'input[name^="option-"]'         # gap: sin sm:
+  add_option: "add-option"        # sm: real, con data-question-id
+  remove_option: "remove-option"  # sm: real, con data-question-id + data-option-index
+
+# GAP DE TESTABILIDAD: los inputs de texto de pregunta/opcion y el checkbox de "correcta"
+# no tienen marca sm: propia (usan `name` dinamico con un id generado client-side,
+# ej. name="question-id_fw1ow522h"). Localizables solo por atributo `name^=` o por
+# `data-question-id`/`data-option-index`, no por sm: unico. Mismo patron que #13 (media
+# basic information) y #35 (custom attributes) -> considerar filar issue si se decide
+# automatizar la creacion/edicion de preguntas por UI (hoy se cubre mas facil por API).

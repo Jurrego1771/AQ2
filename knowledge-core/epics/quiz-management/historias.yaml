@@ -1,0 +1,51 @@
+# Historias de Usuario - Epic Quiz Management
+# Solo intencion: US + AC. Los vinculos a tests/riesgos los declara el test
+# (tests.yaml -> refs) y los calcula el build. Aqui NO hay reverse-links.
+# AC ids unicos por modulo: QUIZ-AC-N.
+version: 1
+epic: "Quiz Management"
+ultima_actualizacion: '2026-07-04'
+
+stories:
+  - id: "US-016"
+    titulo: "Navegar el historial de quizzes de un Live o Media sin importar cuantos haya"
+    rol: "administrador de contenido / ad ops"
+    meta: "ver, crear y editar quizzes de un live/media con muchos registros historicos"
+    beneficio: "gestionar el historial completo sin que la pagina se vuelva lenta o inutilizable"
+    descripcion: |
+      Como administrador de contenido,
+      quiero que el historial de quizzes de un live o media se pueda paginar,
+      para poder revisar y gestionar todos los quizzes sin importar cuantos
+      se hayan creado.
+
+    acceptance_criteria:
+      - id: "QUIZ-AC-1"
+        criterio: "GET .../quizzes soporta pagination real via page/items_per_page (clamp [1,100], default 12), y modo legado (sin params) sigue funcionando hasta 200 resultados"
+      - id: "QUIZ-AC-2"
+        criterio: "El orden de clasificacion es date_created desc en live-stream y trigger_time asc en media, cada uno consistente con su propio contexto de uso"
+      - id: "QUIZ-AC-3"
+        criterio: "En media, crear o editar un quiz a menos del intervalo minimo configurado (account.ops.media.quiz_interval) de otro quiz existente se rechaza con 400; a distancia exactamente igual al intervalo se acepta"
+      - id: "QUIZ-AC-4"
+        criterio: "Los controles de paginacion de la UI (anterior/siguiente, cambiar tamano de pagina, borrar el ultimo item de una pagina) mantienen un estado consistente con el total real"
+
+    prioridad: "medium"
+    tipo: "feature"
+    dependencias:
+      - "auth (sesion iniciada)"
+      - "account.ops.media.quiz habilitado en la cuenta"
+      - "api/live-stream/:id/quizzes, api/media/:id/quizzes"
+
+    notas: |
+      Origen: mediastream/sm2#7654 (issue: sin scroll/paginacion en el
+      historial) / mediastream/sm2#8032 (PR). Verificado en vivo (2026-07-04,
+      dev): las 4 AC se cumplen. Se detecto ademas que la validacion de
+      intervalo (QUIZ-AC-3) se movio de cliente a servidor como consecuencia
+      necesaria de paginar (el cliente ya no tiene todos los quizzes en
+      memoria) -cambio no anunciado en el titulo del PR pero correcto y
+      probado exhaustivamente en los limites-.
+      Antes de esto, "Quiz Manager" figuraba como cluster pendiente en
+      modules/media/overview.md; se separo a modulo propio
+      (modules/quiz-manager/) porque aplica igual a live-stream y a media,
+      cada uno con comportamiento propio (orden, intervalo solo en media).
+      Sin tests automatizados todavia (solo exploracion manual en vivo) -ver
+      modules/quiz-manager/tests.yaml para el estado y los candidatos a TC.
