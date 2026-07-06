@@ -1,0 +1,196 @@
+# Riesgos - Modulo Live Editor. Definicion. El vinculo riesgo<-test es DERIVADO
+# (tests.yaml -> refs.mitigates); aqui NO se escribe mitigado_por_test.
+version: 1
+modulo: "live-editor"
+ultima_actualizacion: '2026-06-26'
+
+riesgos:
+  - id: "LEDT-RISK-1"
+    severidad: "medium"
+    probabilidad: "low"
+    titulo: "Endpoints del editor podrian filtrar 500 (DB CastError) ante id/body invalido"
+    descripcion: >
+      Los endpoints del editor (POST /api/editor, GET /api/editor/media/:id/job-status,
+      POST /api/editor/create-preview, GET /api/live-editor/:id) reciben ids y bodies
+      desde la UI. Un id no-ObjectId o un body incompleto podria propagar un Mongoose
+      CastError o una excepcion no controlada como 500, filtrando internals de DB
+      (mismo patron que el bug de live-stream /recording, AQ2#20). Verificado en vivo
+      (dev v7.0.67): el contrato es robusto -> responde 400/404 segun el caso, sin 500.
+      Notese que job-status devuelve 404 por la rama "else" (ignora el error e), y un
+      ObjectId valido sin jobs devuelve 200 con lista vacia: comportamiento defendible
+      a proteger contra regresiones.
+    detonador:
+      - "Id no-ObjectId en la ruta (job-status, datos del editor)"
+      - "Objeto de video inexistente o de tipo no soportado en create"
+      - "Body de create-preview sin id/type/meta_id"
+    mitigacion: >
+      Los handlers validan la entrada y responden con codigos de estado explicitos
+      (400 INVALID_VIDEO_OBJECT / BAD_REQUEST, 404 INVALID_MEDIA / NOT_FOUND) en lugar
+      de propagar el error. Cubierto por la suite de contrato LEDT-TC-1..6.
+    archivos_afectados:
+      - "src/server/routes/api/editor/create.js"
+      - "src/server/routes/api/editor/job_status.js"
+      - "src/server/routes/api/editor/create_preview.js"
+      - "src/server/routes/live-editor/detail.js"
+    defectos_relacionados: []
+    prioridad_prueba: "SHOULD"
+    nota_industria: >
+      Patron hermano del bug AQ2#20 (live-stream /recording 500 por CastError). El
+      editor lo maneja correctamente; estos tests protegen ese comportamiento ante
+      regresiones. Ref: OWASP API3:2023 (Broken Object Property / error handling).
+
+  - id: "LEDT-RISK-2"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "Controles de zoom sin nombre accesible ni foco por teclado"
+    descripcion: >
+      Los controles de zoom del timeline (zoomIn/zoomOut) son <div class="glyphicon">
+      sin title/aria-label/role ni tabindex: no tienen nombre accesible y quedan fuera
+      del orden de tabulacion. Un usuario de lector de pantalla o que navega por teclado
+      no puede identificarlos ni activarlos. El resto de la toolbar SI expone nombre via
+      title. Verificado en vivo (dev v7.0.67).
+    detonador:
+      - "Navegacion por teclado (Tab) en el editor"
+      - "Uso de lector de pantalla sobre la toolbar del timeline"
+    mitigacion: >
+      Agregar title/aria-label ("Zoom in"/"Zoom out"), role="button" y foco por teclado
+      a zoomIn/zoomOut. Cubierto como prueba viva por LEDT-TC-7 (test.fail, rojo esperado).
+    archivos_afectados:
+      - "views/live_editor_detail.coffee"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#29"
+    prioridad_prueba: "COULD"
+    nota_industria: >
+      WCAG 2.1 — 4.1.2 Name, Role, Value (A); 2.1.1 Keyboard (A).
+
+  - id: "LEDT-RISK-3"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "Typo en etiqueta de la toolbar: 'Move selection rigth'"
+    descripcion: >
+      El control move-forward tiene title="Move selection rigth" (debe ser "right").
+      Su par move-backward esta bien escrito ("Move selection left"). Afecta la
+      claridad/profesionalismo del tooltip. Verificado en vivo (dev v7.0.67).
+    detonador:
+      - "Hover sobre move-forward en la toolbar del timeline"
+    mitigacion: >
+      Corregir el title a "Move selection right". Cubierto como prueba viva por
+      LEDT-TC-8 (test.fail, rojo esperado).
+    archivos_afectados:
+      - "views/live_editor_detail.coffee"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#30"
+    prioridad_prueba: "COULD"
+    nota_industria: >
+      Nielsen #2 (correspondencia con el mundo real / lenguaje correcto).
+
+  - id: "LEDT-RISK-5"
+    severidad: "medium"
+    probabilidad: "medium"
+    titulo: "POST /api/dvr no valida duracion ni inicio/fin del clip (validacion anulada)"
+    descripcion: >
+      La funcion cutDurations en routes/api/dvr/create.js tiene la guarda invertida
+      (`if (!query?.end || query?.start)`) y ademas hace `return` dentro de un forEach
+      (que solo sale del callback, no de la funcion). Efecto combinado: para toda URL
+      de clip real (que siempre lleva `start`) se salta la acumulacion de duracion ->
+      totalDuration queda en 0 -> el chequeo `totalDuration <= MAX_DURATION` siempre
+      pasa. Resultado: el limite MAX_DURATION_HOURS (10h en dev) NO se aplica y el
+      error CUT_MEDIA_MUST_HAVE_BEGIN_AND_END nunca se emite. Verificado en vivo: 4
+      payloads invalidos (clip 24h, sin start, sin end, sin querystring) devolvieron
+      200 y crearon media. Las media de prueba creadas se borraron tras verificar.
+    detonador:
+      - "POST /api/dvr/:id con clip cuya duracion excede MAX_DURATION_HOURS"
+      - "POST /api/dvr/:id con URL de clip sin start o sin end"
+    mitigacion: >
+      Corregir la guarda a `if (!query?.end || !query?.start)` y reemplazar el forEach
+      por un for...of / some() que corte cutDurations al primer clip invalido. Cubierto
+      como prueba viva por LEDT-TC-10 (test.fail, rojo esperado; crea+limpia 1 media).
+    archivos_afectados:
+      - "src/server/routes/api/dvr/create.js"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#32"
+    prioridad_prueba: "MUST"
+    nota_industria: >
+      OWASP API8:2023 (validacion de entrada del lado servidor / defensa en
+      profundidad). Dead code + condicion invertida.
+
+  - id: "LEDT-RISK-6"
+    severidad: "low"
+    probabilidad: "low"
+    titulo: "Codigo de depuracion en produccion: tecla '<' abre editMedia con mediaId hardcodeado"
+    descripcion: >
+      El handler keydown del editor tiene un case 188 ('<') que invoca
+      editMedia('5a08dad51ea95c138e831437') simulando un job completado. No esta
+      detras de ningun flag (is_dev/is_qa). En cualquier cuenta/entorno, pulsar '<'
+      abre la vista de edicion de un media ajeno (o un estado roto si no existe).
+      Debug code enviado al bundle de produccion.
+    detonador:
+      - "Pulsar la tecla '<' (Shift+,) con el foco fuera de un input"
+    mitigacion: >
+      Eliminar el case 188 del handler keydown o gatearlo tras window.SM.is_dev.
+      SIN test vivo: disparar el atajo cargaria un media ajeno en la UI -> GAP
+      (se documenta el riesgo; el build lo reporta sin test que lo mitigue).
+    archivos_afectados:
+      - "src/client/live_editor/detail.coffee"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#33"
+    prioridad_prueba: "COULD"
+    nota_industria: >
+      Buenas practicas de release: no enviar debug/test hooks a produccion.
+
+  - id: "LEDT-RISK-4"
+    severidad: "low"
+    probabilidad: "medium"
+    titulo: "Pluralizacion incorrecta de retencion ('1 hours') por redondeo en el borde"
+    descripcion: >
+      El label de retencion muestra "Retention: 1 hours" cuando el buffer esta apenas
+      por encima de 60 min: el numero se redondea (Math.round(retHours)=1) pero la unidad
+      se decide con el valor sin redondear (retHours>1 -> 'hours'). Inconsistencia
+      numero/plural. Verificado en vivo: audio "Radio QA" muestra "1 hours", video
+      "Live Dai QA" muestra "1 hour".
+    detonador:
+      - "Buffer DVR con retHours en (1, 1.5) -> redondea a 1 pero usa plural"
+    mitigacion: >
+      Decidir la unidad sobre el valor ya redondeado (currentInterval.time > 1).
+      SIN test vivo: reproducir el borde depende del buffer DVR -> GAP de cobertura
+      (el build lo reporta como riesgo sin test que lo mitigue).
+    archivos_afectados:
+      - "src/client/live_editor/detail.coffee"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#31"
+    prioridad_prueba: "COULD"
+    nota_industria: >
+      Nielsen #2 (correspondencia con el mundo real). Severidad baja.
+
+  - id: "LEDT-RISK-7"
+    severidad: "low"
+    probabilidad: "medium"
+    titulo: "'New Media' crea media de inmediato sin confirmacion y 'Back' no la elimina (media huerfana)"
+    descripcion: >
+      Los botones "New Media" / "New Media With Template" del editor disparan
+      POST /api/dvr/:id y crean+persisten una media real con un solo click, sin
+      confirmacion. El "Back" del form de metadata (marca dvr-media-back-without-save)
+      solo descarta los cambios de METADATA, no la media: tras pulsarlo la media sigue
+      existiendo (GET /api/media/:id -> 200, transcodificada). No hay forma de abortar
+      la creacion desde el editor -> media huerfana en la libreria + cuota de
+      transcoding consumida por cada creacion abandonada. Verificado en vivo (dev
+      v7.0.67): mediaId 6a3ec82a... persistio tras Back; las media de prueba se
+      borraron con DELETE /api/media/:id tras verificar.
+    detonador:
+      - "Click en 'New Media' para ver el form y luego 'Back' (sin guardar)"
+    mitigacion: >
+      Pedir confirmacion antes de crear, o que 'Back' (sin guardar) elimine la media
+      recien creada, o aclarar que 'New Media' commitea la creacion. SIN test vivo:
+      el remedio es abierto y un test UI crearia+transcodificaria media por corrida
+      (pesado) y quedaria acoplado a un remedio concreto -> GAP (se documenta el
+      riesgo; el build lo reporta sin test que lo mitigue).
+    archivos_afectados:
+      - "src/client/live_editor/detail.coffee"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#34"
+    prioridad_prueba: "COULD"
+    nota_industria: >
+      Nielsen #3 (control y libertad del usuario / deshacer) y #5 (prevencion de
+      errores). Comportamiento "crear-luego-editar" intencional; el hallazgo es la
+      falta de confirmacion/undo, no la inmediatez en si. Severidad baja (media nace
+      despublicada, iniciada por el usuario, borrable).

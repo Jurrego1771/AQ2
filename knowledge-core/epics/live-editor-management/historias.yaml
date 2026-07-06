@@ -1,0 +1,129 @@
+# Historias de Usuario - Epic Live Editor Management
+# Solo intencion: US + AC. Los vinculos a tests/riesgos los declara el test
+# (tests.yaml -> refs) y los calcula el build. Aqui NO hay reverse-links.
+# AC ids unicos por modulo: LEDT-AC-N.
+version: 1
+epic: "Live Editor Management"
+ultima_actualizacion: '2026-06-26'
+
+stories:
+  - id: "US-022"
+    titulo: "Operar el contrato de endpoints del Live Editor con entradas robustas"
+    rol: "administrador de contenido"
+    meta: "cortar clips del DVR de un evento en vivo y generarlos como media"
+    beneficio: "producir clips y media desde una senal en vivo sin errores de plataforma"
+    descripcion: |
+      Como administrador de contenido,
+      quiero que los endpoints del editor (crear clip, estado de job, preview, datos
+      del editor) validen sus entradas y respondan con codigos de estado correctos,
+      para operar el editor sin que un id o body invalido filtre un 500 de servidor.
+
+    acceptance_criteria:
+      - id: "LEDT-AC-1"
+        criterio: "Crear un clip con objeto de video invalido (media inexistente o tipo no soportado) responde 400 INVALID_VIDEO_OBJECT, sin crear media ni 500"
+      - id: "LEDT-AC-2"
+        criterio: "El estado de job trata un id no-ObjectId como 404 INVALID_MEDIA (no 500) y un ObjectId valido sin jobs responde 200 con lista vacia"
+      - id: "LEDT-AC-3"
+        criterio: "Generar un preview sin los campos requeridos (id/type/meta_id) responde 400 BAD_REQUEST"
+      - id: "LEDT-AC-4"
+        criterio: "El endpoint de datos del editor trata un id invalido como 404 NOT_FOUND"
+      - id: "LEDT-AC-7"
+        criterio: "Crear media (POST /api/dvr) desde un clip que excede MAX_DURATION_HOURS o con URL sin inicio/fin es rechazado con 400, sin crear media"
+
+    prioridad: "high"
+    tipo: "feature"
+    dependencias:
+      - "auth (sesion iniciada)"
+      - "api/editor"
+      - "api/live-editor"
+      - "api/dvr (crear media desde clip)"
+      - "cuenta con cdn_zone + evento con DVR retention"
+
+    notas: |
+      Verificado en vivo (dev v7.0.67) sobre el live de video "Live Dai QA"
+      (6a15a4e5a23b8b92586beb63). El contrato del family /api/editor es robusto:
+      ningun id/body invalido filtra un 500 (contraste con live-stream /recording,
+      bug AQ2#20). LEDT-AC-1..4 en verde (LEDT-TC-1..6). En cambio, el endpoint que
+      el editor usa REALMENTE para crear media es POST /api/dvr/:id (no /api/editor),
+      y su validacion de duracion esta anulada: LEDT-AC-7 en rojo (LEDT-TC-10,
+      test.fail AQ2#32). Los flujos de UI del editor (navegacion del DVR,
+      seleccion+corte de clip, lista de clips) dependen de buffer DVR y se exploran
+      en una fase posterior -> GAP conocido.
+
+  - id: "US-023"
+    titulo: "Operar la toolbar del timeline del editor de forma accesible y consistente"
+    rol: "administrador de contenido"
+    meta: "navegar y manipular el DVR con controles claros, accesibles y bien etiquetados"
+    beneficio: "usar el editor con teclado/lectores de pantalla y sin etiquetas confusas"
+    descripcion: |
+      Como administrador de contenido,
+      quiero que los controles de la toolbar del timeline (zoom, mover seleccion,
+      retencion) tengan nombre accesible, foco por teclado y etiquetas correctas,
+      para operar el editor de forma accesible y sin ambiguedad.
+
+    acceptance_criteria:
+      - id: "LEDT-AC-5"
+        criterio: "Los controles de la toolbar del timeline (incluidos zoom in/out) exponen nombre accesible y son operables por teclado"
+      - id: "LEDT-AC-6"
+        criterio: "Las etiquetas de la toolbar estan bien escritas y la unidad de retencion concuerda en numero y plural"
+
+    prioridad: "low"
+    tipo: "improvement"
+    dependencias:
+      - "auth (sesion iniciada)"
+      - "cuenta con cdn_zone + evento con DVR retention"
+
+    notas: |
+      Hallazgos de exploracion (dev v7.0.67). LEDT-AC-5 en rojo (LEDT-TC-7,
+      test.fail AQ2#29: zoomIn/zoomOut <div> sin nombre accesible ni foco/tabindex,
+      WCAG 4.1.2/2.1.1). LEDT-AC-6 parcialmente en rojo: LEDT-TC-8 (test.fail
+      AQ2#30: title="Move selection rigth") y la pluralizacion "Retention: 1 hours"
+      (AQ2#31, sin test vivo: depende del borde de buffer DVR -> GAP). LEDT-TC-9
+      (verde) protege el par bien escrito move-backward "Move selection left".
+
+  - id: "US-024"
+    titulo: "Cortar clips del DVR (seleccion in/out) y gestionarlos antes de crear media"
+    rol: "administrador de contenido"
+    meta: "marcar segmentos del DVR como clips y depurarlos antes de generarlos como media"
+    beneficio: "producir recortes precisos del directo sin generar media de prueba"
+    descripcion: |
+      Como administrador de contenido,
+      quiero seleccionar un rango (cut-in/cut-out) del DVR y cortarlo como clip,
+      verlo en la lista y poder borrarlo, para preparar los recortes antes de
+      crear la media final.
+
+    acceptance_criteria:
+      - id: "LEDT-AC-8"
+        criterio: "Cortar un clip con seleccion valida lo agrega a la lista, suma su duracion y habilita 'New Media'"
+      - id: "LEDT-AC-9"
+        criterio: "Borrar un clip de la lista lo quita; sin clips, 'New Media' queda deshabilitado"
+      - id: "LEDT-AC-10"
+        criterio: "Una seleccion sin cut-in previo (o de duracion cero) no crea clip"
+      - id: "LEDT-AC-11"
+        criterio: "El editor de produccion no expone atajos de depuracion (no debe abrir media ajenos por teclado)"
+      - id: "LEDT-AC-12"
+        criterio: "Abortar la creacion de media con 'Back' (sin guardar) no debe dejar una media huerfana en la libreria"
+
+    prioridad: "high"
+    tipo: "feature"
+    dependencias:
+      - "auth (sesion iniciada)"
+      - "cuenta con cdn_zone + evento con DVR retention (buffer)"
+
+    notas: |
+      Verificado en vivo (dev v7.0.67) sobre "Live Dai QA". El flujo de corte es
+      100% client-side (sessionStorage) hasta crear media (US-022 / AC-7, /api/dvr).
+      Robusto: happy path, guarda de duracion <=0 (shine rojo), cut-out sin cut-in
+      (alerta "Please, select an input first."), seleccion invertida (intercambia,
+      duracion positiva) y corte de MULTIPLES clips (la duracion total acumula la suma)
+      funcionan. LEDT-AC-8/9/10 en verde (LEDT-TC-11/12/13: TC-13 valida la suma
+      multi-clip). LEDT-AC-11 en rojo: la tecla "<" abre editMedia con un mediaId
+      hardcodeado (AQ2#33, debug code en prod), sin test vivo (disparar editMedia
+      traeria un media ajeno) -> GAP. LEDT-AC-12 (nuevo) en rojo: "New Media" crea y
+      persiste la media de inmediato sin confirmacion y "Back" NO la elimina -> queda
+      huerfana (AQ2#34). SIN test vivo: el remedio es abierto (confirmacion vs.
+      borrar-en-Back) y un test UI seria pesado (crea+transcodifica media por corrida)
+      y acoplado a un remedio concreto -> GAP documentado (LEDT-RISK-7).
+      RETRACTADO: un "TypeError: reading 'end'" observado al conducir el corte por la
+      via interna getCutPosition() NO reproduce por la ruta UI real (date-picker+i/o/c)
+      -> era artefacto del driving sintetico, no un bug de producto.

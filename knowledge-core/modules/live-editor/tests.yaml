@@ -1,0 +1,174 @@
+# Tests - Modulo Live Editor. Definicion (sin estado de ejecucion: eso es derivado).
+# refs = FUENTE UNICA de los vinculos. El spec lleva en su titulo solo el id de
+# correlacion @LEDT-TC-N (+ la capa @api).
+version: 1
+modulo: "live-editor"
+ultima_actualizacion: '2026-06-26'
+
+tests:
+  # ---- US-022: contrato de endpoints del editor (capa API) ----
+  - id: "LEDT-TC-1"
+    titulo: "POST /api/editor con media inexistente devuelve 400 INVALID_VIDEO_OBJECT"
+    modulo: "live-editor"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LEDT-AC-1"]
+      mitigates: ["LEDT-RISK-1"]
+      story: "US-022"
+      spec: "tests/api/live-editor.api.spec.js"
+
+  - id: "LEDT-TC-2"
+    titulo: "POST /api/editor con type=live (no soportado) devuelve 400 INVALID_VIDEO_OBJECT"
+    modulo: "live-editor"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LEDT-AC-1"]
+      mitigates: ["LEDT-RISK-1"]
+      story: "US-022"
+      spec: "tests/api/live-editor.api.spec.js"
+
+  - id: "LEDT-TC-3"
+    titulo: "GET job-status con id no-ObjectId devuelve 404 INVALID_MEDIA (no 500)"
+    modulo: "live-editor"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LEDT-AC-2"]
+      mitigates: ["LEDT-RISK-1"]
+      story: "US-022"
+      spec: "tests/api/live-editor.api.spec.js"
+
+  - id: "LEDT-TC-4"
+    titulo: "GET job-status con ObjectId valido sin jobs devuelve 200 y lista vacia"
+    modulo: "live-editor"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LEDT-AC-2"]
+      mitigates: []
+      story: "US-022"
+      spec: "tests/api/live-editor.api.spec.js"
+
+  - id: "LEDT-TC-5"
+    titulo: "POST /api/editor/create-preview sin campos requeridos devuelve 400 BAD_REQUEST"
+    modulo: "live-editor"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LEDT-AC-3"]
+      mitigates: ["LEDT-RISK-1"]
+      story: "US-022"
+      spec: "tests/api/live-editor.api.spec.js"
+
+  - id: "LEDT-TC-6"
+    titulo: "GET /api/live-editor/:id con id invalido devuelve 404 NOT_FOUND"
+    modulo: "live-editor"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LEDT-AC-4"]
+      mitigates: ["LEDT-RISK-1"]
+      story: "US-022"
+      spec: "tests/api/live-editor.api.spec.js"
+
+  - id: "LEDT-TC-10"
+    titulo: "POST /api/dvr rechaza un clip que excede MAX_DURATION_HOURS [prueba viva BUG]"
+    modulo: "live-editor"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LEDT-AC-7"]
+      mitigates: ["LEDT-RISK-5"]
+      story: "US-022"
+      spec: "tests/api/live-editor.api.spec.js"
+    # test.fail() en el spec: rojo esperado hasta corregir AQ2#32. Crea 1 media por
+    # corrida (validacion anulada) y la limpia en teardown (ResourceCleaner).
+
+  # ---- US-023: toolbar del timeline (UX/a11y, capa UI) ----
+  - id: "LEDT-TC-7"
+    titulo: "Los controles de zoom exponen nombre accesible [prueba viva BUG]"
+    modulo: "live-editor"
+    tipo: "regression"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LEDT-AC-5"]
+      mitigates: ["LEDT-RISK-2"]
+      story: "US-023"
+      spec: "tests/regression/live-editor.regression.spec.js"
+    # test.fail() en el spec: rojo esperado hasta corregir AQ2#29.
+
+  - id: "LEDT-TC-8"
+    titulo: "El title de move-forward no debe tener el typo 'rigth' [prueba viva BUG]"
+    modulo: "live-editor"
+    tipo: "regression"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LEDT-AC-6"]
+      mitigates: ["LEDT-RISK-3"]
+      story: "US-023"
+      spec: "tests/regression/live-editor.regression.spec.js"
+    # test.fail() en el spec: rojo esperado hasta corregir AQ2#30.
+
+  - id: "LEDT-TC-9"
+    titulo: "move-backward expone un title correcto ('Move selection left')"
+    modulo: "live-editor"
+    tipo: "regression"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LEDT-AC-6"]
+      mitigates: []
+      story: "US-023"
+      spec: "tests/regression/live-editor.regression.spec.js"
+
+  # ---- US-024: flujo de corte de clips (capa UI, client-side) ----
+  - id: "LEDT-TC-11"
+    titulo: "Cortar un clip lo agrega a la lista y habilita New Media; borrarlo lo quita"
+    modulo: "live-editor"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LEDT-AC-8", "LEDT-AC-9"]
+      mitigates: []
+      story: "US-024"
+      spec: "tests/regression/live-editor-cut.regression.spec.js"
+    # Conduce el corte por UI real (date-picker + atajos i/o/c). Skip si el DVR
+    # no tiene buffer (player no listo). No crea media (corte = client-side).
+
+  - id: "LEDT-TC-12"
+    titulo: "cut-out sin cut-in no crea clip (guarda de seleccion)"
+    modulo: "live-editor"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LEDT-AC-10"]
+      mitigates: []
+      story: "US-024"
+      spec: "tests/regression/live-editor-cut.regression.spec.js"
+
+  - id: "LEDT-TC-13"
+    titulo: "Cortar dos clips acumula la duracion total (suma multi-clip)"
+    modulo: "live-editor"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LEDT-AC-8"]
+      mitigates: []
+      story: "US-024"
+      spec: "tests/regression/live-editor-cut.regression.spec.js"
+    # Corta 2 clips por UI real y verifica que "Main Media duration" acumula la suma.
+    # Skip si el DVR no tiene buffer. No crea media (corte = client-side).
