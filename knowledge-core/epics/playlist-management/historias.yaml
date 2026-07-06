@@ -1,0 +1,71 @@
+# Historias de Usuario - Epic Playlist Management
+# Solo intencion: US + AC. Los vinculos a tests/riesgos los declara el test
+# (tests.yaml -> refs) y los calcula el build. Aqui NO hay reverse-links.
+# AC ids unicos por modulo: PLST-AC-N.
+version: 1
+epic: "Playlist Management"
+ultima_actualizacion: '2026-07-06'
+
+stories:
+  - id: "US-025"
+    titulo: "Crear, consultar y eliminar playlists vía API"
+    rol: "administrador de contenido"
+    meta: "agrupar medias en playlists (manual/smart/series/playout) mediante el contrato /api/playlist"
+    beneficio: "organizar el catálogo en colecciones reutilizables por el player sin operar item por item"
+    descripcion: |
+      Como administrador de contenido,
+      quiero crear, leer y borrar playlists a través de la API,
+      para armar y mantener colecciones de medias de forma programática y consistente.
+
+    acceptance_criteria:
+      - id: "PLST-AC-1"
+        criterio: "POST /api/playlist con un nombre válido crea la playlist y responde 200 con _id y type"
+      - id: "PLST-AC-2"
+        criterio: "El detalle (GET ?all=true) expone rules{manual,smart,series,playout} y el bloque access_rules"
+      - id: "PLST-AC-3"
+        criterio: "DELETE /api/playlist/:id elimina la playlist y responde 200 OK; el detalle deja de resolver"
+      - id: "PLST-AC-4"
+        criterio: "Crear una playlist sin nombre se rechaza con una validación 400, no con un 500 de servidor"
+
+    prioridad: "high"
+    tipo: "feature"
+    dependencias:
+      - "auth (sesion iniciada)"
+      - "api/playlist"
+
+    notas: |
+      Verificado en vivo (dev v7.0.70): el envelope es {status:'OK'|'ERROR', data}. El
+      body se acepta como JSON y como form-urlencoded. Happy-path sólido (crear/leer/
+      borrar = 200). PLST-AC-4 es un GAP conocido: crear sin nombre devuelve
+      500 {data:'DB_ERROR'} en vez de 400 (bug Jurrego1771/AQ2#36).
+
+  - id: "US-026"
+    titulo: "Acceder al form de playlist y al panel de playlists desde Media"
+    rol: "administrador de contenido"
+    meta: "abrir el editor de playlist y ver el listado de playlists integrado en el módulo Media"
+    beneficio: "operar playlists desde el mismo lugar donde se gestiona el contenido, sin rutas rotas"
+    descripcion: |
+      Como administrador de contenido,
+      quiero abrir el form de playlist y ver el panel de playlists en /media,
+      para crear y localizar colecciones sin salir del flujo de gestión de medios.
+
+    acceptance_criteria:
+      - id: "PLST-AC-5"
+        criterio: "El form /playlist/new renderiza el selector de tipo (manual/smart/series/playout) y las acciones save/delete"
+      - id: "PLST-AC-6"
+        criterio: "El panel de Playlists ([sm=playlist-list]) está disponible dentro de /media"
+      - id: "PLST-AC-7"
+        criterio: "La ruta /playlist (y el breadcrumb 'Playlist') resuelve a una vista válida, no a un 404"
+
+    prioridad: "medium"
+    tipo: "feature"
+    dependencias:
+      - "auth (sesion iniciada)"
+      - "modulo media (el panel de playlists vive en /media)"
+
+    notas: |
+      Playlist NO es un módulo top-level: no existe ruta de listado propia. El form
+      vive en /playlist/:id (:id='new' para crear) y el listado es el panel lateral
+      [sm=playlist-list] dentro de /media. PLST-AC-7 es un GAP conocido: /playlist
+      devuelve 404 (bug #37). Los campos de captura del form no tienen marcas sm:
+      (bug #38), por eso la cobertura UI es estructural.

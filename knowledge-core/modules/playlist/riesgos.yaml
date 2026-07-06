@@ -1,0 +1,109 @@
+# Riesgos - Modulo Playlist. Definicion. El vinculo riesgo<-test es DERIVADO
+# (tests.yaml -> refs.mitigates); aqui NO se escribe mitigado_por_test.
+version: 1
+modulo: "playlist"
+ultima_actualizacion: '2026-07-06'
+
+riesgos:
+  - id: "PLST-RISK-1"
+    severidad: "medium"
+    probabilidad: "high"
+    titulo: "Crear playlist sin nombre revienta el backend con 500 DB_ERROR (sin validación)"
+    descripcion: >
+      POST /api/playlist no valida el campo requerido `name` ni en cliente ni en
+      servidor: con nombre vacío intenta persistir y falla a nivel de BD, respondiendo
+      500 {status:'ERROR',data:'DB_ERROR'} en lugar de un 400 de validación. La UI
+      muestra un toast genérico "There was a server error... Please try again", que es
+      engañoso porque reintentar nunca resuelve la causa (dato faltante). Verificado en
+      vivo (dev v7.0.70) por JSON y por form-urlencoded.
+    detonador:
+      - "Submit del form /playlist/new con Name vacío"
+      - "POST /api/playlist con name='' (o sin name)"
+    mitigacion: >
+      Validar el campo requerido en cliente (bloquear submit) y en servidor devolver
+      400 con un error de validación semántico en vez de propagar el fallo de BD.
+      Cubierto como prueba viva por PLST-TC-4 (test.fail hasta corregir #36).
+    archivos_afectados:
+      - "src/pages/playlist.page.js"
+      - "src/api/playlist.client.js"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#36"
+    prioridad_prueba: "MUST"
+    nota_industria: >
+      Un error de validación debe ser 4xx, no 5xx (contrato REST). Ref: OWASP
+      API8:2023 (Security Misconfiguration) y buenas prácticas de manejo de errores.
+
+  - id: "PLST-RISK-2"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "Breadcrumb y ruta /playlist devuelven 404 (back-link roto)"
+    descripcion: >
+      El breadcrumb "Playlist" del form de crear/editar enlaza a /playlist, ruta que
+      devuelve una página 404 ("Look like you're lost"). El listado real vive en el
+      panel [sm=playlist-list] de /media, no en /playlist. El usuario que pulsa "volver"
+      cae en un callejón sin salida. Verificado en vivo (dev v7.0.70): /playlist
+      renderiza 0 marcas sm:.
+    detonador:
+      - "Click en el breadcrumb 'Playlist' desde /playlist/:id"
+      - "Navegación directa a /playlist"
+    mitigacion: >
+      Hacer que el breadcrumb apunte a una ruta válida (p.ej. /media con el panel de
+      playlists) o que /playlist redirija al listado. Cubierto como prueba viva por
+      PLST-TC-7 (test.fail hasta corregir #37).
+    archivos_afectados:
+      - "src/pages/playlist.page.js"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#37"
+    prioridad_prueba: "SHOULD"
+    nota_industria: >
+      Nielsen #3 (control y libertad del usuario) y #1 (visibilidad del estado): un
+      breadcrumb debe llevar siempre a una vista existente.
+
+  - id: "PLST-RISK-3"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "Form de playlist sin marcas sm: -> cobertura UI limitada a lo estructural"
+    descripcion: >
+      Los campos de captura del form (Name, Description, Slug, Categories y todas las
+      reglas del tipo Smart) y cada ítem del panel [sm=playlist-list] no exponen marca
+      sm:. Como la política AQ2 obliga a selectores sm: en los Page Objects, la
+      automatización UI del flujo de captura de datos no es viable de forma robusta:
+      solo se pueden asertar contenedores/acciones (tipo, save/delete, panel).
+    detonador:
+      - "Escribir specs UI que interactúen con Name/Description/Slug o reglas Smart"
+    mitigacion: >
+      Agregar marcas sm: estables a los inputs del form y a cada ítem de playlist.
+      Sin fix, la cobertura se apoya en el contrato de API (PLST-TC-1..4) y en
+      aserciones estructurales (PLST-TC-5..6). GAP consciente: sin test que lo mitigue.
+    archivos_afectados:
+      - "src/pages/playlist.page.js"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#38"
+    prioridad_prueba: "COULD"
+    nota_industria: >
+      Testabilidad: sin selectores estables el front acopla los tests a texto/DOM
+      frágil. La marca sm: es el contrato de QA del proyecto.
+
+  - id: "PLST-RISK-4"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "Acumulación de playlists huérfanas de prueba (sin limpieza ni borrado masivo)"
+    descripcion: >
+      El panel de playlists en dev acumula decenas de artefactos de corridas previas
+      ([QA-AUTO] PL-Manual..., Investigation Playlist..., PL ...) sin limpiar. No hay
+      una vista de listado ni acción de borrado masivo de playlists en la UI, lo que
+      dificulta la higiene de datos y ensucia el panel para el resto del equipo.
+    detonador:
+      - "Corridas automatizadas / exploraciones que crean playlists y no las borran"
+    mitigacion: >
+      Provisioning self-contained con teardown (ResourceCleaner registra 'playlist' y
+      borra por DELETE /api/playlist/:id). A nivel producto, considerar una vista de
+      listado con borrado múltiple. GAP consciente: sin test dedicado (no es defecto
+      de producto sino de higiene/operación).
+    archivos_afectados:
+      - "src/fixtures/resource-cleaner.js"
+    defectos_relacionados: []
+    prioridad_prueba: "COULD"
+    nota_industria: >
+      Higiene de datos de prueba: los tests que escriben deben limpiar lo que crean
+      (idempotente, best-effort) para no contaminar el entorno compartido.

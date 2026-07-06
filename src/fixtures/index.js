@@ -5,9 +5,11 @@ const { MediaDetailPage } = require('../pages/media-detail.page');
 const { LiveStreamPage } = require('../pages/live-stream.page');
 const { ShowPage } = require('../pages/show.page');
 const { LiveEditorPage } = require('../pages/live-editor.page');
+const { PlaylistPage } = require('../pages/playlist.page');
 const { MediaClient } = require('../api/media.client');
 const { LiveStreamClient } = require('../api/live-stream.client');
 const { EditorClient, LiveEditorClient, DvrClient } = require('../api/live-editor.client');
+const { PlaylistClient } = require('../api/playlist.client');
 const { ResourceCleaner } = require('./resource-cleaner');
 const { createTranscodedMedia } = require('../api/media-factory');
 const { createLiveStream } = require('../api/live-stream-factory');
@@ -51,6 +53,11 @@ const test = base.test.extend({
     await use(new LiveEditorPage(page));
   },
 
+  // Page Object del form de playlist + panel de playlists en /media
+  playlistPage: async ({ page }, use) => {
+    await use(new PlaylistPage(page));
+  },
+
   // APIRequestContext autenticado por SESIÓN (cookies del storageState del
   // login). Autoriza /api/media igual que la app, sin token aparte.
   api: async ({ playwright }, use) => {
@@ -88,6 +95,11 @@ const test = base.test.extend({
   // Creación de media desde el DVR (/api/dvr/:id).
   dvrClient: async ({ api }, use) => {
     await use(new DvrClient(api));
+  },
+
+  // Contrato de playlists (/api/playlist).
+  playlistClient: async ({ api }, use) => {
+    await use(new PlaylistClient(api));
   },
 
   // Live-stream REAL self-contained: lo crea por API y lo borra al terminar

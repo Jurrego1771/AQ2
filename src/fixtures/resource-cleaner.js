@@ -17,6 +17,7 @@ const PASS_DELAY_MS = 500
 const DELETERS = {
   media: (api, id) => api.delete(`/api/media/${id}`),
   'live-stream': (api, id) => api.delete(`/api/live-stream/${id}`),
+  playlist: (api, id) => api.delete(`/api/playlist/${id}`),
 }
 
 class ResourceCleaner {

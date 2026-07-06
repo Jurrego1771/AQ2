@@ -1,0 +1,93 @@
+# Tests - Modulo Playlist. Definicion (sin estado de ejecucion: eso es derivado).
+# refs = FUENTE UNICA de los vinculos. El spec lleva en su titulo solo el id de
+# correlacion @PLST-TC-N (+ la capa @api/@regression).
+version: 1
+modulo: "playlist"
+ultima_actualizacion: '2026-07-06'
+
+tests:
+  # ---- US-025: contrato de /api/playlist (capa API) ----
+  - id: "PLST-TC-1"
+    titulo: "POST /api/playlist con nombre válido crea playlist manual (200, _id, type)"
+    modulo: "playlist"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["PLST-AC-1"]
+      mitigates: []
+      story: "US-025"
+      spec: "tests/api/playlist.api.spec.js"
+
+  - id: "PLST-TC-2"
+    titulo: "GET /api/playlist/:id?all=true expone rules{manual,smart,series,playout} y access_rules"
+    modulo: "playlist"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["PLST-AC-2"]
+      mitigates: []
+      story: "US-025"
+      spec: "tests/api/playlist.api.spec.js"
+
+  - id: "PLST-TC-3"
+    titulo: "DELETE /api/playlist/:id elimina la playlist y responde 200 OK"
+    modulo: "playlist"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["PLST-AC-3"]
+      mitigates: []
+      story: "US-025"
+      spec: "tests/api/playlist.api.spec.js"
+
+  - id: "PLST-TC-4"
+    titulo: "POST /api/playlist con nombre vacío debe responder 400, no 500 [BUG #36]"
+    modulo: "playlist"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["PLST-AC-4"]
+      mitigates: ["PLST-RISK-1"]
+      story: "US-025"
+      spec: "tests/api/playlist.api.spec.js"
+
+  # ---- US-026: form y navegación (capa UI) ----
+  - id: "PLST-TC-5"
+    titulo: "El form /playlist/new renderiza el selector de tipo y las acciones save/delete"
+    modulo: "playlist"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["PLST-AC-5"]
+      mitigates: []
+      story: "US-026"
+      spec: "tests/regression/playlist.regression.spec.js"
+
+  - id: "PLST-TC-6"
+    titulo: "El panel de Playlists está disponible en /media"
+    modulo: "playlist"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["PLST-AC-6"]
+      mitigates: []
+      story: "US-026"
+      spec: "tests/regression/playlist.regression.spec.js"
+
+  - id: "PLST-TC-7"
+    titulo: "La ruta /playlist debe resolver a una vista válida, no a un 404 [BUG #37]"
+    modulo: "playlist"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["PLST-AC-7"]
+      mitigates: ["PLST-RISK-2"]
+      story: "US-026"
+      spec: "tests/regression/playlist.regression.spec.js"
