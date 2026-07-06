@@ -7,7 +7,7 @@ epic: "Live Editor Management"
 ultima_actualizacion: '2026-06-26'
 
 stories:
-  - id: "US-016"
+  - id: "US-022"
     titulo: "Operar el contrato de endpoints del Live Editor con entradas robustas"
     rol: "administrador de contenido"
     meta: "cortar clips del DVR de un evento en vivo y generarlos como media"
@@ -50,7 +50,7 @@ stories:
       seleccion+corte de clip, lista de clips) dependen de buffer DVR y se exploran
       en una fase posterior -> GAP conocido.
 
-  - id: "US-017"
+  - id: "US-023"
     titulo: "Operar la toolbar del timeline del editor de forma accesible y consistente"
     rol: "administrador de contenido"
     meta: "navegar y manipular el DVR con controles claros, accesibles y bien etiquetados"
@@ -81,7 +81,7 @@ stories:
       (AQ2#31, sin test vivo: depende del borde de buffer DVR -> GAP). LEDT-TC-9
       (verde) protege el par bien escrito move-backward "Move selection left".
 
-  - id: "US-018"
+  - id: "US-024"
     titulo: "Cortar clips del DVR (seleccion in/out) y gestionarlos antes de crear media"
     rol: "administrador de contenido"
     meta: "marcar segmentos del DVR como clips y depurarlos antes de generarlos como media"
@@ -112,7 +112,7 @@ stories:
 
     notas: |
       Verificado en vivo (dev v7.0.67) sobre "Live Dai QA". El flujo de corte es
-      100% client-side (sessionStorage) hasta crear media (US-016 / AC-7, /api/dvr).
+      100% client-side (sessionStorage) hasta crear media (US-022 / AC-7, /api/dvr).
       Robusto: happy path, guarda de duracion <=0 (shine rojo), cut-out sin cut-in
       (alerta "Please, select an input first."), seleccion invertida (intercambia,
       duracion positiva) y corte de MULTIPLES clips (la duracion total acumula la suma)

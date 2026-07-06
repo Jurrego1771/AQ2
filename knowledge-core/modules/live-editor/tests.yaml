@@ -6,7 +6,7 @@ modulo: "live-editor"
 ultima_actualizacion: '2026-06-26'
 
 tests:
-  # ---- US-016: contrato de endpoints del editor (capa API) ----
+  # ---- US-022: contrato de endpoints del editor (capa API) ----
   - id: "LEDT-TC-1"
     titulo: "POST /api/editor con media inexistente devuelve 400 INVALID_VIDEO_OBJECT"
     modulo: "live-editor"
@@ -16,7 +16,7 @@ tests:
     refs:
       validates: ["LEDT-AC-1"]
       mitigates: ["LEDT-RISK-1"]
-      story: "US-016"
+      story: "US-022"
       spec: "tests/api/live-editor.api.spec.js"
 
   - id: "LEDT-TC-2"
@@ -28,7 +28,7 @@ tests:
     refs:
       validates: ["LEDT-AC-1"]
       mitigates: ["LEDT-RISK-1"]
-      story: "US-016"
+      story: "US-022"
       spec: "tests/api/live-editor.api.spec.js"
 
   - id: "LEDT-TC-3"
@@ -40,7 +40,7 @@ tests:
     refs:
       validates: ["LEDT-AC-2"]
       mitigates: ["LEDT-RISK-1"]
-      story: "US-016"
+      story: "US-022"
       spec: "tests/api/live-editor.api.spec.js"
 
   - id: "LEDT-TC-4"
@@ -52,7 +52,7 @@ tests:
     refs:
       validates: ["LEDT-AC-2"]
       mitigates: []
-      story: "US-016"
+      story: "US-022"
       spec: "tests/api/live-editor.api.spec.js"
 
   - id: "LEDT-TC-5"
@@ -64,7 +64,7 @@ tests:
     refs:
       validates: ["LEDT-AC-3"]
       mitigates: ["LEDT-RISK-1"]
-      story: "US-016"
+      story: "US-022"
       spec: "tests/api/live-editor.api.spec.js"
 
   - id: "LEDT-TC-6"
@@ -76,7 +76,7 @@ tests:
     refs:
       validates: ["LEDT-AC-4"]
       mitigates: ["LEDT-RISK-1"]
-      story: "US-016"
+      story: "US-022"
       spec: "tests/api/live-editor.api.spec.js"
 
   - id: "LEDT-TC-10"
@@ -88,12 +88,12 @@ tests:
     refs:
       validates: ["LEDT-AC-7"]
       mitigates: ["LEDT-RISK-5"]
-      story: "US-016"
+      story: "US-022"
       spec: "tests/api/live-editor.api.spec.js"
     # test.fail() en el spec: rojo esperado hasta corregir AQ2#32. Crea 1 media por
     # corrida (validacion anulada) y la limpia en teardown (ResourceCleaner).
 
-  # ---- US-017: toolbar del timeline (UX/a11y, capa UI) ----
+  # ---- US-023: toolbar del timeline (UX/a11y, capa UI) ----
   - id: "LEDT-TC-7"
     titulo: "Los controles de zoom exponen nombre accesible [prueba viva BUG]"
     modulo: "live-editor"
@@ -103,7 +103,7 @@ tests:
     refs:
       validates: ["LEDT-AC-5"]
       mitigates: ["LEDT-RISK-2"]
-      story: "US-017"
+      story: "US-023"
       spec: "tests/regression/live-editor.regression.spec.js"
     # test.fail() en el spec: rojo esperado hasta corregir AQ2#29.
 
@@ -116,7 +116,7 @@ tests:
     refs:
       validates: ["LEDT-AC-6"]
       mitigates: ["LEDT-RISK-3"]
-      story: "US-017"
+      story: "US-023"
       spec: "tests/regression/live-editor.regression.spec.js"
     # test.fail() en el spec: rojo esperado hasta corregir AQ2#30.
 
@@ -129,10 +129,10 @@ tests:
     refs:
       validates: ["LEDT-AC-6"]
       mitigates: []
-      story: "US-017"
+      story: "US-023"
       spec: "tests/regression/live-editor.regression.spec.js"
 
-  # ---- US-018: flujo de corte de clips (capa UI, client-side) ----
+  # ---- US-024: flujo de corte de clips (capa UI, client-side) ----
   - id: "LEDT-TC-11"
     titulo: "Cortar un clip lo agrega a la lista y habilita New Media; borrarlo lo quita"
     modulo: "live-editor"
@@ -142,7 +142,7 @@ tests:
     refs:
       validates: ["LEDT-AC-8", "LEDT-AC-9"]
       mitigates: []
-      story: "US-018"
+      story: "US-024"
       spec: "tests/regression/live-editor-cut.regression.spec.js"
     # Conduce el corte por UI real (date-picker + atajos i/o/c). Skip si el DVR
     # no tiene buffer (player no listo). No crea media (corte = client-side).
@@ -156,7 +156,7 @@ tests:
     refs:
       validates: ["LEDT-AC-10"]
       mitigates: []
-      story: "US-018"
+      story: "US-024"
       spec: "tests/regression/live-editor-cut.regression.spec.js"
 
   - id: "LEDT-TC-13"
@@ -168,7 +168,7 @@ tests:
     refs:
       validates: ["LEDT-AC-8"]
       mitigates: []
-      story: "US-018"
+      story: "US-024"
       spec: "tests/regression/live-editor-cut.regression.spec.js"
     # Corta 2 clips por UI real y verifica que "Main Media duration" acumula la suma.
     # Skip si el DVR no tiene buffer. No crea media (corte = client-side).
