@@ -1,0 +1,170 @@
+/* qa-report — estilos del informe HTML, optimizados para LECTURA y exportación a PDF.
+   Documento tipo A4, tipografía amplia, evidencias grandes, sin JS. Sin fuentes/CDN. */
+:root {
+  --ink: #1f2933;
+  --soft: #4a5568;
+  --faint: #8a95a5;
+  --line: #e3e8ef;
+  --line-strong: #cbd5e1;
+  --surface: #ffffff;
+  --surface-2: #f6f8fb;
+  --accent: #2f54eb;
+  --accent-ink: #1d39c4;
+
+  --pass: #2f9e44;
+  --fail: #e03131;
+  --skip: #868e96;
+  --xfail: #f08c00;
+
+  --sev-critical: #c92a2a;
+  --sev-high: #e8590c;
+  --sev-medium: #f08c00;
+  --sev-low: #1c7ed6;
+  --sev-info: #868e96;
+
+  --mono: "Cascadia Code", "JetBrains Mono", Consolas, "Liberation Mono", monospace;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: #eef1f6;
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.62;
+}
+/* "Hoja" centrada en pantalla; en PDF ocupa la página completa (ver @page). */
+.page {
+  max-width: 820px;
+  margin: 24px auto;
+  background: var(--surface);
+  padding: 48px 56px 56px;
+  border-radius: 6px;
+  box-shadow: 0 2px 18px rgba(31, 41, 51, .08);
+}
+a { color: var(--accent); }
+p { margin: 0 0 12px; }
+code { font-family: var(--mono); font-size: .87em; background: var(--surface-2);
+  border: 1px solid var(--line); border-radius: 4px; padding: .05em .38em; }
+
+/* ---------- encabezado ---------- */
+.doc-head { border-bottom: 3px solid var(--accent); padding-bottom: 18px; margin-bottom: 6px; }
+.doc-head .kicker { font-size: .76rem; font-weight: 700; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+.doc-head h1 { margin: 0; font-size: 1.85rem; line-height: 1.2; letter-spacing: -.01em; }
+.doc-head .sub { color: var(--soft); margin-top: 6px; font-size: 1rem; }
+.meta-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: .9rem; }
+.meta-table td { padding: 7px 12px; border: 1px solid var(--line); }
+.meta-table td.k { background: var(--surface-2); color: var(--faint); font-weight: 600;
+  white-space: nowrap; width: 1%; text-transform: uppercase; font-size: .72rem; letter-spacing: .04em; }
+
+/* ---------- secciones ---------- */
+section { margin-top: 34px; }
+section > h2 { font-size: 1.25rem; margin: 0 0 14px; padding-bottom: 8px;
+  border-bottom: 2px solid var(--line); break-after: avoid; }
+section > h2 .count { font-size: .8rem; color: var(--faint); font-weight: 500; }
+
+/* ---------- resumen ---------- */
+.stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 16px; }
+.stat { border: 1px solid var(--line); border-radius: 8px; padding: 12px 10px; text-align: center; }
+.stat .n { font-size: 1.7rem; font-weight: 700; line-height: 1; }
+.stat .l { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: var(--faint); margin-top: 5px; }
+.stat.total { background: var(--surface-2); }
+.stat.pass .n { color: var(--pass); }
+.stat.fail .n { color: var(--fail); }
+.stat.xfail .n { color: var(--xfail); }
+.stat.skip .n { color: var(--skip); }
+.bar { display: flex; height: 12px; border-radius: 999px; overflow: hidden; border: 1px solid var(--line); }
+.bar span { display: block; }
+.bar .b-passed { background: var(--pass); } .bar .b-failed { background: var(--fail); }
+.bar .b-skipped { background: var(--skip); } .bar .b-xfail { background: var(--xfail); }
+.summary-txt { margin-top: 14px; }
+
+/* ---------- listas ---------- */
+ul.scope { margin: 0; padding-left: 22px; }
+ul.scope li { margin: 6px 0; }
+ol.recs { margin: 0; padding-left: 24px; }
+ol.recs li { margin: 8px 0; padding-left: 4px; }
+
+/* ---------- tabla de tests ---------- */
+table.tests { width: 100%; border-collapse: collapse; font-size: .92rem; }
+table.tests th { text-align: left; font-size: .72rem; text-transform: uppercase; letter-spacing: .05em;
+  color: var(--faint); padding: 8px 10px; border-bottom: 2px solid var(--line-strong); }
+table.tests td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+table.tests tr { break-inside: avoid; }
+.tid { font-family: var(--mono); font-size: .82rem; color: var(--accent-ink); white-space: nowrap; }
+.tnotes { color: var(--soft); font-size: .86rem; margin-top: 3px; }
+
+.badge { display: inline-block; font-size: .74rem; font-weight: 700; padding: 2px 10px;
+  border-radius: 6px; white-space: nowrap; border: 1px solid; }
+.b-passed { color: var(--pass); border-color: var(--pass); background: #ebfbee; }
+.b-failed { color: var(--fail); border-color: var(--fail); background: #fff0f0; }
+.b-skipped { color: var(--skip); border-color: var(--line-strong); background: var(--surface-2); }
+.b-xfail { color: #b45309; border-color: var(--xfail); background: #fff8eb; }
+.chip { font-size: .72rem; color: var(--soft); background: var(--surface-2);
+  border: 1px solid var(--line); border-radius: 5px; padding: 1px 7px; }
+
+/* referencia a evidencia (Evidencia N) */
+.evref { display: inline-block; font-size: .74rem; font-weight: 600; color: var(--accent-ink);
+  background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 5px; padding: 1px 7px;
+  margin: 4px 4px 0 0; text-decoration: none; }
+
+/* ---------- hallazgos ---------- */
+.finding { border: 1px solid var(--line); border-left: 5px solid var(--sev-info);
+  border-radius: 8px; padding: 16px 18px; margin-bottom: 14px; break-inside: avoid; }
+.finding.s-critical { border-left-color: var(--sev-critical); }
+.finding.s-high { border-left-color: var(--sev-high); }
+.finding.s-medium { border-left-color: var(--sev-medium); }
+.finding.s-low { border-left-color: var(--sev-low); }
+.finding.s-info { border-left-color: var(--sev-info); }
+.finding h3 { margin: 0 0 8px; font-size: 1.02rem; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.finding .desc { color: var(--soft); }
+.finding .rec { margin-top: 10px; font-size: .92rem; background: var(--surface-2);
+  border-left: 3px solid var(--accent); border-radius: 0 6px 6px 0; padding: 8px 12px; }
+.finding .rec b { color: var(--accent-ink); }
+.pill { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .03em;
+  padding: 2px 9px; border-radius: 6px; color: #fff; }
+.pill.s-critical { background: var(--sev-critical); } .pill.s-high { background: var(--sev-high); }
+.pill.s-medium { background: var(--sev-medium); } .pill.s-low { background: var(--sev-low); }
+.pill.s-info { background: var(--sev-info); }
+
+/* ---------- evidencias (GRANDES, una vez) ---------- */
+figure.shot { margin: 0 0 24px; break-inside: avoid; }
+figure.shot .frame { border: 1px solid var(--line-strong); border-radius: 8px; overflow: hidden; background: var(--surface-2); }
+figure.shot img { display: block; width: 100%; height: auto; }
+figure.shot figcaption { margin-top: 8px; font-size: .88rem; color: var(--soft); }
+figure.shot .num { display: inline-block; font-weight: 700; color: var(--accent-ink);
+  margin-right: 6px; }
+
+/* ---------- logs (siempre visibles para PDF) ---------- */
+.log { border: 1px solid var(--line); border-radius: 8px; margin-bottom: 12px; break-inside: avoid; overflow: hidden; }
+.log .lh { background: var(--surface-2); padding: 8px 14px; font-weight: 600; font-size: .9rem;
+  border-bottom: 1px solid var(--line); }
+.log pre { margin: 0; padding: 12px 14px; font-family: var(--mono); font-size: .8rem;
+  color: var(--soft); white-space: pre-wrap; word-break: break-word; }
+
+/* ---------- pie ---------- */
+.foot { margin-top: 38px; padding-top: 14px; border-top: 1px solid var(--line);
+  color: var(--faint); font-size: .8rem; text-align: center; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 680px) {
+  .page { padding: 28px 20px; margin: 0; border-radius: 0; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .doc-head h1 { font-size: 1.4rem; }
+}
+
+/* ---------- PDF / impresión ---------- */
+@page { size: A4; margin: 16mm 14mm; }
+@media print {
+  body { background: #fff; font-size: 11.5pt; }
+  .page { max-width: none; margin: 0; padding: 0; box-shadow: none; border-radius: 0; }
+  a { color: var(--ink); }
+  section { margin-top: 22px; }
+  .finding, figure.shot, .log, table.tests tr { break-inside: avoid; }
+  section > h2 { break-after: avoid; }
+  /* asegura colores de badges/pills en el PDF */
+  .badge, .pill, .bar span, .stat .n, .evref { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
