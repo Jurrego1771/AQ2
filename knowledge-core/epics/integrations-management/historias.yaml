@@ -1,0 +1,40 @@
+# Historias de Usuario - Epic Integrations Management
+# Solo intencion: US + AC. Los vinculos a tests/riesgos los declara el test
+# (tests.yaml -> refs) y los calcula el build. Aqui NO hay reverse-links.
+# AC ids unicos por modulo: INTG-AC-N.
+version: 1
+epic: "Integrations Management"
+ultima_actualizacion: '2026-07-06'
+
+stories:
+  - id: "US-027"
+    titulo: "Configurar la integración de pagos Stripe con validación clara"
+    rol: "administrador de cuenta"
+    meta: "activar Stripe cargando la Secret Key sin confundirme por placeholders ni errores genéricos"
+    beneficio: "evitar activar la integración sin key (que falla al guardar) y entender qué corregir al instante"
+    descripcion: |
+      Como administrador de cuenta,
+      quiero que el campo Secret Key de Stripe no parezca ya cargado y que el sistema
+      me avise de inmediato si activo Stripe sin key,
+      para no activar una integración incompleta ni depender de un error genérico del backend.
+
+    acceptance_criteria:
+      - id: "INTG-AC-1"
+        criterio: "El placeholder del Secret Key de Stripe no tiene forma de API Key real (no simula un valor cargado)"
+      - id: "INTG-AC-2"
+        criterio: "Al guardar con Stripe activado y la API Key vacía, aparece un warning específico y NO se envía el request al backend"
+
+    prioridad: "medium"
+    tipo: "feature"
+    dependencias:
+      - "auth (sesion iniciada, permisos de admin/account-admin)"
+      - "api/account (persistencia de integraciones; valida STRIPE_API_KEY_REQUIRED server-side)"
+
+    notas: |
+      Origen: PR de producto mediastream/sm2#8481 (Closes mediastream/sm2#8480). Verificado
+      en vivo (dev v7.0.70): ambos fixes YA están desplegados -> los tests son VERDES
+      (protección anti-regresión), no pruebas vivas. El placeholder pasó de
+      'sk_live_5EsePiS72IHwK5ETv5vEzZoX' a 'example: sk_live_xxxxxxxxxxxxxxxxxxxxxxxx'.
+      La validación cliente sigue el patrón de Gracenote/System73/PlayAnywhere y corta
+      antes del POST. El warning se muestra en [sm=global-alert]. Los controles Stripe
+      NO tienen marca sm: (gap AQ2#39) -> el spec usa data-name como excepción documentada.

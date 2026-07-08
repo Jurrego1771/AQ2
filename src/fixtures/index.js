@@ -6,6 +6,8 @@ const { LiveStreamPage } = require('../pages/live-stream.page');
 const { ShowPage } = require('../pages/show.page');
 const { LiveEditorPage } = require('../pages/live-editor.page');
 const { PlaylistPage } = require('../pages/playlist.page');
+const { IntegrationsPage } = require('../pages/integrations.page');
+const { SchedulePage } = require('../pages/schedule.page');
 const { MediaClient } = require('../api/media.client');
 const { LiveStreamClient } = require('../api/live-stream.client');
 const { EditorClient, LiveEditorClient, DvrClient } = require('../api/live-editor.client');
@@ -56,6 +58,16 @@ const test = base.test.extend({
   // Page Object del form de playlist + panel de playlists en /media
   playlistPage: async ({ page }, use) => {
     await use(new PlaylistPage(page));
+  },
+
+  // Page Object de Settings > Integrations (foco Stripe, PR sm2#8481)
+  integrationsPage: async ({ page }, use) => {
+    await use(new IntegrationsPage(page));
+  },
+
+  // Page Object del form de Schedule de un live (foco song metadata, PR sm2#8463)
+  schedulePage: async ({ page }, use) => {
+    await use(new SchedulePage(page));
   },
 
   // APIRequestContext autenticado por SESIÓN (cookies del storageState del
@@ -109,6 +121,17 @@ const test = base.test.extend({
     const cleaner = new ResourceCleaner(api);
     const name = `[QA-AUTO] Live ${testInfo.title.slice(0, 40)} ${Date.now()}`;
     const id = await createLiveStream(api, { name, type: 'video' });
+    cleaner.register('live-stream', id);
+    await use(id);
+    await cleaner.clean();
+  },
+
+  // Live-stream de AUDIO self-contained (mismo patrón). Necesario para el bloque
+  // de song metadata del schedule, que solo se renderiza en lives de audio (sm2#8463).
+  audioLiveStream: async ({ api }, use, testInfo) => {
+    const cleaner = new ResourceCleaner(api);
+    const name = `[QA-AUTO] Audio Live ${testInfo.title.slice(0, 40)} ${Date.now()}`;
+    const id = await createLiveStream(api, { name, type: 'audio' });
     cleaner.register('live-stream', id);
     await use(id);
     await cleaner.clean();

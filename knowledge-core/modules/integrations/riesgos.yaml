@@ -1,0 +1,79 @@
+# Riesgos - Modulo Integrations. Definicion. El vinculo riesgo<-test es DERIVADO
+# (tests.yaml -> refs.mitigates); aqui NO se escribe mitigado_por_test.
+version: 1
+modulo: "integrations"
+ultima_actualizacion: '2026-07-06'
+
+riesgos:
+  - id: "INTG-RISK-1"
+    severidad: "medium"
+    probabilidad: "low"
+    titulo: "Placeholder con forma de token real induce a activar Stripe sin cargar la key"
+    descripcion: >
+      El input Secret Key de Stripe mostraba el placeholder 'sk_live_5EsePiS72IHwK5ETv5vEzZoX',
+      con el formato exacto de una API Key real. El usuario asumía que ya había una key cargada
+      y activaba la integración con el campo en realidad vacío. Corregido en sm2#8481 (placeholder
+      genérico 'example: sk_live_xxxx...'). Verificado en vivo (dev v7.0.70): el fix está desplegado;
+      el test protege contra una regresión del placeholder.
+    detonador:
+      - "Abrir Settings > Integrations con el campo Secret Key vacío (placeholder visible)"
+    mitigacion: >
+      Placeholder que no simula un valor cargado. Cubierto por INTG-TC-1 (verde, anti-regresión).
+    archivos_afectados:
+      - "src/pages/integrations.page.js"
+    defectos_relacionados:
+      - "mediastream/sm2#8480"
+      - "mediastream/sm2#8481"
+    prioridad_prueba: "SHOULD"
+    nota_industria: >
+      Nielsen #1/#2 (visibilidad del estado y correspondencia con el mundo real): un placeholder
+      no debe imitar un dato válido ya ingresado.
+
+  - id: "INTG-RISK-2"
+    severidad: "low"
+    probabilidad: "medium"
+    titulo: "Activar Stripe sin key sin aviso inmediato -> request al backend y error genérico"
+    descripcion: >
+      Al activar Stripe sin API Key, el frontend no avisaba en el momento: recién al guardar el
+      backend rechazaba con STRIPE_API_KEY_REQUIRED y la UI mostraba un 'server error' genérico,
+      sin decir qué faltaba. Corregido en sm2#8481: validación cliente que muestra un warning
+      específico y evita el POST, más el mapeo del código STRIPE_API_KEY_REQUIRED en el handler
+      .always. Verificado en vivo (dev v7.0.70): al guardar con Stripe activo y key vacía aparece
+      el warning en [sm=global-alert] y NO se dispara POST /api/account.
+    detonador:
+      - "Tildar 'Enabled' en Stripe con el campo API Key vacío y pulsar Save changes"
+    mitigacion: >
+      Guarda cliente en save() (si stripe.enabled && api_key === '' -> warning + return) y mensaje
+      específico ante 400 STRIPE_API_KEY_REQUIRED. Cubierto por INTG-TC-2 (verde, anti-regresión).
+    archivos_afectados:
+      - "src/pages/integrations.page.js"
+    defectos_relacionados:
+      - "mediastream/sm2#8481"
+    prioridad_prueba: "SHOULD"
+    nota_industria: >
+      Nielsen #5 (prevención de errores) y #9 (mensajes de error claros): validar en cliente y
+      dar contexto de qué corregir, en lugar de un error genérico tras el round-trip.
+
+  - id: "INTG-RISK-3"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "Controles Stripe sin marca sm: -> cobertura acoplada a data-name"
+    descripcion: >
+      El toggle (payments-stripe-enabled) y el input Secret Key (payments-stripe-api-key) de Stripe
+      no exponen marca sm:, a diferencia de System73 ([sm=system73-api-key], etc.) en la misma
+      pantalla. La política AQ2 obliga a selectores sm: en los Page Objects; para cubrir el PR
+      sm2#8481 el POM cae en data-name como excepción documentada (precedente: el <select> de
+      items-por-página en Media, AQ2#11). Un rename del data-name rompería los tests.
+    detonador:
+      - "Automatizar cualquier interacción con los controles de Stripe"
+    mitigacion: >
+      Agregar marcas sm: estables a los controles de Stripe (patrón System73). GAP consciente:
+      sin test dedicado; el riesgo es de mantenibilidad de la suite, no de producto.
+    archivos_afectados:
+      - "src/pages/integrations.page.js"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#39"
+    prioridad_prueba: "COULD"
+    nota_industria: >
+      Testabilidad: los controles bajo prueba deben exponer selectores estables y dedicados a QA
+      (marca sm: del proyecto), no depender de atributos funcionales.

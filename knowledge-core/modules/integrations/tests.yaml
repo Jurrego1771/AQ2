@@ -1,0 +1,32 @@
+# Tests - Modulo Integrations. Definicion (sin estado de ejecucion: eso es derivado).
+# refs = FUENTE UNICA de los vinculos. El spec lleva en su titulo solo el id de
+# correlacion @INTG-TC-N (+ la capa @regression).
+version: 1
+modulo: "integrations"
+ultima_actualizacion: '2026-07-06'
+
+tests:
+  # ---- US-027: validación de Stripe (capa UI) ----
+  - id: "INTG-TC-1"
+    titulo: "El placeholder del Secret Key de Stripe no tiene forma de token real"
+    modulo: "integrations"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["INTG-AC-1"]
+      mitigates: ["INTG-RISK-1"]
+      story: "US-027"
+      spec: "tests/regression/integrations.regression.spec.js"
+
+  - id: "INTG-TC-2"
+    titulo: "Activar Stripe sin API Key muestra un warning y no envía el request al backend"
+    modulo: "integrations"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["INTG-AC-2"]
+      mitigates: ["INTG-RISK-2"]
+      story: "US-027"
+      spec: "tests/regression/integrations.regression.spec.js"
