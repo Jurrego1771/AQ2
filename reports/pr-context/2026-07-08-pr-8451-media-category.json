@@ -1,0 +1,172 @@
+{
+  "meta": {
+    "skill": "pr-context",
+    "generated_at": "2026-07-08T18:05:00-05:00",
+    "pr_url": "https://github.com/mediastream/sm2/pull/8451",
+    "pr_number": 8451,
+    "source": "gh CLI"
+  },
+  "pr": {
+    "url": "https://github.com/mediastream/sm2/pull/8451",
+    "title": "#8450 feat: add media.category module to token profiles",
+    "state": "OPEN",
+    "branch": { "head": "feature/issue-8450", "base": "staging" },
+    "state": "OPEN",
+    "mergedAt": null,
+    "version_bump": "7.0.64 -> 7.0.65",
+    "issue_relacionado": {
+      "number": 8450,
+      "url": "https://github.com/mediastream/sm2/issues/8450",
+      "title": "Incluir el modulo categorias en Token Profiles",
+      "state": "OPEN",
+      "solicitante": "Equipo Aragón TV (xaloc tercero)"
+    }
+  },
+
+  "motivo_del_cambio": {
+    "tipo": "feature_nueva (no bugfix)",
+    "resumen": "Habilitar que API tokens con perfil restringido puedan acceder a GET /api/category del platform actual 'https://platform.mediastre.am'.",
+    "necesidad_de_negocio": "Aragón TV es un cliente tercero (xaloc) que integra desde sus sistemas externos. Sin este cambio, el token que usan no puede listar categorías de media a través de la API pública de platform.mediastre.am.",
+    "tipo_segun_review": "Code Review 9.5/10 — cambio puramente aditivo, mínimo, sin riesgo"
+  },
+
+  "comportamiento_antes": {
+    "que_pasaba": "Un TokenProfile con modules: ['media.category'] no podía guardarse porque el enum de Mongoose no incluía 'media.category', y aunque se pudiera por algún bypass, el dropdown del admin en /admin/account (Token Profiles) no ofrecía 'media.category' como opción para asignarlo a un perfil.",
+    "resultado_observable": "Aragón TV obtenía 403 al llamar GET /api/category con su token de perfil restringido, aunque conceptualmente ese endpoint ya soportaba 'media.category' en el middleware de check_module_access (fn.js)."
+  },
+
+  "causa_raiz": {
+    "falla_de_diseño": "El patrón dot-notation para sub-módulos (visto en 'sale.customer', 'sale.seller') nunca se había extendido al dominio media. Faltaban dos entradas en lockstep: el enum del schema Mongoose (validación de persistencia) y la lista del cliente CoffeeScript (dropdown UI).",
+    "archivos_implicados": [
+      "src/server/model/schemas/tokenProfile.js (modulesEnum faltaba media.category)",
+      "src/client/admin_accounts.coffee (modulesList faltaba media.category)"
+    ],
+    "nota": "El middleware real (check_module_access en fn.js + module-access.js) YA evaluaba Array.includes(_module), por lo que estaba preparado para aceptar la nueva clave sin cambios — sólo faltaban las dos listas de declaración."
+  },
+
+  "como_se_arreglo": {
+    "cambios_funcionales": [
+      {
+        "file": "src/server/model/schemas/tokenProfile.js",
+        "cambio": "+1 línea: agrega 'media.category' al array modulesEnum (validación Mongoose en save()).",
+        "impacto": "A partir de ahora se permite persistir TokenProfile con modules: ['media.category', ...]; el enum bloquea cualquier valor fuera de la lista al guardar."
+      },
+      {
+        "file": "src/client/admin_accounts.coffee",
+        "cambio": "+1 línea: agrega 'media.category' al array modulesList que renderiza el dropdown en /admin/account -> Token Profiles.",
+        "impacto": "El admin puede seleccionar 'media.category' desde la UI para incluirlo en un perfil; se alinea con el backend."
+      }
+    ],
+    "cambios_mecanicos_ignorables": [
+      "package.json y package-lock.json: bump 7.0.64 -> 7.0.65"
+    ],
+    "cambios_NO_realizados_aunque_serian_utiles": [
+      "module-access.js:31-41 — getTokenProfile ignora el parámetro err del callback de Mongoose (mencionado por el code review como pre-existente, fuera del scope del PR)"
+    ]
+  },
+
+  "archivos_modificados": [
+    {
+      "path": "src/server/model/schemas/tokenProfile.js",
+      "diff": "+'media.category' en modulesEnum (línea ~37)"
+    },
+    {
+      "path": "src/client/admin_accounts.coffee",
+      "diff": "+'media.category' en modulesList (línea ~18)"
+    },
+    {
+      "path": "package.json",
+      "diff": "version bump 7.0.64 -> 7.0.65"
+    },
+    {
+      "path": "package-lock.json",
+      "diff": "version bump sync"
+    }
+  ],
+
+  "archivos_relacionados_o_afectados_indirectamente": {
+    "middleware_que_ya_soportaba_la_clave": [
+      "src/server/middleware/module-access.js (línea 31-41 getTokenProfile, y línea 55 tokenProfile.modules.includes(_module))",
+      "src/server/fn.js (línea 574 check_module_access)"
+    ],
+    "endpoints_que_quedan_habilitados": [
+      "GET /api/category (ruta que ya gestionaba 'media.category' internamente — ahora los tokens pueden pasar la autorización)"
+    ],
+    "ui_afectada": [
+      "/admin/account -> Token Profiles (dropdown de modules del perfil)"
+    ],
+    "smell_pre_existente_no_resuelto": [
+      "src/server/middleware/module-access.js:31-41 getTokenProfile ignora err -> si Mongo falla, devuelve cb(null) (404) en lugar de propagar el error (500). El code review del PR lo recomienda como ticket separado."
+    ]
+  },
+
+  "como_deberia_funcionar_despues_del_cambio": {
+    "happy_path": [
+      "Admin abre /admin/account -> Token Profiles, crea/edita un perfil y ahora ve 'media.category' como opción seleccionable en el dropdown.",
+      "Selecciona 'media.category', guarda -> el TokenProfile persiste con modules: ['media.category', ...] (validación Mongoose OK).",
+      "Genera un API token con ese perfil.",
+      "Llama GET /api/category con Authorization: Bearer <token> -> 200 OK con la lista de categorías.",
+      "Sin 'media.category' en el perfil -> 403 en el mismo GET."
+    ],
+    "contratos_json_involucrados": {
+      "endpoint": "GET /api/category",
+      "headers_esperados": ["Authorization: Bearer <api_token>"],
+      "auth_flow": "MIDDLEWARE.API_AUTH_READ -> check_module_access(tokenProfile, 'media.category', 'read')",
+      "respuesta_exitosa": "200 + [{name, image_url, ...}]",
+      "respuesta_rechazada": "403 (profile sin la clave) o 401 (sin token)"
+    }
+  },
+
+  "cobertura_existente_en_knowledge_core": {
+    "epic": "knowledge-core/epics/token-profiles-management/historias.yaml",
+    "acs_ya_definidos_para_este_cambio": [
+      "AC: 'Un API token cuyo Token Profile incluye media.category recibe 200 al llamar GET /api/category'",
+      "AC: 'Un API token cuyo Token Profile NO incluye media.category recibe 403 al llamar GET /api/category'"
+    ],
+    "tests_referenciados_en_tests_yaml": [
+      "-> GET /api/category responde 200",
+      "-> GET /api/category responde 403"
+    ],
+    "status": "DISEÑADO pero los tests API concretos (TokenProfile creando + GET /api/category con bearer) NO están implementados en tests/api/. El PR #8451 destraba el código que faltaba para que esos tests pasen. Quedan como TODO visible en el knowledge-core."
+  },
+
+  "conversaciones_del_pr": [
+    {
+      "autor": "janoppix (member)",
+      "status": "none (no es aprobación formal, es code review)",
+      "contenido": "Code Review detallado 9.5/10. Sin críticos ni importantes. Única observación: hallazgo pre-existente en module-access.js (err ignorado en callback de Mongoose). Recomienda NO mezclarlo con este PR, tratar como ticket separado.",
+      "valor_para_qa": "BAJO. Es el resultado de un code-review-bot, no una conversación humana operativa. La única perla útil es el smell pre-existente de module-access.js:31-41 — anotarlo para una iteración futura (no expande el scope de este PR)."
+    }
+  ],
+
+  "sin_verificar_en_vivo": {
+    "estado_real_en_dev": "dev estaba en v7.0.71 durante la sesión 2026-07-08; el PR #8451 bumpea a 7.0.65 — no confirma que el fix esté desplegado en dev (la rama es feature/issue-8450 -> staging, aún OPEN, no mergeado). Cualquier test que asuma 'media.category' funcional en dev podría fallar.",
+    "verificacion_recomendada": "Probar primero si /admin/account muestra 'media.category' en el dropdown. Si no aparece -> el fix NO está en dev. Si aparece -> probar el flujo API token + GET /api/category."
+  },
+
+  "info_para_tests_recomendada": {
+    "precondiciones": [
+      "Tener TOKEN_PROFILE_ID_WITH_CATEGORY y TOKEN_PROFILE_ID_WITHOUT_CATEGORY en .env (ver CLAUDE.md — ya se referencian en BaseClient)",
+      "Si no existen, crearlos via /admin/account o via API (con admin token) durante el setup del test"
+    ],
+    "casos_a_cubrir": [
+      {
+        "tipo": "API (rápido, determinístico)",
+        "caso": "GET /api/category con bearer cuyo perfil incluye 'media.category' -> 200",
+        "categoria": "smoke o regression"
+      },
+      {
+        "tipo": "API",
+        "caso": "GET /api/category con bearer cuyo perfil NO incluye 'media.category' -> 403",
+        "categoria": "regression"
+      },
+      {
+        "tipo": "UI (admin)",
+        "caso": "/admin/account -> Token Profiles -> dropdown de modules muestra la opción 'media.category'",
+        "categoria": "smoke",
+        "nota": "Solo tiene valor si el fix está desplegado en el ambiente de prueba; gate por env.isProd o feature flag"
+      }
+    ],
+    "posible_bug_latente_en_pr": "Ninguno introducido por este PR; el code review lo confirma. Pero el smell pre-existente en module-access.js:31-41 (getTokenProfile ignora err) merece un test fail-vivo si se quiere blindar el flujo de token profiles — fuera del scope actual."
+  }
+}
