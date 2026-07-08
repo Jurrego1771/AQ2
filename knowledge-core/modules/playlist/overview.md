@@ -29,27 +29,36 @@ como **JSON** y como **form-urlencoded**.
 
 | Método | Ruta | Resultado |
 |---|---|---|
-| POST | `/api/playlist/` | 200 `{data:{_id,name,type,rules,access_rules,...}}` con `name`; **500 `DB_ERROR`** si `name` vacío (bug #36) |
-| GET | `/api/playlist/:id?all=true` | 200 con el objeto completo (`rules.{manual,smart,series,playout}`, `access_rules`) |
+| POST | `/api/playlist/` | 200 `{data:{_id,name,type,rules,access_rules,uses_reels,...}}` con `name`; **500 `DB_ERROR`** si `name` vacío (bug #36). Acepta `uses_reels` (default `false` al omitirlo, PR sm2#8076) |
+| POST | `/api/playlist/:id` | Update (NO PUT; PUT → 404). Mismo body que create; `uses_reels=false` persiste (falsy-safe) |
+| GET | `/api/playlist?uses_reels=true` | 200 con array filtrado a solo las playlists marcadas para reels (PR sm2#8076) |
+| GET | `/api/playlist/:id?all=true` | 200 con el objeto completo (`rules.{manual,smart,series,playout}`, `access_rules`, `uses_reels`) |
 | DELETE | `/api/playlist/:id` | 200 `{status:'OK',data:null}` |
 
 Cliente: `src/api/playlist.client.js` (`PlaylistClient`). Fixture: `playlistClient`.
 Teardown: `ResourceCleaner` soporta el tipo `playlist` (DELETE /api/playlist/:id).
 
-## Marcas sm: disponibles (cosechadas en vivo)
-Form: `playlist-type`, `manual-media-list`, `playout-rule-list`, `playout-total-duration`,
-`playlist-image*`, `save`, `delete`. En `/media`: `playlist-list`, `create-smart-playlist`,
-`add-to-playlist` (+ `add-to-playlist-form` / `-modal-body` / `-modal-footer`).
-**Faltan** (bug #38): inputs Name/Description/Slug/Categories, reglas Smart, e ítems del panel.
+## Marcas disponibles (cosechadas en vivo)
+Marcas `sm:` — Form: `playlist-type`, `manual-media-list`, `playout-rule-list`,
+`playout-total-duration`, `playlist-image*`, `save`, `delete`. En `/media`: `playlist-list`,
+`create-smart-playlist`, `add-to-playlist` (+ `add-to-playlist-form` / `-modal-body` / `-modal-footer`).
+
+Sin `sm:` pero con **`data-name`** (bug #38; direccionables por la escalera de selectores
+estables, ver CLAUDE.md): `name`, `slug`, `playlist_id`, **`playlist-uses-reels`** (checkbox
+'Use for reels', PR sm2#8076), reglas Smart (`smart-title`, `smart-date-*`, …), `manual-add-media`.
+Los ítems `<li>/<a>` del panel siguen sin marca (ni sm: ni data-name).
 
 ## Flujos y estado de cobertura
 - **Contrato API** (crear/leer/borrar): cubierto por PLST-TC-1..3 (verdes) + PLST-TC-4
   (vivo, bug #36).
+- **Flag `uses_reels`** (PR sm2#8076): API por PLST-TC-8..10 (verdes) + UI del checkbox
+  'Use for reels' por PLST-TC-11 (verde, vía data-name).
 - **UI estructural** (tipo + acciones, panel en /media): PLST-TC-5..6 (verdes) + PLST-TC-7
   (vivo, bug #37).
 - **Parcialmente explorado / sin cobertura**: `add-to-playlist` (modal para agregar media a
   una playlist; el disparador es una acción masiva dentro del menú Actions de /media),
-  `create-smart-playlist`, y el flujo de captura de datos del form (bloqueado por bug #38).
+  `create-smart-playlist`, y el resto de campos del form (Name/Slug/reglas Smart —
+  direccionables por data-name si se requiere; hoy sin spec dedicado).
 
 ## Precondiciones
 - Sesión iniciada (storageState). El panel de playlists depende del módulo Media.

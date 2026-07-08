@@ -2,7 +2,7 @@
 # (tests.yaml -> refs.mitigates); aqui NO se escribe mitigado_por_test.
 version: 1
 modulo: "playlist"
-ultima_actualizacion: '2026-07-06'
+ultima_actualizacion: '2026-07-07'
 
 riesgos:
   - id: "PLST-RISK-1"
@@ -27,7 +27,7 @@ riesgos:
       - "src/pages/playlist.page.js"
       - "src/api/playlist.client.js"
     defectos_relacionados:
-      - "Jurrego1771/AQ2#36"
+      - "mediastream/sm2#8504"
     prioridad_prueba: "MUST"
     nota_industria: >
       Un error de validación debe ser 4xx, no 5xx (contrato REST). Ref: OWASP
@@ -64,17 +64,26 @@ riesgos:
     probabilidad: "high"
     titulo: "Form de playlist sin marcas sm: -> cobertura UI limitada a lo estructural"
     descripcion: >
-      Los campos de captura del form (Name, Description, Slug, Categories y todas las
-      reglas del tipo Smart) y cada ítem del panel [sm=playlist-list] no exponen marca
-      sm:. Como la política AQ2 obliga a selectores sm: en los Page Objects, la
-      automatización UI del flujo de captura de datos no es viable de forma robusta:
-      solo se pueden asertar contenedores/acciones (tipo, save/delete, panel).
+      Los campos de captura del form (Name, Description, Slug, Categories, todas las
+      reglas del tipo Smart y el checkbox 'Use for reels' añadido por PR sm2#8076 —
+      name/data-name='playlist-uses-reels') y cada ítem del panel [sm=playlist-list]
+      aún NO exponen marca sm:. Es deuda de testabilidad, no un bloqueo: la política
+      AQ2 pasó a una escalera de selectores estables (sm: -> data-name -> role), y
+      esos campos SÍ exponen `data-name` (la app lo usa para serializar el form), que
+      es estable de facto. Consecuencia: PLST-AC-11 (el checkbox 'Use for reels'
+      persiste en la UI) YA está cubierto por PLST-TC-11 vía data-name — verificado en
+      vivo (dev, form v7.0.71): marcar + guardar + recargar deja el flag marcado. El
+      resto de campos (reglas Smart, ítems del panel) siguen sin spec dedicado, pero
+      son direccionables por la misma escalera si se requiere.
     detonador:
       - "Escribir specs UI que interactúen con Name/Description/Slug o reglas Smart"
+      - "Escribir un spec UI del checkbox 'Use for reels' (PLST-AC-11)"
     mitigacion: >
-      Agregar marcas sm: estables a los inputs del form y a cada ítem de playlist.
-      Sin fix, la cobertura se apoya en el contrato de API (PLST-TC-1..4) y en
-      aserciones estructurales (PLST-TC-5..6). GAP consciente: sin test que lo mitigue.
+      Agregar marcas sm: estables a los inputs del form y a cada ítem de playlist
+      (bug #38, front). Mientras tanto la cobertura NO se bloquea: el checkbox de
+      reels se mitiga con PLST-TC-11 (data-name), y el contrato del flag con
+      PLST-TC-8..10 (API). Al agregar el sm:, el spec sigue verde sin cambios
+      (stable() ya prefiere sm: sobre data-name).
     archivos_afectados:
       - "src/pages/playlist.page.js"
     defectos_relacionados:

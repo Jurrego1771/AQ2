@@ -3,7 +3,7 @@
 # correlacion @PLST-TC-N (+ la capa @api/@regression).
 version: 1
 modulo: "playlist"
-ultima_actualizacion: '2026-07-06'
+ultima_actualizacion: '2026-07-07'
 
 tests:
   # ---- US-025: contrato de /api/playlist (capa API) ----
@@ -90,4 +90,56 @@ tests:
       validates: ["PLST-AC-7"]
       mitigates: ["PLST-RISK-2"]
       story: "US-026"
+      spec: "tests/regression/playlist.regression.spec.js"
+
+  # ---- US-029: flag uses_reels (PR sm2#8076), capa API ----
+  - id: "PLST-TC-8"
+    titulo: "POST /api/playlist persiste uses_reels:true y default a false al omitirlo"
+    modulo: "playlist"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["PLST-AC-8"]
+      mitigates: []
+      story: "US-029"
+      spec: "tests/api/playlist.api.spec.js"
+
+  - id: "PLST-TC-9"
+    titulo: "GET /api/playlist?uses_reels=true devuelve solo playlists marcadas para reels"
+    modulo: "playlist"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["PLST-AC-9"]
+      mitigates: []
+      story: "US-029"
+      spec: "tests/api/playlist.api.spec.js"
+
+  - id: "PLST-TC-10"
+    titulo: "POST /api/playlist/:id apaga uses_reels y el false persiste (falsy-safe)"
+    modulo: "playlist"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["PLST-AC-10"]
+      mitigates: []
+      story: "US-029"
+      spec: "tests/api/playlist.api.spec.js"
+
+  # ---- US-029: checkbox 'Use for reels' (PR sm2#8076), capa UI ----
+  # Direccionado por data-name (escalera de selectores estables): el checkbox aun
+  # no tiene marca sm: (bug #38) pero SI expone data-name='playlist-uses-reels'.
+  - id: "PLST-TC-11"
+    titulo: "El checkbox 'Use for reels' persiste tras guardar y recargar (UI, vía data-name)"
+    modulo: "playlist"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["PLST-AC-11"]
+      mitigates: ["PLST-RISK-3"]
+      story: "US-029"
       spec: "tests/regression/playlist.regression.spec.js"

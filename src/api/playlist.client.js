@@ -20,11 +20,35 @@ class PlaylistClient extends BaseClient {
 
   /**
    * Crea una playlist. `name` es obligatorio (ver bug #36). `type` default en
-   * la UI es 'manual'.
-   * @param {{ name?: string, type?: string, description?: string, medias?: string[], slug?: string }} payload
+   * la UI es 'manual'. `uses_reels` marca la playlist como fuente de reels
+   * (PR sm2#8076); si se omite, el backend la persiste en `false`.
+   * @param {{ name?: string, type?: string, description?: string, medias?: string[], slug?: string, uses_reels?: boolean }} payload
    */
   create(payload) {
     return this.post('/', payload);
+  }
+
+  /**
+   * Actualiza una playlist existente. OJO (verificado en vivo, dev v7.0.71): el
+   * update es **POST /api/playlist/:id**, NO PUT (PUT responde 404). Acepta el
+   * mismo body que create.
+   * @param {string} id
+   * @param {{ name?: string, type?: string, uses_reels?: boolean, [k: string]: any }} payload
+   */
+  update(id, payload) {
+    return this.post(`/${id}`, payload);
+  }
+
+  /**
+   * Listado de playlists. `params.uses_reels === true` filtra solo las marcadas
+   * como fuente de reels (PR sm2#8076). El envelope trae `data` como array.
+   * @param {{ uses_reels?: boolean }} [params]
+   */
+  list(params = {}) {
+    const qs = new URLSearchParams();
+    if (params.uses_reels) qs.set('uses_reels', 'true');
+    const q = qs.toString();
+    return this.get(q ? `/?${q}` : '/');
   }
 
   /** Detalle completo de una playlist (`?all=true`, como carga la vista de edición). */

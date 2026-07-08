@@ -103,7 +103,7 @@ test.describe('Playlist API — contrato de /api/playlist @api @playlist', () =>
   }) => {
     test.fail(
       true,
-      'BUG #36: crear playlist sin nombre devuelve 500 DB_ERROR — https://github.com/Jurrego1771/AQ2/issues/36'
+      'BUG sm2#8504: crear playlist sin nombre devuelve 500 DB_ERROR — https://github.com/mediastream/sm2/issues/8504'
     );
     const cleaner = new ResourceCleaner(api);
     try {
@@ -114,6 +114,101 @@ test.describe('Playlist API — contrato de /api/playlist @api @playlist', () =>
         res.status(),
         'un nombre vacío es un error de validación (4xx), no un fallo de servidor (5xx)'
       ).toBe(400);
+    } finally {
+      await cleaner.clean();
+    }
+  });
+
+  // ---- PR sm2#8076: flag `uses_reels` en la entidad Playlist ----
+  // Verificado en vivo (dev v7.0.71): create acepta uses_reels (default false al
+  // omitirlo), GET ?uses_reels=true filtra solo las marcadas, y el update es
+  // POST /:id (no PUT) — el valor false persiste (caso frágil falsy, cf. bug #23
+  // en schedules donde el false NO persistía).
+
+  test('POST /api/playlist persiste uses_reels:true y default a false al omitirlo @PLST-TC-8', async ({
+    playlistClient,
+    api,
+  }) => {
+    const cleaner = new ResourceCleaner(api);
+    try {
+      // uses_reels:true -> persiste true
+      const on = await playlistClient.create({
+        name: `[QA-AUTO] PL reels-on ${Date.now()}`,
+        type: 'manual',
+        uses_reels: true,
+      });
+      expect(on.status()).toBe(200);
+      const onData = (await on.json()).data;
+      cleaner.register('playlist', onData._id);
+      expect(onData.uses_reels, 'uses_reels:true debe persistir en la creación').toBe(true);
+      // releído desde el detalle, sigue en true
+      const onGet = (await (await playlistClient.getById(onData._id)).json()).data;
+      expect(onGet.uses_reels).toBe(true);
+
+      // omitido -> el backend lo persiste en false (default)
+      const off = await playlistClient.create({
+        name: `[QA-AUTO] PL reels-default ${Date.now()}`,
+        type: 'manual',
+      });
+      expect(off.status()).toBe(200);
+      const offData = (await off.json()).data;
+      cleaner.register('playlist', offData._id);
+      expect(offData.uses_reels, 'sin el campo, uses_reels default a false').toBe(false);
+    } finally {
+      await cleaner.clean();
+    }
+  });
+
+  test('GET /api/playlist?uses_reels=true devuelve solo playlists marcadas para reels @PLST-TC-9', async ({
+    playlistClient,
+    api,
+  }) => {
+    const cleaner = new ResourceCleaner(api);
+    try {
+      const flagged = (await (await playlistClient.create({
+        name: `[QA-AUTO] PL reels-yes ${Date.now()}`,
+        type: 'manual',
+        uses_reels: true,
+      })).json()).data;
+      cleaner.register('playlist', flagged._id);
+
+      const plain = (await (await playlistClient.create({
+        name: `[QA-AUTO] PL reels-no ${Date.now()}`,
+        type: 'manual',
+      })).json()).data;
+      cleaner.register('playlist', plain._id);
+
+      const res = await playlistClient.list({ uses_reels: true });
+      expect(res.status()).toBe(200);
+      const items = (await res.json()).data;
+      expect(Array.isArray(items), 'el listado filtrado debe venir como array').toBe(true);
+      const ids = items.map((p) => p._id);
+      expect(ids, 'la playlist marcada debe aparecer en el filtro').toContain(flagged._id);
+      expect(ids, 'la playlist NO marcada no debe aparecer en el filtro').not.toContain(plain._id);
+      // el filtro es honesto: cada elemento devuelto tiene el flag activo
+      expect(items.every((p) => p.uses_reels === true), 'el filtro solo debe traer uses_reels=true').toBe(true);
+    } finally {
+      await cleaner.clean();
+    }
+  });
+
+  test('POST /api/playlist/:id apaga uses_reels y el false persiste @PLST-TC-10', async ({
+    playlistClient,
+    api,
+  }) => {
+    const cleaner = new ResourceCleaner(api);
+    try {
+      const name = `[QA-AUTO] PL reels-toggle ${Date.now()}`;
+      const created = (await (await playlistClient.create({ name, type: 'manual', uses_reels: true })).json()).data;
+      cleaner.register('playlist', created._id);
+      expect(created.uses_reels).toBe(true);
+
+      // update true -> false (mismo body que envía el form: name+type+flag)
+      const upd = await playlistClient.update(created._id, { name, type: 'manual', uses_reels: false });
+      expect(upd.status(), 'el update es POST /:id (no PUT)').toBe(200);
+
+      const after = (await (await playlistClient.getById(created._id)).json()).data;
+      expect(after.uses_reels, 'uses_reels=false (falsy) debe persistir, no ignorarse').toBe(false);
     } finally {
       await cleaner.clean();
     }
