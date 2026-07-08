@@ -199,3 +199,64 @@ tests:
     # Verificado en vivo con dos sesiones reales antes de escribir el test.
     # Requiere TEST_USER2_DEV/TEST_PASS2_DEV en .env (se skipea si faltan).
     # Ver cross-cutting/changed-alert/overview.md.
+
+  # ---- US-028: song metadata del schedule solo en audio (PR sm2#8463) ----
+  - id: "LIVE-TC-16"
+    titulo: "audio: crear schedule persiste inherit_ignore_song_metadata=false e ignoreSongMetadata=true"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-18"]
+      mitigates: ["LIVE-RISK-11"]
+      story: "US-028"
+      spec: "tests/api/live-stream-schedule.api.spec.js"
+
+  - id: "LIVE-TC-17"
+    titulo: "audio: update alterna song metadata y persiste el valor false"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-18"]
+      mitigates: ["LIVE-RISK-11"]
+      story: "US-028"
+      spec: "tests/api/live-stream-schedule.api.spec.js"
+
+  - id: "LIVE-TC-18"
+    titulo: "audio: el schedule muestra los 2 controles de song metadata (UI)"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-16"]
+      mitigates: ["LIVE-RISK-11"]
+      story: "US-028"
+      spec: "tests/regression/schedule-songmeta.regression.spec.js"
+
+  - id: "LIVE-TC-19"
+    titulo: "video: el schedule NO muestra los controles de song metadata (UI)"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-17"]
+      mitigates: ["LIVE-RISK-11"]
+      story: "US-028"
+      spec: "tests/regression/schedule-songmeta.regression.spec.js"
+
+  - id: "LIVE-TC-20"
+    titulo: "audio: togglear song metadata por UI, guardar y recargar persiste (incl. uncheck)"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-16", "LIVE-AC-18"]
+      mitigates: ["LIVE-RISK-11"]
+      story: "US-028"
+      spec: "tests/regression/schedule-songmeta.regression.spec.js"

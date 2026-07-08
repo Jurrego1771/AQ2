@@ -133,6 +133,55 @@ test.describe('Live Stream schedules — contrato API @api @live-stream', () => 
     expect(overlap.status(), 'un solape es error del cliente -> 400').toBe(400);
   });
 
+  // --- Song metadata: solo aplica a lives de AUDIO (PR sm2#8463) ---
+  // El contrato persiste ambos flags, incluidos los valores false (a diferencia
+  // del bug #23 en description/is_featured). Verificado en vivo (dev v7.0.70).
+
+  test('audio: crear schedule persiste inherit_ignore_song_metadata=false e ignoreSongMetadata=true @LIVE-TC-16', async ({
+    liveStreamClient,
+    audioLiveStream,
+  }) => {
+    const day = dayStr(55);
+    const res = await liveStreamClient.createScheduleJob(audioLiveStream, {
+      ...onetime('QA songmeta create', day, 10, 12),
+      inherit_ignore_song_metadata: false,
+      ignoreSongMetadata: true,
+    });
+    expect(res.status()).toBe(200);
+    const sid = (await res.json()).data._id;
+
+    const after = (await (await liveStreamClient.scheduleJob(audioLiveStream, sid)).json()).data;
+    expect(after.inherit_ignore_song_metadata, 'inherit=false debe persistir (falsy)').toBe(false);
+    expect(after.ignoreSongMetadata, 'ignore=true debe persistir').toBe(true);
+  });
+
+  test('audio: update alterna song metadata y persiste el valor false @LIVE-TC-17', async ({
+    liveStreamClient,
+    audioLiveStream,
+  }) => {
+    const day = dayStr(58);
+    const base = onetime('QA songmeta upd', day, 10, 12);
+    // add: inherit=false, ignore=true
+    const created = await liveStreamClient.createScheduleJob(audioLiveStream, {
+      ...base,
+      inherit_ignore_song_metadata: false,
+      ignoreSongMetadata: true,
+    });
+    const sid = (await created.json()).data._id;
+
+    // modify + clear-a-false: inherit=true, ignore=false (el false es el caso frágil)
+    const upd = await liveStreamClient.updateScheduleJob(audioLiveStream, sid, {
+      ...base,
+      inherit_ignore_song_metadata: true,
+      ignoreSongMetadata: false,
+    });
+    expect(upd.status()).toBe(200);
+
+    const after = (await (await liveStreamClient.scheduleJob(audioLiveStream, sid)).json()).data;
+    expect(after.inherit_ignore_song_metadata, 'inherit=true debe persistir').toBe(true);
+    expect(after.ignoreSongMetadata, 'ignore=false (falsy) debe persistir, no ignorarse').toBe(false);
+  });
+
   // --- Prueba viva del bug #23: el vaciado no persiste en update ---
   test('vaciar la descripción y apagar is_featured en update debe persistir [BUG #23] @LIVE-TC-13', async ({
     liveStreamClient,

@@ -265,3 +265,35 @@ riesgos:
       Un filtro de query con un campo undefined no es "sin filtro en ese
       campo" en la intencion del desarrollador, pero Mongoose lo trata asi
       -mismatch entre lo esperado y el comportamiento real de la libreria-.
+
+  - id: "LIVE-RISK-11"
+    severidad: "low"
+    probabilidad: "medium"
+    titulo: "Regresion del render condicional de song metadata en el schedule (audio vs video)"
+    descripcion: >
+      El bloque de song metadata (Inherit/Ignore Song Metadata) del form de schedule
+      debe renderizarse SOLO cuando el live padre es de tipo audio (PR sm2#8463: `if @is_audio`
+      en la vista + is_audio expuesto por la ruta + el cliente solo envia los flags cuando los
+      controles existen). Riesgo de regresion: que los controles reaparezcan en video (opciones
+      sin sentido, ruido de UX) o que los flags dejen de persistir el valor false (patron falsy
+      hermano de #23). Verificado en vivo (dev v7.0.70): audio muestra ambos controles, video
+      ninguno, y el contrato persiste inherit_ignore_song_metadata/ignoreSongMetadata incluidos
+      los false.
+    detonador:
+      - "Abrir/crear un schedule bajo un live de audio vs video"
+      - "Alternar los flags, guardar y recargar (persistencia, incl. uncheck -> false)"
+    mitigacion: >
+      Render condicional por tipo de live y persistencia de los flags. Cubierto por
+      LIVE-TC-16/17 (API) y LIVE-TC-18/19/20 (UI). Los controles usan data-name (sin marca sm:,
+      AQ2#24); la UI se cubre por data-name como excepcion documentada.
+    archivos_afectados:
+      - "src/pages/schedule.page.js"
+      - "src/api/live-stream.client.js"
+    defectos_relacionados:
+      - "mediastream/sm2#8462"
+      - "mediastream/sm2#8463"
+    prioridad_prueba: "SHOULD"
+    nota_industria: >
+      Nielsen #8 (diseno minimalista): no mostrar controles que no aplican al contexto
+      (video). La persistencia de valores falsy es un patron de bug recurrente en la
+      plataforma (ver #23) que conviene proteger explicitamente.

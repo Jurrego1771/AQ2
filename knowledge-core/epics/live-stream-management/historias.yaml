@@ -107,3 +107,39 @@ stories:
       schedules esta bloqueada por falta de marcas sm (AQ2#24): solo el campo Title
       (scheduleTitle), save y delete tienen marca; tipo/fechas/horas/recurrencia/opciones
       no son direccionables -> cobertura solo por API.
+
+  - id: "US-028"
+    titulo: "Song metadata en el schedule solo para lives de audio"
+    rol: "administrador de contenido"
+    meta: "controlar el ignore de song metadata por schedule, solo donde aplica (lives de audio)"
+    beneficio: "no exponer opciones sin sentido en video y controlar el metadata de canciones por franja en audio"
+    descripcion: |
+      Como administrador de contenido de un live de audio,
+      quiero ver y configurar Inherit/Ignore Song Metadata en el schedule,
+      para decidir por franja si se ignora el metadata de canciones; en video esas
+      opciones no deben aparecer.
+
+    acceptance_criteria:
+      - id: "LIVE-AC-16"
+        criterio: "En un schedule bajo un live de AUDIO se muestran los controles Inherit Ignore Song Metadata e Ignore Song Metadata"
+      - id: "LIVE-AC-17"
+        criterio: "En un schedule bajo un live de VIDEO esos controles no se renderizan"
+      - id: "LIVE-AC-18"
+        criterio: "Crear/actualizar un schedule persiste inherit_ignore_song_metadata e ignoreSongMetadata, incluidos los valores false (no se ignoran)"
+
+    prioridad: "medium"
+    tipo: "feature"
+    dependencias:
+      - "auth (sesion iniciada)"
+      - "api/live-stream/schedule-job"
+      - "un live de tipo audio (fixture audioLiveStream)"
+
+    notas: |
+      Origen: PR mediastream/sm2#8463 (Closes sm2#8462). Verificado en vivo (dev v7.0.70):
+      ambos fixes desplegados -> tests VERDES (anti-regresion). El bloque se envuelve en
+      `if @is_audio` (la ruta expone is_audio) y el save() del cliente solo envia los flags
+      cuando los controles existen. A diferencia del bug #23 en description/is_featured, estos
+      flags SI persisten el valor false (LIVE-TC-16/17/20). Los controles usan data-name (sin
+      marca sm: -> AQ2#24); la UI se cubre por data-name como excepcion documentada. Nota: en
+      exploracion se observo una lectura post-escritura inconsistente del schedule-job (GET
+      devolvio campos vacios justo tras el POST), no reproducible de forma fiable -> no filado.
