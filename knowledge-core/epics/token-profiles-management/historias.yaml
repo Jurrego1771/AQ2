@@ -1,58 +1,46 @@
-# Historias de Usuario - Epic Token Profiles Management
-# Solo intencion: US + AC. Los vinculos a tests/riesgos los declara el test
-# (tests.yaml -> refs) y los calcula el build. Aqui NO hay reverse-links.
-# AC ids unicos por modulo: TOK-AC-N.
 version: 1
-epic: "Token Profiles Management"
-ultima_actualizacion: '2026-07-03'
+epic: "token-profiles-management"
+ultima_actualizacion: '2026-07-08'
+
+# Este epic se actualizo a partir del analisis del PR sm2#8451 (Jurrego1771/AQ2).
+# Cubre 2 historias:
+#   1. AragonTV flow: token API restringido puede usar /api/category si su TokenProfile
+#      incluye 'media.category' (PR sm2#8451, OPEN).
+#   2. Token API restringido SIN media.category NO puede usar /api/category.
+#
+# Capa de contratos del recurso /api/category vive en knowledge-core/modules/category/
 
 stories:
-  - id: "US-018"
-    titulo: "Restringir el acceso de un API token al modulo de categorias"
-    rol: "administrador de plataforma / integrador externo"
-    meta: "que un API token con perfil restringido pueda leer /api/category"
-    beneficio: "otorgar acceso de solo-lectura a categorias sin exponer el resto de la API"
+  - id: "US-035"
+    titulo: "Acceso a /api/category por tokens API restringidos segun TokenProfile"
+    rol: "cliente externo (ej. AragonTV) o admin de plataforma"
+    meta: "Permitir que un API token con profile restringido use /api/category solo si su profile incluye 'media.category'"
+    beneficio: "Habilitar integraciones externas (AragonTV) sobre platform actual 'https://platform.mediastre.am' sin compartir el token admin global"
     descripcion: |
-      Como administrador de plataforma,
-      quiero poder asignar el modulo media.category a un Token Profile,
-      para que un integrador externo con ese perfil pueda consultar
-      /api/category sin tener acceso a otros modulos.
+      Como cliente externo de platform actual (AragonTV),
+      quiero emitir un API token cuyo TokenProfile solo incluya el modulo 'media.category',
+      para llamar a GET /api/category sin necesidad de pedir credenciales admin.
 
+      Antes del PR sm2#8451 esto NO era posible: el enum de Mongoose en
+      src/server/model/schemas/tokenProfile.js no aceptaba 'media.category', asi que
+      cualquier profile que intentara guardarse con ese modulo fallaba la validacion.
     acceptance_criteria:
-      - id: "TOK-AC-1"
-        criterio: "Un API token cuyo Token Profile incluye media.category recibe 200 al llamar GET /api/category"
-      - id: "TOK-AC-2"
-        criterio: "Un API token cuyo Token Profile NO incluye media.category recibe 403 al llamar GET /api/category"
-
+      - id: "CAT-AC-1"
+        criterio: "Un API token cuyo TokenProfile incluye 'media.category' responde 200 al llamar GET /api/category"
+      - id: "CAT-AC-2"
+        criterio: "Un API token cuyo TokenProfile NO incluye 'media.category' responde 403 al llamar GET /api/category"
     prioridad: "medium"
     tipo: "feature"
     dependencias:
-      - "api/category"
-      - "modelo TokenProfile (sm2)"
-      - "cuenta con el modulo media activado (ACCOUNT.modules.media)"
+      - "PR sm2#8451 (feature/issue-8450, OPEN)"
+      - "Setup admin: crear TokenProfile + emitir tokens persistentes (ver TOK-RISK-001)"
 
     notas: |
-      Origen: mediastream/sm2#8451 (PR) / #8450 (issue), pedido por Aragon TV
-      (xaloc tercero). Cambio aditivo: se agrego 'media.category' al enum de
-      Mongoose de TokenProfile y al dropdown del cliente
-      (admin_accounts.coffee); el middleware module-access.js y las rutas de
-      /api/category ya soportaban el modulo (verificado leyendo codigo, sin
-      cambios necesarios ahi).
-
-      TOK-AC-1 y TOK-AC-2: SIN cobertura (GAP), ver TOK-RISK-001. Se
-      descubrio que un token creado por la cuenta QA nunca tiene
-      TokenProfile asignado (el campo esta oculto en la UI salvo
-      USER.is_admin=true, views/settings/api.coffee), por lo que ningun
-      test con un token "normal" ejercita el codigo de este PR -se escribio
-      y elimino un intento asi al confirmarlo, para no dejar un falso
-      positivo en la suite-. Pedido de acceso correcto (una sola vez, no por
-      corrida): dos documentos TokenProfile creados por un admin de
-      plataforma (con y sin media.category) + modulo de cuenta api_tokens
-      habilitado para la cuenta QA -la asignacion de perfil a un token SI es
-      alcanzable con permiso de cuenta normal una vez que el TokenProfile
-      existe, confirmado leyendo update.js-.
-
-      La UI de gestion de perfiles (/admin/account -> pestana Token Profiles)
-      y la definicion de que modulos tiene cada perfil quedan permanentemente
-      fuera de cobertura de AQ2 (requieren is_admin de plataforma, sin via
-      alternativa) -ver TOK-RISK-002.
+      Cobertura actual (sesion 2026-07-08):
+      - Contrato del endpoint: tests/api/contract/category.api.contract.spec.js (CAT-TC-001..004) - verde.
+      - AragonTV flow end-to-end: tests/api/token-profile.gate.spec.js (TOK-TC-001..004) - skipped
+        hasta configurar TOKEN_PROFILE_ID_WITH_CATEGORY_DEV/WITHOUT.
+      - UI admin dropdown /admin/account - NO accesible con bot QA (Forbidden admin-only).
+        El PR sm2#8451 agrega 'media.category' a @client/admin_accounts.coffee lines 15+;
+        el coverage del dropdown queda como gap de UI (mismo problema que live-stream
+        y otros modulos admin-only).

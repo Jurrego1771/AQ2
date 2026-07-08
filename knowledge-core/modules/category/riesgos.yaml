@@ -1,0 +1,74 @@
+version: 1
+modulo: "category"
+ultima_actualizacion: '2026-07-08'
+
+riesgos:
+  - id: "CAT-RISK-1"
+    severidad: "medium"
+    probabilidad: "high"
+    titulo: "Filtro hidden del handler sm2 excluye 'account' del payload del listado"
+    descripcion: >
+      El handler sm2 (categorias/index.js:110-114) verifica is_account_admin para
+      habilitar `with_count`. Si el user es account_admin, ve todas las categorias
+      de la cuenta. Si NO lo es, ve solo `user.categories[]` asignadas. Esto es
+      un filtro server-side que el cliente no controla. Si sm2 cambia la logica de
+      visibilidad, los clientes que asumian 'veo todo lo que la cuenta tiene' rompen.
+    detonador:
+      - "Cambio de permisos de categoria en el admin que mueve/quita el user del array 'categories'"
+      - "Cambio de logica en filterCategories() del handler"
+    mitigacion: >
+      Test fail-vivo que cree un user SIN account_admin y verifique que solo ve
+      `user.categories[]`. Cubre deriva silenciosa del filtro de visibilidad.
+    archivos_afectados:
+      - "src/server/routes/api/category/index.js:14-22"
+    defectos_relacionados: []
+    prioridad_prueba: "SHOULD"
+    nota_industria: >
+      Authoritative (OWASP A01:2021 Broken Access Control) - cualquier cliente que asume
+      'lista completa de la cuenta' es un riesgo. La convencion debe ser: cada token
+      explicita que modulo usa y solo ve lo que su modulo le da.
+
+  - id: "CAT-RISK-2"
+    severidad: "low"
+    probabilidad: "medium"
+    titulo: "GET /api/category sin auth devuelve 403 INVALID_TOKEN (no 401)"
+    descripcion: >
+      Verificado en vivo: GET /api/category sin auth (sin cookies ni x-api-token) responde
+      403 INVALID_TOKEN, no 401. Esto es semantica confusa para clientes HTTP puros
+      que esperan 401 para "falta auth" y 403 para "auth presente pero insuficiente".
+      sm2 usa 403 para ambos casos. Documentar para los spec.
+    detonador:
+      - "Endpoint se llama sin Authorization ni cookies"
+      - "Token invalido o expirado"
+    mitigacion: >
+      Tests contract aceptan cualquier envelope {status:'ERROR', data:string} para
+      no atar al codigo de error literal. Status 401 vs 403 es irrelevante para
+      clients que ya manejan 'no autorizado' como categoria.
+    archivos_afectados:
+      - "src/server/middleware/api-auth-read.js"
+    defectos_relacionados: []
+    prioridad_prueba: "COULD"
+    nota_industria: >
+      RFC 7235 recomienda 401 para falta de auth y 403 para auth insuficiente.
+      La eleccion de sm2 (siempre 403) es pragmatica; aceptar ambos en tests.
+
+  - id: "CAT-RISK-3"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "El handler sm2 hace .select() con whitelist explicita; campos fuera de la lista no son accesibles"
+    descripcion: >
+      categorias/index.js:239 hardcodea los campos del .select():
+      'name description parent date_created image_url visible track app_feed
+       drm custom slug filter_categories'. Si un cliente espera un campo (p.ej.
+      'account', 'is_published'), recibe undefined. El cliente no tiene manera
+      de pedir mas campos (no hay ?fields=).
+    detonador:
+      - "Cliente espera 'account' o 'is_published' en la respuesta"
+      - "sm2 agrega un campo nuevo al CategorySchema de Mongoose sin actualizar el .select()"
+    mitigacion: >
+      Tests contract Zod verifican la shape exacta; si sm2 cambia el .select() el spec
+      rompe rapido en CI (ya cubierto en CAT-TC-001).
+    archivos_afectados:
+      - "src/server/routes/api/category/index.js:239"
+    defectos_relacionados: []
+    prioridad_prueba: "SHOULD"
