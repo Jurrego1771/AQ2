@@ -11,13 +11,10 @@ const {
 
 /**
  * @api — Contrato HTTP del recurso Category (sm2 vista categories.coffee).
+ * Cubre GET list / detail.
  *
- * Cubre GET list / detail. El AragonTV flow end-to-end (crear TokenProfile con
- * media.category -> emitir token -> GET /api/category) vive en
- * tests/api/token-profile.gate.spec.js porque requiere credenciales admin
- * (ver TOK-RISK-001). Lo que cubrimos aca es el CONTRATO del endpoint -
- * cualquier cambio de shape rompe CI antes de que sm2 despliegue y rompa
- * clientes de AragonTV.
+ * Si sm2 cambia el shape del envelope `{status:'OK', data:[...]}` o de los items,
+ * los specs rompen rapido en CI.
  */
 test.describe('Category API @api - Contract', () => {
   test.skip(env.isProd, 'prodGuard: estos tests escriben recursos en dev/qa');

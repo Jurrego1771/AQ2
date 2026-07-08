@@ -4,16 +4,10 @@ const { z } = require('zod');
 /**
  * Schema Zod del recurso Category del admin SM2.
  *
- * Verificado en vivo contra /api/category (dev v7.0.71) con cuenta botqa@mediastre.am.
  * El handler sm2 hace un .select() explicito (categorias/index.js:239) con:
  *   'name description parent date_created image_url visible track app_feed
  *    drm custom slug filter_categories'
  * Los campos que faltan en ese select no aparecen en la respuesta.
- *
- * Contexto del PR #8451 (Jurrego1771/AQ2): este endpoint se volvio accesible
- * para tokens API restringidos una vez que se anadio 'media.category' al
- * TokenProfile enum. La cobertura de AragonTV flow vive en
- * tests/api/token-profile.gate.spec.js (skip-if-no-credentials).
  */
 
 const drmSchema = z.object({
