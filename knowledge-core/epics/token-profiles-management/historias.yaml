@@ -38,8 +38,7 @@ stories:
     notas: |
       Cobertura actual (sesion 2026-07-08):
       - Contrato del endpoint: tests/api/contract/category.api.contract.spec.js (CAT-TC-001..004) - verde.
-      - AragonTV flow end-to-end: tests/api/token-profile.gate.spec.js (TOK-TC-001..004) - skipped
-        hasta configurar TOKEN_PROFILE_ID_WITH_CATEGORY_DEV/WITHOUT.
+      - AragonTV flow end-to-end: NO testeado desde esta cuenta. El bot QA no es super-admin; el setup requiere crear TokenProfile + emitir token con perfil `media.category` y reusarlo (ver TOK-RISK-001 en `knowledge-core/modules/token-profiles/tests.yaml` para el setup exacto). Decidido fuera de scope.
       - UI admin dropdown /admin/account - NO accesible con bot QA (Forbidden admin-only).
         El PR sm2#8451 agrega 'media.category' a @client/admin_accounts.coffee lines 15+;
         el coverage del dropdown queda como gap de UI (mismo problema que live-stream
