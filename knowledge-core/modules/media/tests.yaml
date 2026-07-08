@@ -318,3 +318,64 @@ tests:
     # Ver cross-cutting/changed-alert/overview.md.
 
   # Thumbnails / Preview (cluster 3) -> módulo aparte: modules/thumbnails/tests.yaml (THM-TC-*)
+
+  # ---- Contratos HTTP (validan shape via Zod, sin sesion browser) ----
+  # Migrado de api_test_flow/tests/api/contract/media/media.contract.spec.js (rama
+  # previa del mismo repo). Adaptado a AQ2: auth por cookies via storageState,
+  # cleanup self-contained con ResourceCleaner, envelopes jsonp sm2 intactos,
+  # titulos unicos [QA-CONTRACT]-{ts}-{rand} para multiples corridas.
+  - id: "MED-TC-025"
+    titulo: "POST /api/media devuelve Create Response valido contra Zod"
+    modulo: "media"
+    tipo: "contract"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["MED-AC-1"]
+      mitigates: []
+      story: "US-006"
+      spec: "tests/api/contract/media.api.contract.spec.js"
+    # Blindaje contra drift silencioso de sm2: si sm2 cambia un campo de POST /api/media,
+    # este spec rompe rapido en CI (no en runtime de cliente).
+
+  - id: "MED-TC-026"
+    titulo: "GET /api/media/:id devuelve Get Response valido contra Zod"
+    modulo: "media"
+    tipo: "contract"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["MED-AC-1"]
+      mitigates: []
+      story: "US-006"
+      spec: "tests/api/contract/media.api.contract.spec.js"
+    # Consistency check: el _id devuelto por GET debe matchear el id creado por POST.
+
+  - id: "MED-TC-027"
+    titulo: "GET /api/media (list) devuelve List Response valido contra Zod"
+    modulo: "media"
+    tipo: "contract"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["MED-AC-2"]
+      mitigates: []
+      story: "US-006"
+      spec: "tests/api/contract/media.api.contract.spec.js"
+    # Solo se valida la forma (data = array, status OK); no se asume cantidad > 0
+    # por portabilidad cross-cuenta.
+
+  - id: "MED-TC-028"
+    titulo: "GET /api/media?count=true devuelve Number Response valido contra Zod"
+    modulo: "media"
+    tipo: "contract"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["MED-AC-2"]
+      mitigates: []
+      story: "US-006"
+      spec: "tests/api/contract/media.api.contract.spec.js"
+    # Caso especial: el handler sm2 devuelve `data: <number>` cuando viene
+    # `?count=true`. Esquema separado para no forzar array.
+
