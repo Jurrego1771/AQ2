@@ -77,3 +77,38 @@ tests:
       mitigates: ["SHW-RISK-002"]
       story: "US-015"
       spec: "tests/regression/show-seasons.regression.spec.js"
+
+  # ---- Contratos HTTP (capa contract, blindaje contra drift de sm2) ----
+  # Migrado de api_test_flow/tests/api/contract/show/show.contract.spec.js.
+  # ALCANCE LIMITADO: en esta version de sm2 (v7.0.71) SOLO existe /api/show/list
+  # (verificado leyendo sm2/app.js:4094). POST/GET-by-id/DELETE se exponen por
+  # el admin via UI o sub-resources (/api/show/:id/season) cubiertos en specs de
+  # integracion existentes (tests/integration/show-*). Solo cubrimos list aqui.
+  - id: "SHW-TC-007"
+    titulo: "GET /api/show/list devuelve items con shape minimo (id/title/type) contra Zod"
+    modulo: "show"
+    tipo: "contract"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["SHW-AC-1"]
+      mitigates: []
+      story: "US-015"
+      spec: "tests/api/contract/show.api.contract.spec.js"
+    # El handler sm2 hace .select() que por defecto retorna SOLO _id/title/type
+    # (MINIMUM_FIELDS en src/server/routes/api/show/list.js). Los demas campos
+    # solo llegan con ?fields=slug,...
+
+  - id: "SHW-TC-008"
+    titulo: "GET /api/show/list?all=true bypasea filtro status='OK' y mantiene shape minimo"
+    modulo: "show"
+    tipo: "contract"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["SHW-AC-1"]
+      mitigates: []
+      story: "US-015"
+      spec: "tests/api/contract/show.api.contract.spec.js"
+    # El param all=true es la unica manera de incluir shows no-publish sin
+    # actualizar cada uno via UI.

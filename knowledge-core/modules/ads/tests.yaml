@@ -224,6 +224,60 @@ tests:
       mitigates: ["ADS-RISK-9"]
       story: "US-033"
       spec: "tests/api/ads.api.spec.js"
-    # ROJO HASTA FIX: la unica rama de update.js que limpia schedule.mid es
+     # ROJO HASTA FIX: la unica rama de update.js que limpia schedule.mid es
     # `mid === 'null'` (literal string). El UI no envia ese literal: envia []
     # o no envia la clave. Bug tracked en Jurrego1771/AQ2#47.
+
+  # ---- Contratos HTTP (capa contract, blindaje contra drift de sm2) ----
+  # Migrado de api_test_flow/tests/api/contract/ad/ad.contract.spec.js. Adaptacion:
+  # el endpoint real de alta es /api/ad/new (sm2/app.js:2716), NO /api/ad/.
+  # El catalogo de tipos aceptados por el backend (create.js) incluye 8 valores;
+  # el del UI solo 6 (ad-insertion, googleima, adswizz siguen funcionando via API).
+  - id: "ADS-TC-18"
+    titulo: "POST /api/ad/new devuelve Create Response valido contra Zod"
+    modulo: "ads"
+    tipo: "contract"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["ADS-AC-1"]
+      mitigates: []
+      story: "US-030"
+      spec: "tests/api/contract/ad.api.contract.spec.js"
+
+  - id: "ADS-TC-19"
+    titulo: "GET /api/ad/:id devuelve Get Response valido contra Zod"
+    modulo: "ads"
+    tipo: "contract"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["ADS-AC-1"]
+      mitigates: []
+      story: "US-030"
+      spec: "tests/api/contract/ad.api.contract.spec.js"
+
+  - id: "ADS-TC-20"
+    titulo: "GET /api/ad (list) devuelve List Response valido contra Zod"
+    modulo: "ads"
+    tipo: "contract"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["ADS-AC-2"]
+      mitigates: []
+      story: "US-030"
+      spec: "tests/api/contract/ad.api.contract.spec.js"
+
+  - id: "ADS-TC-21"
+    titulo: "GET /api/ad/:fake_id devuelve 404 NOT_FOUND"
+    modulo: "ads"
+    tipo: "contract"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["ADS-AC-3"]
+      mitigates: []
+      story: "US-030"
+      spec: "tests/api/contract/ad.api.contract.spec.js"
+

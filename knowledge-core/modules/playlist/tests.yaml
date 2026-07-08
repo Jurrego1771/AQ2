@@ -143,3 +143,57 @@ tests:
       mitigates: ["PLST-RISK-3"]
       story: "US-029"
       spec: "tests/regression/playlist.regression.spec.js"
+
+  # ---- Contratos HTTP (capa contract, blindaje contra drift de sm2) ----
+  # Migrado de api_test_flow/tests/api/contract/playlist/playlist.contract.spec.js.
+  # Cubre POST/GET/list + ?medias=true con schema Zod (src/schemas/playlist.schema.js).
+  - id: "PLST-TC-12"
+    titulo: "POST /api/playlist devuelve Create Response valido contra Zod"
+    modulo: "playlist"
+    tipo: "contract"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["PLST-AC-1"]
+      mitigates: []
+      story: "US-026"
+      spec: "tests/api/contract/playlist.api.contract.spec.js"
+
+  - id: "PLST-TC-13"
+    titulo: "GET /api/playlist/:id devuelve Get Response valido contra Zod"
+    modulo: "playlist"
+    tipo: "contract"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["PLST-AC-1"]
+      mitigates: []
+      story: "US-026"
+      spec: "tests/api/contract/playlist.api.contract.spec.js"
+
+  - id: "PLST-TC-14"
+    titulo: "GET /api/playlist (list) devuelve List Response valido contra Zod"
+    modulo: "playlist"
+    tipo: "contract"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["PLST-AC-2"]
+      mitigates: []
+      story: "US-026"
+      spec: "tests/api/contract/playlist.api.contract.spec.js"
+
+  - id: "PLST-TC-15"
+    titulo: "GET /api/playlist/:id?medias=true responde 200 con envelope jsonp valido"
+    modulo: "playlist"
+    tipo: "contract"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["PLST-AC-1"]
+      mitigates: []
+      story: "US-026"
+      spec: "tests/api/contract/playlist.api.contract.spec.js"
+    # Diferencia con el old repo: en esta version de sm2 ?medias=true devuelve la
+    # playlist completa + rules, NO un array de medias. Conservamos el spec para
+    # detectar drift en el envelope (status/data) sin atar a un shape interno.
