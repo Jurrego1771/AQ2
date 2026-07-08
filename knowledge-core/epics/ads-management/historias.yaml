@@ -1,0 +1,87 @@
+# Historias de Usuario - epic: ads-management
+# SM2 module: Ads (vista ads.coffee / ad.coffee).
+# Estructura: US-030 carga modulo, US-031 listado+busqueda, US-032 form
+# (new + detail), US-033 contrato API. Una US por flujo significativo explorado.
+version: 1
+epic: "ads-management"
+ultima_actualizacion: '2026-07-08'
+
+stories:
+  - id: "US-030"
+    titulo: "Cargar el modulo Ads en el admin SM2"
+    rol: "admin de plataforma"
+    meta: "Listar plantillas de anuncios publicitarios con contador real"
+    beneficio: "Acceso rapido al inventario de Ads para gestionarlos"
+    descripcion: |
+      Como admin de plataforma,
+      quiero entrar al modulo Ads y ver el listado con el total real,
+      para localizar rapidamente las plantillas de anuncios a editar o auditar.
+    acceptance_criteria:
+      - id: "ADS-AC-1"
+        criterio: "GET /ad responde 200 y la pagina muestra el contador `total-ads` con el total real de la API > 0 para una cuenta con ads"
+    prioridad: "critical"
+    tipo: "feature"
+    dependencias:
+      - "auth/login"
+      - "sesion activa via storageState"
+
+  - id: "US-031"
+    titulo: "Buscar y paginar ads en el listado"
+    rol: "admin de plataforma"
+    meta: "Reducir el listado por nombre y mantener el orden por Creation Date"
+    beneficio: "Encontrar ads especificos sin scroll manual"
+    descripcion: |
+      Como admin,
+      quiero buscar ads por nombre y paginar los resultados,
+      para localizar rapidamente una plantilla concreta entre cientos de ads.
+    acceptance_criteria:
+      - id: "ADS-AC-2"
+        criterio: "El listado carga con paginador (paginator-next / paginator-prev) y contador total-ads que refleja el total real de la API"
+      - id: "ADS-AC-3"
+        criterio: "Tipear texto en el input de busqueda (sm='query-ad') y enviar con Enter dispara una nueva peticion /api/ad?query=<texto> que reduce el listado y muestra solo filas cuyo Name contiene el termino (substring, case-insensitive, regexp)"
+      - id: "ADS-AC-4"
+        criterio: "La busqueda sin coincidencias devuelve total-ads=0 y la lista queda vacia; limpiar el input restaura el listado al estado original"
+    prioridad: "high"
+    tipo: "feature"
+    dependencias:
+      - "US-030"
+
+  - id: "US-032"
+    titulo: "Crear y editar un Ad desde el form"
+    rol: "admin de plataforma"
+    meta: "Crear una plantilla de anuncio con tipo (AdServer/VMAP/Media/Ad Replacement/Google MRSS/Prebid) y datos basicos"
+    beneficio: "Publicar Ads en el player con las plataformas publicitarias elegidas"
+    descripcion: |
+      Como admin,
+      quiero crear/editar un ad definiendo nombre, estado de publicacion y tipo,
+      para configurar como el player servira los anuncios en el contenido asociado.
+    acceptance_criteria:
+      - id: "ADS-AC-5"
+        criterio: "El form /ad/new y /ad/:id expone: input Name (sm='ad-name'), toggle Status (data-name='is_enabled'), 6 botones Type (AdServer/VMAP/Media/Ad Replacement/Google MRSS/Prebid) y el boton Save Changes (sm='save')"
+      - id: "ADS-AC-6"
+        criterio: "Al guardar con un nombre valido y tipo vast, el POST /api/ad/ responde 200 con jsonp {status:'OK', data:ad} y la navegacion al detalle carga el input con el nombre persistido"
+    prioridad: "high"
+    tipo: "feature"
+    dependencias:
+      - "US-031"
+
+  - id: "US-033"
+    titulo: "Contrato HTTP del recurso /api/ad"
+    rol: "integrador / admin"
+    meta: "Operar el recurso Ad por API con respuestas consistentes"
+    beneficio: "Permitir tooling externo (scripts, integraciones) que operen Ads sin UI"
+    descripcion: |
+      Como integrador,
+      quiero usar GET/POST/POST(no-PUT)/DELETE en /api/ad/:id con respuestas estables,
+      para poder crear, consultar, actualizar y borrar Ads desde fuera del admin.
+    acceptance_criteria:
+      - id: "ADS-AC-7"
+        criterio: "GET /api/ad/:id responde 200 con el documento completo para un id existente y 404 NOT_FOUND para un id valido-hex pero inexistente"
+      - id: "ADS-AC-8"
+        criterio: "POST /api/ad/ con body {name,type:'vast',is_enabled:'false'} responde 200 y persiste; el GET posterior devuelve el documento con los mismos campos"
+      - id: "ADS-AC-9"
+        criterio: "El update via POST /api/ad/:id con cambio de type debe limpiar los campos del tipo anterior (no state leak entre tipos)"
+    prioridad: "high"
+    tipo: "feature"
+    dependencias:
+      - "US-032"

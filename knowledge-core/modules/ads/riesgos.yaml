@@ -1,0 +1,278 @@
+# Riesgos - Modulo Ads. Poblado desde exploracion en vivo (dev) + lectura de
+# src/server/routes/api/ad/* de sm2. Defectos = issues GitHub (Jurrego1771/AQ2#N).
+# NO se escribe mitigado_por_test (derivado).
+version: 1
+modulo: "ads"
+ultima_actualizacion: '2026-07-08'
+
+riesgos:
+  # ---- Backend (API) ----
+  - id: "ADS-RISK-1"
+    severidad: "medium"
+    probabilidad: "medium"
+    titulo: "GET /api/ad/:id no necesariamente valida que :id sea un ObjectId valido"
+    descripcion: >
+      El handler de detail.js hace SM_APP.model.Ad.findOne({_id: req.params.ad_id, account}).
+      Con un id no-ObjectId (literal 'new', por ejemplo) Mongoose lanza CastError
+      al castear; segun el handler cae a la rama 'ad falsy' y responde 404, pero
+      NO HAY GARANTIA explicita (no se llama mongoose.isValidObjectId). Patron
+      similar al bug LIVE-RISK-1 (recording) - misma familia.
+    detonador:
+      - "GET /api/ad/new (literal 'new', ruta del form de creacion)"
+      - "GET /api/ad/<string no-hex>"
+    mitigacion: >
+      Validar :ad_id con mongoose.isValidObjectId antes del findOne y responder
+      404 NOT_FOUND consistente. Tambien: NO serializar el error de Mongoose
+      en la respuesta (CWE-209 information exposure).
+    archivos_afectados:
+      - "src/server/routes/api/ad/detail.js"
+      - "src/server/routes/api/ad/delete.js"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#43"
+    prioridad_prueba: "MUST"
+    nota_industria: >
+      OWASP Improper Error Handling / Information Exposure (CWE-209).
+
+  - id: "ADS-RISK-2"
+    severidad: "medium"
+    probabilidad: "high"
+    titulo: "El form no expone los tipos 'ad-insertion'/'googleima'/'adswizz' y los botones del selector no muestran el tipo real"
+    descripcion: >
+      El backend acepta 8 tipos (vast|vmap|googleima|local|ad-insertion|adswizz|
+      ad-insertion-google|ad-prebid) pero el form expone solo 5 con marca sm
+      unica (vast, vmap, local, ad-insertion-google, ad-prebid) y uno compartido
+      (Media + Ad Replacement = type-local). Tipos legacy siguen siendo queryables
+      en el listado (cosechado "Ad Insertion" en dev), pero la UI no permite
+      crear ni cambiar a esos tipos. Ademas, en detalle, los 6 botones no
+      muestran de forma fiable cual esta activo: en una fila de tipo
+      'ad-insertion' el boton 'Ad Replacement' tenia clase 'active' en el cosechado
+      en vivo (RISK-2 -> ver hallazgo adicional en overview.md).
+    detonador:
+      - "Listar Ads: aparecen filas con tipo 'Ad Insertion' (legacy)"
+      - "Abrir un Ad de tipo 'ad-insertion' en el detalle: los 6 botones del
+        selector Type aparecen todos inactivos; sin embargo 'Ad Replacement' tiene
+        clase 'active' (incoherente)"
+    mitigacion: >
+      - Eliminar 'googleima'/'adswizz' del backend si son legacy puros.
+      - Mantener 'ad-insertion' como tipo accesible desde la UI (anadir boton).
+      - En el form, deshabilitar el selector Type cuando el ad ya existe
+        (el tipo es inmutable al actualizar el mismo recurso, o permitir cambio
+        explicito con confirmacion); y siempre reflejar visualmente el tipo
+        real del ad en el detalle.
+    archivos_afectados:
+      - "src/client/ad.coffee"
+      - "src/client/ads.coffee"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#41"
+    prioridad_prueba: "SHOULD"
+    nota_industria: >
+      Nielsen #3 (control y libertad: el usuario debe poder ver y editar el
+      tipo), Nielsen #6 (reconocer mejor que recordar: el boton activo debe
+      representar el estado real), Nielsen #4 (consistencia entre UI y datos).
+
+  - id: "ADS-RISK-3"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "Media y Ad Replacement comparten la marca sm='type-local' (no direccionables individualmente)"
+    descripcion: >
+      En el form, los 2 botones 'Media' y 'Ad Replacement' llevan sm='type-local'.
+      Tests no pueden identificarlos por sm unica, obligando a .nth(0) / .nth(1)
+      fragil ante cualquier reorden o i18n. Misma familia de SMELL que
+      LIVE-RISK-3 y SM2#35 (Published indicators).
+    detonador:
+      - "Automatizar la seleccion entre Media y Ad Replacement por marca sm unica"
+      - "Reordenar el orden visual de los botones en la vista (cambio de i18n)"
+    mitigacion: >
+      Asignar sm distintas: type-local-media y type-local-replacement. Mismo
+      criterio para los 6 botones en general si se amplia el catalogo.
+    archivos_afectados:
+      - "src/client/ad.coffee"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#46"
+    prioridad_prueba: "COULD"
+    nota_industria: >
+      Testabilidad / mantenibilidad de selectores (contrato QA: solo sm:).
+
+  - id: "ADS-RISK-4"
+    severidad: "medium"
+    probabilidad: "medium"
+    titulo: "Typo `ad.gdai = null` en update.js (deberia ser `ad.google_dai`) y branch ad-prebid no nullifica campos de otros tipos (state leak)"
+    descripcion: >
+      Dos issues detectados leyendo src/server/routes/api/ad/update.js:
+
+      1. Linea ~245 (rama default 'vast'): `ad.gdai = null`. Mongoose ignora
+         campos desconocidos del schema, asi que esta linea es NO-OP -> NO se
+         limpia `google_dai` al pasar de ad-insertion-google a vast en update.
+         El backend deberia decir `ad.google_dai = null` como hace create.js
+         (linea ~188).
+
+      2. Branch `req.body?.type === 'ad-prebid'` (linea ~100): NO hace
+         `ad.google_dai = null` ni `ad.insertion = null` ni `ad.vmap = null` ni
+         `ad.adswizz = null`. Cambiar un Ad de tipo ad-insertion-google a
+         ad-prebid deja rastros de source_id/hmac en google_dai. Mismo patron que
+         LIVE-RISK-7 (updateSchedule): no limpia campos de tipos anteriores.
+
+      Misma familia de patron falsy en update: si una rama del switch no
+      nulifica los campos de las otras ramas, se produce state leak al cambiar
+      de tipo.
+    detonador:
+      - "Crear Ad ad-insertion-google con source_id. Cambiar tipo a vast o ad-prebid. Releer: los datos de google_dai.source_id persisten."
+    mitigacion: >
+      - Corregir typo: `ad.google_dai = null` (en vez de `ad.gdai`).
+      - En cada rama de tipo en update.js, nulificar explicitamente los campos
+        de las otras ramas (o factorizar un helper que limpie segun el nuevo tipo).
+      - Patron consistente con create.js (que ya lo hace bien en la mayor parte).
+    archivos_afectados:
+      - "src/server/routes/api/ad/update.js"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#44"
+    prioridad_prueba: "MUST"
+    nota_industria: >
+      Semantica de actualizacion: un PUT/POST debe dejar el recurso consistente
+      con el nuevo estado. El patron 'no limpiar campos de tipos anteriores'
+      es una clase de bug recurrente en la plataforma (ver LIVE-RISK-7).
+
+  - id: "ADS-RISK-5"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "Listado UI: sin filtro Published/Not Published aunque la API lo soporta con `status=0|1`"
+    descripcion: >
+      La API index.js acepta `status=0` (todos, default) y por implicacion
+      otros valores. La UI solo envia status=0 y no expone un control para
+      alternar. Resultado: el listado siempre muestra todos los ads sin
+      manera de ocultar los no publicados.
+
+      Hipotesis alternativa: el modulo solo lista publicados y los no
+      publicados se gestionan desde otra vista. Pero en el cosechado en vivo
+      todas las filas tenian status glyphicon 'ok' (al menos las primeras
+      paginas); falta confirmacion negativa.
+    detonador:
+      - "Tener 100 ads en cuenta, querer ver solo los 10 no publicados"
+    mitigacion: >
+      Anadir control en la toolbar (chip o dropdown) que envie status=0|1|2
+      (todos|publicados|no publicados). Si la API no soporta !=0, extender
+      el handler.
+    archivos_afectados:
+      - "src/client/ads.coffee"
+      - "src/server/routes/api/ad/index.js"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#40"
+    prioridad_prueba: "COULD"
+    nota_industria: >
+      Nielsen #3 (control y libertad: poder filtrar).
+
+  # ---- UX / a11y ----
+  - id: "ADS-RISK-6"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "Multiples controles solo-icono sin nombre accesible (a11y SC 4.1.2 A)"
+    descripcion: >
+      Varios controles UI no exponen texto visible ni aria-label ni title:
+      - Listado: botones paginator-next / paginator-prev son `<a href='#next|#previous'><i class='glyphicon'></i></a>` sin aria-label.
+      - Listado: glyphicon 'ok' para Status por fila (sin accesible name).
+      - Form: add-midroll, preroll-params-edit, preroll-params-mobile-edit, midroll-params-edit, postroll-params-edit, vmap-params-edit, vmap-mobile-params-edit: botones solo-icono.
+      WCAG 2.1 SC 4.1.2 Name, Role, Value (nivel A).
+    detonador:
+      - "Navegar la UI con lector de pantalla"
+      - "Intentar automatizar clicks por role/name accessible (testeable)"
+    mitigacion: >
+      Anadir aria-label o sr-only text a cada control (e.g. 'Add mid-roll', 'Open pre-roll custom parameters', 'Next page', etc.).
+    archivos_afectados:
+      - "src/client/ads.coffee"
+      - "src/client/ad.coffee"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#42"
+    prioridad_prueba: "COULD"
+    nota_industria: >
+      WCAG 2.1 SC 4.1.2 Name, Role, Value (A). Cubre tambien WCAG 2.4.4 Link Purpose.
+
+  # ---- UX / comportamiento ----
+  - id: "ADS-RISK-7"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "El form no bloquea el alta con Name vacio y el server lo acepta"
+    descripcion: >
+      El form permite submit con Name vacio. El backend (create.js) solo
+      aplica name si `req.body?.name` es truthy, asi que si el form no envia
+      'name', el doc queda con `name: undefined`. La lista igualmente lo
+      mostrara con un placeholder vacio. No es bloqueante pero da una
+      falsa sensacion de guardado cuando en realidad el campo esta vacio.
+    detonador:
+      - "Click Save Changes sin escribir un nombre"
+    mitigacion: >
+      Validacion HTML `required` en el input ad-name. Si se quiere permitir
+      sin nombre, agregar un placeholder ('Requerido para identificar el ad').
+    archivos_afectados:
+      - "src/client/ad.coffee"
+    defectos_relacionados: []
+    prioridad_prueba: "COULD"
+    nota_industria: >
+      Nielsen #5 (prevencion de errores), #9 (errores recuperables).
+
+  - id: "ADS-RISK-8"
+    severidad: "low"
+    probabilidad: "medium"
+    titulo: "Listado pide `limit=11` aunque la UI ofrece '12 per page' (friccion menor)"
+    descripcion: >
+      La peticion del front lleva `limit=11` aunque el dropdown dice '12 per
+      page' (select con opciones 12/24/48/96). El contador visible
+      '1 - 11' es honesto con la API, pero el usuario que espera '12
+      resultados por pagina' ve '11'. Friccion menor / inconsistencia.
+    detonador:
+      - "Cualquier carga del listado en /ad"
+    mitigacion: >
+      Alinear el param `limit` del front con el valor visible del dropdown
+      (12, 24, 48 o 96 segun seleccion).
+    archivos_afectados:
+      - "src/client/ad.coffee"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#45"
+    prioridad_prueba: "COULD"
+    nota_industria: >
+      Nielsen #4 (consistencia y estandares). Tambien CWE-UI-1 en
+      manifests de open code.
+
+  - id: "ADS-RISK-9"
+    severidad: "medium"
+    probabilidad: "high"
+    titulo: "Falsy leaks en update.js (VAST): pausead.position y schedule.mid no se limpian con '' / []"
+    descripcion: >
+      Verificado en vivo contra dev v7.0.71 (probe en
+      scripts/probe-ad-falsy-exhaustive.js). El backend NO permite vaciar
+      dos campos editables del form enviando empty string '' / empty array [].
+      El servidor responde 200 OK pero el valor previo persiste silenciosamente.
+      Misma familia/raiz que LIVE-RISK-7: guardas `if (X)` o
+      `if (X && trim(X) !== '')` que fallan cuando X es falsy.
+
+      Campos confirmados en vivo (10 OK, 2 leaks):
+      - `schedule.pausead.tag` -> '' OK
+      - `schedule.pausead.tag_mobile` -> '' OK
+      - `schedule.pausead.duration` -> '' OK
+      - `schedule.pausead.duration_mobile` -> '' OK
+      - `schedule.pausead.messages.close_text` -> '' OK (trim)
+      - `schedule.pausead.messages.view_more_text` -> '' OK (trim)
+      - `schedule.overlay.tag` -> '' OK
+      - `schedule.overlay.position` -> '' OK
+      - `schedule.pre.tag` -> '' OK
+      - `schedule.post.tag` -> '' OK
+      - **`schedule.pausead.position` -> '' NO limpia (persiste)**
+      - **`schedule.mid` -> [] NO limpia (conserva mids previos)**
+
+      Causa en update.js (sm2):
+      - pausead.position: `if (pauseadPosition && utils.trim(pauseadPosition) !== '')` -> salta el bloque cuando X es ''.
+      - schedule.mid: la unica ruta que limpia mid es `if (req.body.schedule?.mid === 'null')` (literal string), no `[]`.
+    detonador:
+      - "Editar un Ad VAST en el form y vaciar el campo Pause Ad Position -> guardar -> el valor sigue ahi"
+      - "Editar un Ad VAST y borrar todos los mid-rolls del form -> guardar -> los mid-rolls vuelven a aparecer"
+    mitigacion: >
+      Cambiar las guardas a presencia explicita: usar `if (X !== undefined && X !== null)` en vez de `if (X)` para detectar que el usuario QUIERE actualizar ese campo. Para schedule.mid, aceptar `[]` o `null` ademas del literal 'null'.
+    archivos_afectados:
+      - "src/server/routes/api/ad/update.js"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#47"
+    prioridad_prueba: "MUST"
+    nota_industria: >
+      Semantica de update parcial (PUT/PATCH): un valor explicito del usuario
+      debe aplicarse incluso si es empty/falsy. Igual que LIVE-RISK-7.
+      Nielsen #3 (control y libertad: poder deshacer).
+      manifests de open code.

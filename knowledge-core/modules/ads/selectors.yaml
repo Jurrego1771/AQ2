@@ -1,0 +1,119 @@
+version: 1
+modulo: "ads"
+ultima_actualizacion: '2026-07-08'
+
+# ---- Listado /ad ----
+listado:
+  query: "query-ad"             # input de busqueda; envia con Enter (param API query=)
+  search: "search"              # boton lupa
+  total: "total-ads"            # <strong>; total real de la API (senal estable)
+  current_skip: "current-skip"  # "1 - 11" rango actual
+  paginator: "paginator"
+  paginator_next: "paginator-next"
+  paginator_prev: "paginator-prev"
+  new_ad_link: 'a[href="/ad/new"]'
+  data_list: "data-list"        # <tbody>
+  card_event: "event"           # <tr>; sm-id lleva el ObjectId
+  api:
+    count: 'GET /api/ad?count=true&status=0&query='
+    data:  'GET /api/ad?limit=11&skip=0&status=0&query='
+
+# ---- Form /ad/:id y /ad/new ----
+form:
+  name: "ad-name"                     # input Name
+  # Status: toggle visual (Published/Not Published) envuelve un checkbox con
+  # data-name="is_enabled". Clickear el toggle cambia el checkbox.
+  status_checkbox: dataName("is_enabled")
+  save: "save"                        # boton Save Changes (al final del form, verde)
+  categories: dataName("categories")  # multi-select
+  tags: dataName("tags")              # multi-select
+  referers: dataName("referers")      # multi-select
+
+# ---- Selector de Type (smell: Media + Ad Replacement comparten sm) ----
+type_picker:
+  ad_server: "type-vast"              # label "AdServer"
+  vmap: "type-vmap"                   # label "VMAP"
+  local_shared: "type-local"          # 2 nodos: [0]=Media, [1]=Ad Replacement (RISK-3)
+  google_mrss: "type-ad-insertion-google"   # label "Google MRSS Feed"
+  prebid: "type-prebid"               # label "Prebid"
+  # AUSENTES en UI (legacy): ad-insertion, googleima, adswizz -> RISK-2
+
+# ---- Secciones visibles segun tipo ----
+section:
+  ad_server: "section-type-ad-server"
+  vmap: "section-type-vmap"
+  local_media: "section-type-local-media"
+  ad_insertion: "section-type-ad-insertion"            # existe DOM, sin boton
+  ad_insertion_google: "section-type-ad-insertion-google"
+  ad_prebid: "section-type-ad-prebid"
+
+# ---- VAST (default) ----
+vast:
+  skip_preroll: "preroll-skip-at"     # <select> "Don't allow ... 30 seconds in"
+  min_media_time_length: "min-media-time-length"   # <input type=number>
+  preroll_tag: "preroll-tag"
+  preroll_tag_mobile: "preroll-tag-mobile"
+  preroll_params_edit: "preroll-params-edit"        # boton (icon only, sin aria-label, RISK-6)
+  preroll_params_mobile_edit: "preroll-params-mobile-edit"
+  add_midroll: "add-midroll"                        # boton "+"
+  midroll_first: "midroll-0"                         # inputs siguientes seran midroll-1, ...
+  midroll_params_edit: "midroll-params-edit"
+  postroll_tag: "postroll-tag"
+  postroll_params_edit: "postroll-params-edit"
+  overlay_position: "overlay-position"
+  overlay_tag: "overlay-tag"
+
+# ---- Pause Ad (subseccion de VAST) ----
+pausead:
+  tag: "pausead-tag"
+  tag_mobile: "pausead-tag-mobile"
+  duration: "pausead-duration"
+  duration_mobile: "pausead-duration-mobile"
+  position: "pausead-position"                      # <select>
+  position_trigger: "pausead-position-trigger"      # boton visible (muestra label actual)
+  position_options: "pausead-position-options"      # <ul> opciones de posicion visual
+  close_button: "pausead-close-button"              # <select>
+  close_text: "pausead-close-text"
+  view_more_text: "pausead-view-more-text"
+
+# ---- VMAP ----
+vmap_section:
+  tag: "vmap-tag"
+  tag_mobile: "vmap-tag-mobile"
+  params_edit: "vmap-params-edit"
+  mobile_params_edit: "vmap-mobile-params-edit"
+
+# ---- Local Media ----
+local_media:
+  preroll: "preroll-media"
+  postroll: "postroll-media"
+  default_duration: "local-media-default-duration"
+
+# ---- Ad Insertion ----
+ad_insertion:
+  decision_server: "ad-decision-server"
+  loop: "ad-insertion-loop"
+  add_loop: "ad-insertion-add-loop"
+  show_loop: "ad-insertion-show-loop"
+  loop_name: "ad-insertion-loop-name"
+
+# ---- Ad Insertion Google (GDAI) ----
+ad_insertion_google:
+  source_id: "source-id-gdai"
+  hmac: "hmac-gdai"
+
+# ---- Prebid ----
+prebid:
+  type: "ad-prebid-type"                            # <select>
+  unit_code: "ad-prebid-unitCode"
+  page_url: "ad-prebid-pageUrl"
+  appnexus_placement_id: "ad-prebid-appnexus-placementId"
+  rubicon_account_id: "ad-prebid-rubicon-accountId"
+  rubicon_site_id: "ad-prebid-rubicon-siteId"
+  rubicon_zone_id: "ad-prebid-rubicon-zoneId"
+  pubmatic_publisher_id: "ad-prebid-pubmatic-publisherId"
+  pubmatic_ad_slot: "ad-prebid-pubmatic-adSlot"
+  smartadserver_site_id: "ad-prebid-smartadserver-siteId"
+  smartadserver_page_id: "ad-prebid-smartadserver-pageId"
+  smartadserver_format_id: "ad-prebid-smartadserver-formatId"
+  smartadserver_network_id: "ad-prebid-smartadserver-networkId"

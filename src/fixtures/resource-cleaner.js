@@ -18,6 +18,7 @@ const DELETERS = {
   media: (api, id) => api.delete(`/api/media/${id}`),
   'live-stream': (api, id) => api.delete(`/api/live-stream/${id}`),
   playlist: (api, id) => api.delete(`/api/playlist/${id}`),
+  ad: (api, id) => api.delete(`/api/ad/${id}`),
 }
 
 class ResourceCleaner {

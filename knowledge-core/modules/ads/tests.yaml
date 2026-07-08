@@ -1,0 +1,229 @@
+# Tests - Modulo Ads. Definicion (sin estado de ejecucion: eso es derivado).
+# refs = FUENTE UNICA de los vinculos. El spec lleva en su titulo solo el id de
+# correlacion @ADS-TC-N (+ la capa @smoke/@regression/@api).
+version: 1
+modulo: "ads"
+ultima_actualizacion: '2026-07-08'
+
+tests:
+  # ---- US-030: carga del modulo ----
+  - id: "ADS-TC-1"
+    titulo: "El modulo Ads carga con su contador real y es skipeable en prod (prodGuard)"
+    modulo: "ads"
+    tipo: "smoke"
+    prioridad: "critical"
+    estado: "active"
+    refs:
+      validates: ["ADS-AC-1"]
+      mitigates: []
+      story: "US-030"
+      spec: "tests/smoke/ads.smoke.spec.js"
+
+  # ---- US-031: listado y busqueda ----
+  - id: "ADS-TC-2"
+    titulo: "El listado carga con contador real y muestra filas con Name no vacio"
+    modulo: "ads"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["ADS-AC-1", "ADS-AC-2"]
+      mitigates: []
+      story: "US-031"
+      spec: "tests/regression/ads-list.regression.spec.js"
+
+  - id: "ADS-TC-3"
+    titulo: "La busqueda por 'QA' reduce el listado (match por substring, case-insensitive)"
+    modulo: "ads"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["ADS-AC-3"]
+      mitigates: ["ADS-RISK-2"]
+      story: "US-031"
+      spec: "tests/regression/ads-list.regression.spec.js"
+    # Mismo patron substring (no palabra completa) que live-stream, distinto de media (#10).
+
+  - id: "ADS-TC-4"
+    titulo: "La busqueda sin coincidencias deja el contador en 0 y al limpiar se restaura"
+    modulo: "ads"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["ADS-AC-3"]
+      mitigates: []
+      story: "US-031"
+      spec: "tests/regression/ads-list.regression.spec.js"
+
+  - id: "ADS-TC-5"
+    titulo: "XSS benigno en el input de busqueda no se renderiza como HTML"
+    modulo: "ads"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["ADS-AC-3"]
+      mitigates: []
+      story: "US-031"
+      spec: "tests/regression/ads-list.regression.spec.js"
+    # Verificado en vivo: GET /api/ad?query=%3Cb%3EQAXSS%3C%2Fb%3E devuelve 200, no se renderiza.
+
+  - id: "ADS-TC-6"
+    titulo: "Los tipos visibles en el listado respetan el catalogo documentado (5 unicos + Media/Ad Replacement compartido)"
+    modulo: "ads"
+    tipo: "regression"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["ADS-AC-2"]
+      mitigates: ["ADS-RISK-2", "ADS-RISK-3"]
+      story: "US-031"
+      spec: "tests/regression/ads-list.regression.spec.js"
+
+  # ---- US-032: carga del form y tipos ----
+  - id: "ADS-TC-7"
+    titulo: "El form /ad/new expone Name, Status y los 6 botones Type con marcas cosechadas"
+    modulo: "ads"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["ADS-AC-4"]
+      mitigates: ["ADS-RISK-3"]
+      story: "US-032"
+      spec: "tests/regression/ads-detail.regression.spec.js"
+
+  - id: "ADS-TC-8"
+    titulo: "Un Ad VAST creado por API muestra su Name en el detalle al navegar /ad/:id"
+    modulo: "ads"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["ADS-AC-5"]
+      mitigates: []
+      story: "US-032"
+      spec: "tests/regression/ads-detail.regression.spec.js"
+
+  - id: "ADS-TC-9"
+    titulo: "El boton Type 'AdServer' (default) muestra la seccion vast y oculta las demas"
+    modulo: "ads"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["ADS-AC-4"]
+      mitigates: ["ADS-RISK-2"]
+      story: "US-032"
+      spec: "tests/regression/ads-detail.regression.spec.js"
+
+  - id: "ADS-TC-10"
+    titulo: "El toggle Status alterna Published/Not Published y cambia el checkbox is_enabled"
+    modulo: "ads"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["ADS-AC-4"]
+      mitigates: []
+      story: "US-032"
+      spec: "tests/regression/ads-detail.regression.spec.js"
+
+  # ---- US-033: contrato API ----
+  - id: "ADS-TC-11"
+    titulo: "GET /api/ad/:id responde 200 con _id, name, type para un ad existente"
+    modulo: "ads"
+    tipo: "integration"
+    prioridad: "critical"
+    estado: "active"
+    refs:
+      validates: ["ADS-AC-6"]
+      mitigates: []
+      story: "US-033"
+      spec: "tests/api/ads.api.spec.js"
+
+  - id: "ADS-TC-12"
+    titulo: "GET /api/ad/:id responde 404 NOT_FOUND para id valido pero inexistente"
+    modulo: "ads"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["ADS-AC-7"]
+      mitigates: []
+      story: "US-033"
+      spec: "tests/api/ads.api.spec.js"
+
+  - id: "ADS-TC-13"
+    titulo: "GET /api/ad?count=true devuelve un numero (total) real > 0"
+    modulo: "ads"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["ADS-AC-2"]
+      mitigates: []
+      story: "US-033"
+      spec: "tests/api/ads.api.spec.js"
+
+  # ---- US-033: pruebas que validan comportamiento esperado (hoy en rojo por bugs) ----
+  - id: "ADS-TC-14"
+    titulo: "El update de Ads no debe filtrar typo `gdai` ni mantener google_dai heredado"
+    modulo: "ads"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: []
+      mitigates: ["ADS-RISK-4"]
+      story: "US-033"
+      spec: "tests/api/ads.api.spec.js"
+    # ROJO HASTA FIX: typo `ad.gdai = null` en update.js (deberia ser ad.google_dai = null).
+    # Bug tracked en Jurrego1771/AQ2#44. Cuando se arregle el bug y el test pase,
+    # el dev que arregla tambien actualiza ADS-RISK-4 (cierre de cobertura).
+
+  - id: "ADS-TC-15"
+    titulo: "Cambiar el tipo de un Ad a ad-prebid debe limpiar campos de tipos anteriores"
+    modulo: "ads"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["ADS-AC-7"]
+      mitigates: ["ADS-RISK-4", "ADS-RISK-5"]
+      story: "US-033"
+      spec: "tests/api/ads.api.spec.js"
+    # ROJO HASTA FIX: la rama ad-prebid de update.js NO hace ad.insertion = null
+    # ni ad.google_dai = null. Bug tracked en Jurrego1771/AQ2#44.
+
+  - id: "ADS-TC-16"
+    titulo: "Vaciar pausead.position con empty string debe persistir limpio"
+    modulo: "ads"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["ADS-AC-7"]
+      mitigates: ["ADS-RISK-9"]
+      story: "US-033"
+      spec: "tests/api/ads.api.spec.js"
+    # ROJO HASTA FIX: la guarda `if (pauseadPosition && utils.trim(pauseadPosition) !== '')`
+    # salta el bloque cuando X es '' -> el valor previo persiste (verificado en vivo).
+    # Misma familia que LIVE-RISK-7. Bug tracked en Jurrego1771/AQ2#47.
+
+  - id: "ADS-TC-17"
+    titulo: "Vaciar schedule.mid con empty array debe persistir limpio"
+    modulo: "ads"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["ADS-AC-7"]
+      mitigates: ["ADS-RISK-9"]
+      story: "US-033"
+      spec: "tests/api/ads.api.spec.js"
+    # ROJO HASTA FIX: la unica rama de update.js que limpia schedule.mid es
+    # `mid === 'null'` (literal string). El UI no envia ese literal: envia []
+    # o no envia la clave. Bug tracked en Jurrego1771/AQ2#47.

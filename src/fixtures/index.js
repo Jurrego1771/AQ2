@@ -8,13 +8,16 @@ const { LiveEditorPage } = require('../pages/live-editor.page');
 const { PlaylistPage } = require('../pages/playlist.page');
 const { IntegrationsPage } = require('../pages/integrations.page');
 const { SchedulePage } = require('../pages/schedule.page');
+const { AdsPage } = require('../pages/ads.page');
 const { MediaClient } = require('../api/media.client');
 const { LiveStreamClient } = require('../api/live-stream.client');
 const { EditorClient, LiveEditorClient, DvrClient } = require('../api/live-editor.client');
 const { PlaylistClient } = require('../api/playlist.client');
+const { AdsClient } = require('../api/ads.client');
 const { ResourceCleaner } = require('./resource-cleaner');
 const { createTranscodedMedia } = require('../api/media-factory');
 const { createLiveStream } = require('../api/live-stream-factory');
+const { createAd } = require('../api/ads-factory');
 const { env } = require('../utils/env');
 
 const AUTH_FILE = '.auth/user.json';
@@ -70,6 +73,11 @@ const test = base.test.extend({
     await use(new SchedulePage(page));
   },
 
+  // Page Object del modulo Ads (listado y form new/detail).
+  adsPage: async ({ page }, use) => {
+    await use(new AdsPage(page));
+  },
+
   // APIRequestContext autenticado por SESIÓN (cookies del storageState del
   // login). Autoriza /api/media igual que la app, sin token aparte.
   api: async ({ playwright }, use) => {
@@ -114,6 +122,11 @@ const test = base.test.extend({
     await use(new PlaylistClient(api));
   },
 
+  // Contrato de Ads (/api/ad).
+  adsClient: async ({ api }, use) => {
+    await use(new AdsClient(api));
+  },
+
   // Live-stream REAL self-contained: lo crea por API y lo borra al terminar
   // (teardown idempotente via ResourceCleaner). El test recibe el id ya creado.
   // A diferencia de transcodedMedia, no hay gate de transcoding que esperar.
@@ -144,6 +157,18 @@ const test = base.test.extend({
     const fileName = `[QA-AUTO] ${testInfo.title.slice(0, 40)} ${Date.now()}`;
     const id = await createTranscodedMedia(api, { fileUrl: SAMPLE_VIDEO_URL, fileName });
     cleaner.register('media', id);
+    await use(id);
+    await cleaner.clean();
+  },
+
+  // Ad REAL self-contained: lo crea por API y lo borra al terminar (teardown
+  // idempotente via ResourceCleaner con deleter `ad`). El test recibe el id ya
+  // creado. No hay gate asíncrono: el POST responde 200 con jsonp {data: ad}.
+  ad: async ({ api }, use, testInfo) => {
+    const cleaner = new ResourceCleaner(api);
+    const name = `[QA-AUTO] Ad ${testInfo.title.slice(0, 40)} ${Date.now()}`;
+    const id = await createAd(api, { name, type: 'local' });
+    cleaner.register('ad', id);
     await use(id);
     await cleaner.clean();
   },

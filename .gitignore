@@ -16,3 +16,7 @@ node_modules/
 .DS_Store
 *.log
 .obsidian/
+
+# local storageState backups (contain session cookies)
+reports/**/storageState*.json
+
