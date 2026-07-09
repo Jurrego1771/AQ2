@@ -1268,4 +1268,111 @@ tests:
       validates: []
       mitigates: []
       story: "US-010"
-      spec: "tests/unit/resource-cleaner.unit.spec.js"
+    spec: "tests/unit/resource-cleaner.unit.spec.js"
+
+  # ---- Cobertura nueva: Ingest (contrato + RTMP real con ffmpeg) ----
+  # Ver tests/api/live-stream-ingest.api.spec.js. Tier 1 (contrato) corre
+  # siempre; Tier 2 (RTMP con ffmpeg) requiere ffmpeg en PATH y un fix del
+  # bug LIVE-RISK-13 para poder obtener la URL de ingest.
+  - id: "LIVE-TC-107"
+    titulo: "ingest: entry_points.primary existe y es array"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/api/live-stream-ingest.api.spec.js"
+  - id: "LIVE-TC-108"
+    titulo: "ingest: cada entry de primary tiene profile y url [prueba viva BUG #49]"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: ["LIVE-RISK-13"]
+      story: "US-010"
+      spec: "tests/api/live-stream-ingest.api.spec.js"
+    # test.fail() en el spec: rojo-esperado hasta corregir AQ2#49.
+  - id: "LIVE-TC-109"
+    titulo: "ingest: urls formato rtmp://origin-{region}.origin.mdstrm.com [prueba viva BUG #49]"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: ["LIVE-RISK-13"]
+      story: "US-010"
+      spec: "tests/api/live-stream-ingest.api.spec.js"
+  - id: "LIVE-TC-110"
+    titulo: "ingest: urls contienen stream_id del live [prueba viva BUG #49]"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: ["LIVE-RISK-13"]
+      story: "US-010"
+      spec: "tests/api/live-stream-ingest.api.spec.js"
+  - id: "LIVE-TC-111"
+    titulo: "ingest: cdn_zones incluye 'us' por defecto"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/api/live-stream-ingest.api.spec.js"
+  - id: "LIVE-TC-112"
+    titulo: "ingest: publishing_token es hex de 32 chars"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/api/live-stream-ingest.api.spec.js"
+  - id: "LIVE-TC-113"
+    titulo: "ingest: refresh-token cambia el token (viej deja de ser hex 32)"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/api/live-stream-ingest.api.spec.js"
+  - id: "LIVE-TC-114"
+    titulo: "ingest: entry_points.backup es array (vacio OK)"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/api/live-stream-ingest.api.spec.js"
+  - id: "LIVE-TC-115"
+    titulo: "ingest: RTMP real con ffmpeg (live pasa a online=true) [prueba viva BUG #49]"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: ["LIVE-RISK-13"]
+      story: "US-010"
+      spec: "tests/api/live-stream-ingest.api.spec.js"
+    # test.fail() en el spec: rojo-esperado hasta corregir AQ2#49 (entry_points
+    # vacio en API-created live). Requiere ffmpeg en PATH.
