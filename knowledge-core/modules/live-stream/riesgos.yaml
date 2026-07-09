@@ -325,38 +325,3 @@ riesgos:
       schedule usa selects que limitan a 0-59, pero el endpoint API no - cualquier
       consumidor externo (clientes custom, scripts, integraciones) puede meter
       valores invalidos.
-
-  - id: "LIVE-RISK-13"
-    severidad: "high"
-    probabilidad: "high"
-    titulo: "API-created live tiene entry_points vacio (RTMP/ingest no expuesto)"
-    descripcion: >
-      Un live creado por POST /api/live-stream/ tiene `entry_points.primary = []`
-      y `entry_points.backup = []` en el GET subsecuente. Solo el "Save changes"
-      del UI popula el array con las URLs RTMP/ingest reales (formato
-      `rtmp://origin-{region}.origin.mdstrm.com/<app>/<stream_id>_<profile>`).
-      El campo independiente `origin_url` muestra ".../undefined/live-stream/
-      undefined/media.m3u8" pre-save. Verificado en vivo (dev v7.0.75, runId=5d4e91,
-      LIVE-TC-108/109/110/115): ni un update con campos completos ni esperar 10s
-      puebla el array. Un live UI-saved (verificado: "Full RTMP" id
-      6a15a57ea23b8b92586bf11c) SI tiene `entry_points.primary[0].url` correcto.
-      Impacto: no se puede probar ingesta end-to-end via API; clientes externos
-      que reciben la URL del API quedan con undefined; consistencia API/UI rota.
-    detonador:
-      - "POST /api/live-stream/ para crear un live y luego GET /:id"
-      - "POST /api/live-stream/:id con un update cualquiera"
-    mitigacion: >
-      Localizar el handler que crea las entry points (probablemente live_stream.coffee
-      save() o un util llamado desde ahi) y verificar que el endpoint POST /:id
-      lo invoque con los mismos argumentos que el form UI. Alternativa: exponer
-      POST /:id/reprocess-ingest que se pueda llamar tras create/update.
-    archivos_afectados:
-      - "src/server/routes/api/live-stream"   # update handler
-      - "src/client/live_stream.coffee"       # save() que pobla entry points
-    defectos_relacionados:
-      - "Jurrego1771/AQ2#49"
-    prioridad_prueba: "MUST"
-    nota_industria: >
-      Consistencia API/UI: el mismo recurso creado de dos formas distintas
-      termina en estados distintos. El server debe tratar create y save de
-      forma identica para que la API sea usable para flujos automatizados.

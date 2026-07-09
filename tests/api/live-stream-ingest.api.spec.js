@@ -8,18 +8,27 @@ const { isAvailable, runRtmpSend } = require('../../src/utils/ffmpeg');
  *
  * Tier 1 (siempre corre, ~8 tests):
  *   Verifica la estructura de `entry_points`, `cdn_zones`, `stream_id`,
- *   `publishing_token` y la regeneracion del token. Cubre AQ2#21 (Origin URL
- *   muestra "undefined" pre-save) implicitamente: con un live recien creado
- *   (sin guardar), entry_points puede estar vacio/null. Aceptamos
- *   cualquiera de los dos (el primer save los puebla).
+ *   `publishing_token` y la regeneracion del token.
  *
  * Tier 2 (skip si ffmpeg no esta disponible, 1 test):
  *   Envia un stream RTMP real con ffmpeg (lavfi/testsrc, no requiere
  *   archivos) al entry_points.primary[0].url del live. Verifica que el
  *   campo `online` del GET pase a `true` dentro de 60s.
  *
+ * LIMITACION del fixture liveStream: crea el live via API pero NO lo
+ * guarda (no invoca el trigger del UI que popula entry_points). Por eso:
+ *   - Los tests estructurales (107, 111-114) pasan (entry_points existe
+ *     como objeto, cdn_zones tiene 'us', token es hex 32, etc.).
+ *   - Los tests que requieren entry_points.primary[] poblado (108, 109, 110,
+ *     115) hacen test.skip() si el array esta vacio. Para probar la senal
+ *     end-to-end con un live self-created via API, hay que hacer un save
+ *     via UI (o exponer un endpoint que replique la logica del save). El
+ *     spec cubre los tests estructurales; para el end-to-end usar un live
+ *     pre-existente con entry_points poblado (ver scripts/demo-rtmp-send.js
+ *     si lo agregamos).
+ *
  * Self-contained: usa el fixture liveStream (crea + borra). El ffmpeg se
- * lanza con `-t 20` (se mata solo a los 20s) Y se mata explicitamente en
+ * lanza con `-t 30` (se mata solo a los 30s) Y se mata explicitamente en
  * el finally del test (cleanup garantizado).
  *
  * Version del server verificado: v7.0.75.
