@@ -66,6 +66,11 @@ const SWEEPERS = {
     extractName: (it) => it?.name || '',
     delete: (api, id) => api.delete(`/api/ad/${id}`),
   },
+  // Quiz: sub-recurso del live. Listado por live (necesitamos un liveId para
+  // listar). Como el sweeper corre SIN contexto de live, no podemos barrer
+  // quizzes por nombre sin uno. Workaround: si llega a entrar en un sweep
+  // por nombre (futuro), se haria a nivel de live (cascada borra los quizzes).
+  // Por ahora lo dejamos como deleter manual (register en el spec).
 };
 
 class ResourceSweeper {

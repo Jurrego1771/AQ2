@@ -19,6 +19,14 @@ const DELETERS = {
   'live-stream': (api, id) => api.delete(`/api/live-stream/${id}`),
   playlist: (api, id) => api.delete(`/api/playlist/${id}`),
   ad: (api, id) => api.delete(`/api/ad/${id}`),
+  // Quiz: id compuesto "liveId/quizId" porque el quiz es sub-recurso del
+  // live y su delete endpoint es /api/live-stream/:liveId/quizzes/:quizId.
+  // (El ResourceCleaner hace split('/') para obtener ambos.)
+  quiz: (api, compositeId) => {
+    const [liveId, quizId] = String(compositeId).split('/');
+    if (!liveId || !quizId) return { status: () => 0, ok: () => false };
+    return api.delete(`/api/live-stream/${liveId}/quizzes/${quizId}`);
+  },
 }
 
 class ResourceCleaner {

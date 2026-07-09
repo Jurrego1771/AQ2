@@ -927,3 +927,173 @@ tests:
       mitigates: []
       story: "US-011"
       spec: "tests/api/live-stream-schedule-edge.integration.spec.js"
+
+  # ---- Cobertura nueva: Quizzes (CRUD + send + auth) ----
+  # Port de api_test_flow/tests/api/integration/live/live-quizzes.integration.spec.js
+  # (TC_LIV_*_quizzes_*). Contrato sm2: list usa `quizzes:`, create usa `quiz:`
+  # con id (no _id). Ver tests/api/live-stream-quizzes.integration.spec.js.
+  - id: "LIVE-TC-77"
+    titulo: "quizzes list: GET /:id/quizzes responde 200 con quizzes: []"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/api/live-stream-quizzes.integration.spec.js"
+  - id: "LIVE-TC-78"
+    titulo: "quizzes list: tras crear un quiz, aparece en la lista"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/api/live-stream-quizzes.integration.spec.js"
+  - id: "LIVE-TC-79"
+    titulo: "quizzes list: id no-ObjectId responde 404/500 (no 200 silencioso)"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-5"]
+      mitigates: ["LIVE-RISK-1"]
+      story: "US-010"
+      spec: "tests/api/live-stream-quizzes.integration.spec.js"
+  - id: "LIVE-TC-80"
+    titulo: "quizzes create: responde 201 con status=draft"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/api/live-stream-quizzes.integration.spec.js"
+  - id: "LIVE-TC-81"
+    titulo: "quizzes create: payload sin title debe rechazarse 4xx"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/api/live-stream-quizzes.integration.spec.js"
+  - id: "LIVE-TC-82"
+    titulo: "quizzes create: payload sin questions debe rechazarse 4xx"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/api/live-stream-quizzes.integration.spec.js"
+  - id: "LIVE-TC-83"
+    titulo: "quizzes create: options sin isCorrect:true debe rechazarse 4xx"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/api/live-stream-quizzes.integration.spec.js"
+  - id: "LIVE-TC-84"
+    titulo: "quizzes update: payload completo persiste nuevo title (verificado via re-list)"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/api/live-stream-quizzes.integration.spec.js"
+  - id: "LIVE-TC-85"
+    titulo: "quizzes update: id inexistente responde 4xx/5xx (no 200)"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-5"]
+      mitigates: ["LIVE-RISK-1"]
+      story: "US-010"
+      spec: "tests/api/live-stream-quizzes.integration.spec.js"
+  - id: "LIVE-TC-86"
+    titulo: "quizzes send: responde 200/201/400/500 segun estado del live"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/api/live-stream-quizzes.integration.spec.js"
+  - id: "LIVE-TC-87"
+    titulo: "quizzes delete: responde 200/204/404 y el quiz desaparece"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/api/live-stream-quizzes.integration.spec.js"
+  - id: "LIVE-TC-88"
+    titulo: "quizzes delete: id inexistente responde 4xx/5xx (no 200)"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-5"]
+      mitigates: ["LIVE-RISK-1"]
+      story: "US-010"
+      spec: "tests/api/live-stream-quizzes.integration.spec.js"
+  - id: "LIVE-TC-89"
+    titulo: "quizzes GET sin token responde 401/403"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/api/live-stream-quizzes.integration.spec.js"
+  - id: "LIVE-TC-90"
+    titulo: "quizzes POST sin token responde 401/403"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/api/live-stream-quizzes.integration.spec.js"
+  - id: "LIVE-TC-91"
+    titulo: "quizzes DELETE sin token responde 401/403"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/api/live-stream-quizzes.integration.spec.js"

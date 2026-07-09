@@ -95,6 +95,29 @@ class LiveStreamClient extends BaseClient {
     return this.delete(`/${id}/thumb/${thumbId}`);
   }
 
+  // --- Quizzes (sub-recurso del live) ---
+  // Contrato sm2 (verificado en vivo): el id del quiz se llama `id` (no `_id`)
+  // en el response de create, y la lista usa `quizzes:` (no `data:`). Manejo
+  // de quirks centralizado en el spec.
+  listQuizzes(id) {
+    return this.get(`/${id}/quizzes`);
+  }
+  /** Crea un quiz. Devuelve 201 Created con body { status:"OK", quiz:{...} }. */
+  createQuiz(id, payload) {
+    return this.post(`/${id}/quizzes`, payload);
+  }
+  /** Update: requiere payload completo (title + questions), no es patch. */
+  updateQuiz(id, quizId, payload) {
+    return this.post(`/${id}/quizzes/${quizId}`, payload);
+  }
+  /** Envia el quiz a la audiencia. Requiere que el live este online. */
+  sendQuiz(id, quizId) {
+    return this.post(`/${id}/quizzes/${quizId}/send`, {});
+  }
+  deleteQuiz(id, quizId) {
+    return this.delete(`/${id}/quizzes/${quizId}`);
+  }
+
   // --- Schedules (onetime / recurrent). Contrato verificado en vivo ---
 
   /**
