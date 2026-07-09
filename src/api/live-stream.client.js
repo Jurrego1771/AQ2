@@ -72,6 +72,29 @@ class LiveStreamClient extends BaseClient {
     return this.get(`/${id}/restream`);
   }
 
+  // --- Logo (multipart upload + delete) ---
+  // El server espera multipart con un campo `attach` (verificado en vivo).
+  // Acepta path, buffer o stream (ver BaseClient.postMultipart).
+  uploadLogo(id, file) {
+    return this.postMultipart(`/${id}/logo`, { attach: file });
+  }
+  deleteLogo(id) {
+    return this.delete(`/${id}/logo`);
+  }
+
+  // --- Thumbnails (multipart upload + set-default + delete) ---
+  // El server espera multipart con un campo `thumb` (verificado en vivo).
+  uploadThumb(id, file) {
+    return this.postMultipart(`/${id}/thumb`, { thumb: file });
+  }
+  /** Marca un thumb existente como default. */
+  setDefaultThumb(id, thumbId) {
+    return this.post(`/${id}/thumb/${thumbId}`, {});
+  }
+  deleteThumb(id, thumbId) {
+    return this.delete(`/${id}/thumb/${thumbId}`);
+  }
+
   // --- Schedules (onetime / recurrent). Contrato verificado en vivo ---
 
   /**

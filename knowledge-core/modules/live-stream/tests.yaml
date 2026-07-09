@@ -662,3 +662,97 @@ tests:
       mitigates: []
       story: "US-011"
       spec: "tests/regression/live-stream-advanced.regression.spec.js"
+
+  # ---- Cobertura nueva: Logo (multipart upload + position + delete) ----
+  # Port de api_test_flow/tests/api/regression/live/live-logo.regression.spec.js.
+  - id: "LIVE-TC-54"
+    titulo: "logo: upload multipart responde 200 y persiste enabled"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/regression/live-stream-logo.regression.spec.js"
+  - id: "LIVE-TC-55"
+    titulo: "logo: update logo_live_position responde 2xx/4xx"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/regression/live-stream-logo.regression.spec.js"
+  - id: "LIVE-TC-56"
+    titulo: "logo: DELETE /:id/logo responde 200/204/404 (idempotente)"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/regression/live-stream-logo.regression.spec.js"
+  - id: "LIVE-TC-57"
+    titulo: "logo: upload de archivo invalido (.txt) NO devuelve 200"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/regression/live-stream-logo.regression.spec.js"
+
+  # ---- Cobertura nueva: Thumbnails (multipart + list + set-default + delete) ----
+  # Port de api_test_flow/tests/api/smoke/live/live-thumbnail.smoke.spec.js.
+  - id: "LIVE-TC-58"
+    titulo: "thumb: upload multipart aparece en listThumbs"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/regression/live-stream-thumbnail.regression.spec.js"
+  - id: "LIVE-TC-59"
+    titulo: "thumb: set-default marca is_default=true y persiste"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/regression/live-stream-thumbnail.regression.spec.js"
+  - id: "LIVE-TC-60"
+    titulo: "thumb: DELETE /:id/thumb/:tid responde 200 y desaparece de la lista"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/regression/live-stream-thumbnail.regression.spec.js"
+  - id: "LIVE-TC-61"
+    titulo: "thumb: listThumbs sin thumbs responde 200 (lista vacia OK)"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/regression/live-stream-thumbnail.regression.spec.js"
