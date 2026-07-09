@@ -1200,3 +1200,72 @@ tests:
       mitigates: []
       story: "US-010"
       spec: "tests/api/resource-registry.integration.spec.js"
+
+  # ---- Infra de provisioning: ResourceCleaner retry policy ----
+  # Unit: politica de retry del cleaner (5xx reintenta, 4xx no).
+  - id: "LIVE-TC-101"
+    titulo: "shouldRetry: 5xx y 429 si, 4xx y 2xx no"
+    modulo: "live-stream"
+    tipo: "unit"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: []
+      mitigates: []
+      story: "US-010"
+      spec: "tests/unit/resource-cleaner.unit.spec.js"
+  - id: "LIVE-TC-102"
+    titulo: "cleaner: 502 transient -> reintenta y eventualmente borra"
+    modulo: "live-stream"
+    tipo: "unit"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: []
+      mitigates: []
+      story: "US-010"
+      spec: "tests/unit/resource-cleaner.unit.spec.js"
+  - id: "LIVE-TC-103"
+    titulo: "cleaner: 4xx no se reintenta y queda como leaked (registry)"
+    modulo: "live-stream"
+    tipo: "unit"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: []
+      mitigates: []
+      story: "US-010"
+    spec: "tests/unit/resource-cleaner.unit.spec.js"
+  - id: "LIVE-TC-104"
+    titulo: "cleaner: 5xx persiste tras N intentos -> queda como leaked y registra WARN"
+    modulo: "live-stream"
+    tipo: "unit"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: []
+      mitigates: []
+      story: "US-010"
+      spec: "tests/unit/resource-cleaner.unit.spec.js"
+  - id: "LIVE-TC-105"
+    titulo: "cleaner: 404 cuenta como borrado (ya no existe)"
+    modulo: "live-stream"
+    tipo: "unit"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: []
+      mitigates: []
+      story: "US-010"
+      spec: "tests/unit/resource-cleaner.unit.spec.js"
+  - id: "LIVE-TC-106"
+    titulo: "cleaner: backoff exponencial (1s, 2s, 4s...) respeta los delays"
+    modulo: "live-stream"
+    tipo: "unit"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: []
+      mitigates: []
+      story: "US-010"
+      spec: "tests/unit/resource-cleaner.unit.spec.js"

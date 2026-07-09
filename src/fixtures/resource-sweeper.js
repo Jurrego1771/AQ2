@@ -31,8 +31,10 @@ const DEFAULT_TYPES = ['media', 'live-stream', 'playlist', 'ad'];
 // Cuántos listar por tipo (los más recientes primero). Cubre fugas de un run
 // normal; subir si se ejecutan suites grandes con >200 creates/tipo.
 const DEFAULT_LIMIT = 200;
-const DELETE_RETRIES = 3;
-const RETRY_DELAY_MS = 500;
+const DELETE_RETRIES = 5;
+// Backoff exponencial: 1s, 2s, 4s, 8s, 16s = ~31s total. Solo se duerme cuando
+// el status es transient (5xx/429).
+const RETRY_DELAY_MS = 1000;
 
 /** Mapeo tipo -> endpoint base + extractor de id + nombre. */
 const SWEEPERS = {
@@ -175,10 +177,20 @@ class ResourceSweeper {
         if (status >= 200 && status < 300) return true;
         if (status === 404) return true; // ya no existe
         lastStatus = status;
-        if (attempt < DELETE_RETRIES) await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
+        // Solo reintentamos errores transitorios (5xx, 429). 4xx es input
+        // invalido y reintentar no va a cambiar la respuesta.
+        const isTransient = status === 429 || (status >= 500 && status < 600);
+        if (!isTransient) return false;
+        if (attempt < DELETE_RETRIES) {
+          const delay = RETRY_DELAY_MS * Math.pow(2, attempt - 1);
+          await new Promise((r) => setTimeout(r, delay));
+        }
       } catch (e) {
         lastStatus = -1;
-        if (attempt < DELETE_RETRIES) await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
+        if (attempt < DELETE_RETRIES) {
+          const delay = RETRY_DELAY_MS * Math.pow(2, attempt - 1);
+          await new Promise((r) => setTimeout(r, delay));
+        }
       }
     }
     return false;
