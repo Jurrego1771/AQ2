@@ -316,3 +316,22 @@ tests:
       spec: "tests/api/contract/live-stream.api.contract.spec.js"
     # Cobertura explicita del negativo: distingue el handler del listado (que
     # devuelve 200 con array vacio) del handler de detail (que devuelve 404).
+
+  # ---- Infra de provisioning: verificacion del naming convention (F1) ----
+  # Protege la convencion [QA-AUTO][run=<6-hex>][w=<n>] habilitada por
+  # src/utils/qa-name.js. Sin este test, una regression del helper (p.ej.
+  # cambiar el formato) pasa desapercibida y rompe el sweep global (Capa 4).
+  - id: "LIVE-TC-25"
+    titulo: "Crear live usa la convencion [QA-AUTO][run=<id>][w=<n>] y aparece tal cual en el listado"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: []
+      mitigates: []
+      story: "US-010"
+      spec: "tests/api/live-stream-naming.api.spec.js"
+    # No valida un AC de producto: protege la infraestructura de provisioning
+    # self-contained. Ver knowledge-core/cross-cutting/test-provisioning/overview.md
+    # (Capa 0, naming).

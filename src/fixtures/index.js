@@ -19,6 +19,7 @@ const { createTranscodedMedia } = require('../api/media-factory');
 const { createLiveStream } = require('../api/live-stream-factory');
 const { createAd } = require('../api/ads-factory');
 const { env } = require('../utils/env');
+const { qaName } = require('../utils/qa-name');
 
 const AUTH_FILE = '.auth/user.json';
 // Video público corto y liviano para ingesta remota (transcoding rápido).
@@ -132,7 +133,7 @@ const test = base.test.extend({
   // A diferencia de transcodedMedia, no hay gate de transcoding que esperar.
   liveStream: async ({ api }, use, testInfo) => {
     const cleaner = new ResourceCleaner(api);
-    const name = `[QA-AUTO] Live ${testInfo.title.slice(0, 40)} ${Date.now()}`;
+    const name = qaName({ type: 'Live', testTitle: testInfo.title });
     const id = await createLiveStream(api, { name, type: 'video' });
     cleaner.register('live-stream', id);
     await use(id);
@@ -143,7 +144,7 @@ const test = base.test.extend({
   // de song metadata del schedule, que solo se renderiza en lives de audio (sm2#8463).
   audioLiveStream: async ({ api }, use, testInfo) => {
     const cleaner = new ResourceCleaner(api);
-    const name = `[QA-AUTO] Audio Live ${testInfo.title.slice(0, 40)} ${Date.now()}`;
+    const name = qaName({ type: 'Audio Live', testTitle: testInfo.title });
     const id = await createLiveStream(api, { name, type: 'audio' });
     cleaner.register('live-stream', id);
     await use(id);
@@ -154,7 +155,7 @@ const test = base.test.extend({
   // al terminar (teardown idempotente). El test recibe el id ya listo.
   transcodedMedia: async ({ api }, use, testInfo) => {
     const cleaner = new ResourceCleaner(api);
-    const fileName = `[QA-AUTO] ${testInfo.title.slice(0, 40)} ${Date.now()}`;
+    const fileName = qaName({ type: 'Media', testTitle: testInfo.title });
     const id = await createTranscodedMedia(api, { fileUrl: SAMPLE_VIDEO_URL, fileName });
     cleaner.register('media', id);
     await use(id);
@@ -166,7 +167,7 @@ const test = base.test.extend({
   // creado. No hay gate asíncrono: el POST responde 200 con jsonp {data: ad}.
   ad: async ({ api }, use, testInfo) => {
     const cleaner = new ResourceCleaner(api);
-    const name = `[QA-AUTO] Ad ${testInfo.title.slice(0, 40)} ${Date.now()}`;
+    const name = qaName({ type: 'Ad', testTitle: testInfo.title });
     const id = await createAd(api, { name, type: 'local' });
     cleaner.register('ad', id);
     await use(id);

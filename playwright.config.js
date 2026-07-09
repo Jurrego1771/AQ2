@@ -11,6 +11,9 @@ const isCI = !!process.env.CI;
  */
 module.exports = defineConfig({
   testDir: './tests',
+  // Genera QA_RUN_ID una sola vez por corrida; lo consumen qaName() y el
+  // sweep global. Ver knowledge-core/cross-cutting/test-provisioning/overview.md.
+  globalSetup: './src/fixtures/global-setup.js',
   // Falla el build si quedó un test.only olvidado en CI.
   forbidOnly: isCI,
   fullyParallel: true,
