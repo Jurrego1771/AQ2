@@ -284,18 +284,36 @@ Al final del run (en teardown):
 
 ## Plan de implementación (Fases)
 
-| Fase | Entregable | Esfuerzo | Impacto |
-|---|---|---|---|
-| **F1** | Capa 0 (naming) + `qaName()` helper + refactor de fixtures/factories para usarlo | 1 sesión | habilitador de C2/C4 |
-| **F2** | Capa 2 (ResourceRegistry) + integración con `ResourceCleaner` | 0.5 sesión | observabilidad |
-| **F3** | Capa 4 (`globalTeardown` sweep por `[QA-AUTO][run=<id>]`) | 1 sesión | safety net real |
-| **F4** | Capa 7 (semáforo por tipo) | 0.5 sesión | mata los 502 del dev |
-| **F5** | Capa 3 (auto-tracking o `qaCreate`) — elegir una | 1 sesión | elimina `register()` manual |
-| **F6** | Capa 5 (pre-flight) + Capa 8 (métricas en reporte) | 1 sesión | observabilidad histórica |
-| **F7** | Capa 6 (cascade-aware DELETERS) — para módulos con hijos no cascade | según módulo | completa la cobertura |
+| Fase | Capa | Entregable | Esfuerzo | Impacto | Status |
+|---|---|---|---|---|---|
+| **F1** | C0 | Capa 0 (naming) + `qaName()` helper + refactor de fixtures/factories para usarlo | 1 sesión | habilitador de C2/C4 | ✅ commit `bdc9110` |
+| **F2** | C2 | Capa 2 (ResourceRegistry) + integración con `ResourceCleaner` | 0.5 sesión | observabilidad | pendiente |
+| **F3** | C4 | Capa 4 (`globalTeardown` sweep por `[QA-AUTO][run=<id>]`) | 1 sesión | safety net real | ✅ commit `7d3830c` |
+| **F4** | C7 | Capa 7 (semáforo por tipo) | 0.5 sesión | mata los 502 del dev | ✅ commit `f82cdc1` |
+| **F5** | C3 | Capa 3 (auto-tracking o `qaCreate`) — elegir una | 1 sesión | elimina `register()` manual | pendiente |
+| **F6** | C5+C8 | Capa 5 (pre-flight) + Capa 8 (métricas en reporte) | 1 sesión | observabilidad histórica | pendiente |
+| **F7** | C6 | Capa 6 (cascade-aware DELETERS) — para módulos con hijos no cascade | según módulo | completa la cobertura | pendiente |
+
+> **Nota sobre los identificadores de commit:** los hashes listados arriba son
+> los commits que implementaron cada fase. Reemplazar por los reales del repo
+> si esta sección se regenera.
 
 Costo total: ~5 sesiones para tener las 7 capas activas. Cada fase es
 **independiente**: se puede parar en cualquiera y seguir con valor.
+
+### Estado actual (post-F4)
+
+| Capa | Estado |
+|---|---|
+| C0 — naming convention | ✅ activo, usado por 4 fixtures + 3 factories |
+| C1 — per-test ResourceCleaner | ✅ pre-existente, sin cambios |
+| C2 — ResourceRegistry global | ⏳ pendiente |
+| C3 — auto-tracking / `qaCreate` | ⏳ pendiente |
+| **C4 — globalTeardown sweep** | ✅ activo, escribe `reports/cleanup-<runId>.json` |
+| C5 — pre-flight check | ⏳ pendiente |
+| C6 — cascade-aware DELETERS | ⏳ pendiente (LIVE → schedule ya cascade) |
+| **C7 — semáforo por tipo** | ✅ activo en `createLiveStream`, opt-in via `QA_MAX_CONCURRENT_CREATE` |
+| C8 — métricas en reporte | parcial: cleanup JSON ya tiene stats; falta resumen agregado por run |
 
 ## Criterios de éxito (SLAs)
 
