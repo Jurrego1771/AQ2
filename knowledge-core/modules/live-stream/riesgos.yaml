@@ -297,3 +297,31 @@ riesgos:
       Nielsen #8 (diseno minimalista): no mostrar controles que no aplican al contexto
       (video). La persistencia de valores falsy es un patron de bug recurrente en la
       plataforma (ver #23) que conviene proteger explicitamente.
+
+  - id: "LIVE-RISK-12"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "Schedule-job acepta valores fuera de rango (date_start_minute, date_end_minute)"
+    descripcion: >
+      El server NO valida que date_start_minute y date_end_minute esten en el rango
+      valido (0-59). Verificado en vivo (dev v7.0.72, runId=09916c, LIVE-TC-67): POST con
+      date_start_minute=99 responde 200 y persiste el schedule con el valor invalido.
+      Impacto: data integrity (horarios imposibles), consumidores que asumen rango valido
+      se rompen silenciosamente. Misma familia de bug que #18/#19 (validacion ausente
+      en backend).
+    detonador:
+      - "POST /api/live-stream/:id/schedule-job/ con date_start_minute o date_end_minute fuera de 0-59"
+    mitigacion: >
+      Validar el rango en el server (mismo lugar que la validacion de hour, si existe)
+      o en el schema Mongoose. Reusar el patron INVALID_DATE_ERROR_* de los otros errores
+      de schedule. Tambien considerar coercion silenciosa (mod 60) como fallback defensivo.
+    archivos_afectados:
+      - "src/server/routes/api/live-stream/schedule-job"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#48"
+    prioridad_prueba: "MUST"
+    nota_industria: >
+      Validacion de entrada en el server (no confiar en el cliente). El form de
+      schedule usa selects que limitan a 0-59, pero el endpoint API no - cualquier
+      consumidor externo (clientes custom, scripts, integraciones) puede meter
+      valores invalidos.

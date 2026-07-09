@@ -756,3 +756,174 @@ tests:
       mitigates: []
       story: "US-010"
       spec: "tests/regression/live-stream-thumbnail.regression.spec.js"
+
+  # ---- Cobertura nueva: schedule edge cases, validacion y auth ----
+  # Port parcial de api_test_flow/tests/api/integration/live/live-schedule.integration.spec.js
+  # (TC_SCH_*). Complementa LIVE-TC-8..13 (cubren el core). Ver
+  # tests/api/live-stream-schedule-edge.integration.spec.js.
+  - id: "LIVE-TC-62"
+    titulo: "GET schedules con id inexistente (ObjectId valido) responde 200/404"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-5"]
+      mitigates: []
+      story: "US-011"
+      spec: "tests/api/live-stream-schedule-edge.integration.spec.js"
+  - id: "LIVE-TC-63"
+    titulo: "GET schedules responde Content-Type application/json"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-9"]
+      mitigates: []
+      story: "US-011"
+      spec: "tests/api/live-stream-schedule-edge.integration.spec.js"
+  - id: "LIVE-TC-64"
+    titulo: "GET schedules data tiene estructura: _id, date_start, date_end, name, type"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-9"]
+      mitigates: []
+      story: "US-011"
+      spec: "tests/api/live-stream-schedule-edge.integration.spec.js"
+  - id: "LIVE-TC-65"
+    titulo: "POST schedule con payload incompleto (solo name) debe rechazarse 4xx"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-12"]
+      mitigates: []
+      story: "US-011"
+      spec: "tests/api/live-stream-schedule-edge.integration.spec.js"
+  - id: "LIVE-TC-66"
+    titulo: "POST schedule con end_hour < start_hour (mismo dia) debe rechazarse 4xx"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-12"]
+      mitigates: []
+      story: "US-011"
+      spec: "tests/api/live-stream-schedule-edge.integration.spec.js"
+  - id: "LIVE-TC-67"
+    titulo: "POST schedule con date_start_minute=99 (fuera de rango) [prueba viva BUG #48]"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-12"]
+      mitigates: ["LIVE-RISK-12"]
+      story: "US-011"
+      spec: "tests/api/live-stream-schedule-edge.integration.spec.js"
+    # test.fail() en el spec: rojo-esperado hasta corregir AQ2#48.
+  - id: "LIVE-TC-68"
+    titulo: "POST schedule recurrente sin days: 200/4xx (no 500)"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-10"]
+      mitigates: []
+      story: "US-011"
+      spec: "tests/api/live-stream-schedule-edge.integration.spec.js"
+  - id: "LIVE-TC-69"
+    titulo: "POST schedule con campos extra desconocidos no debe crashear (no 500)"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-12"]
+      mitigates: []
+      story: "US-011"
+      spec: "tests/api/live-stream-schedule-edge.integration.spec.js"
+  - id: "LIVE-TC-70"
+    titulo: "GET schedules con id malformado (no-ObjectId) responde 4xx/404, NO 500"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-5"]
+      mitigates: ["LIVE-RISK-1"]
+      story: "US-011"
+      spec: "tests/api/live-stream-schedule-edge.integration.spec.js"
+  - id: "LIVE-TC-71"
+    titulo: "GET de un job id que no existe responde 200/404 (no 500)"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-5"]
+      mitigates: []
+      story: "US-011"
+      spec: "tests/api/live-stream-schedule-edge.integration.spec.js"
+  - id: "LIVE-TC-72"
+    titulo: "POST schedule con payload vacio {} no debe crashear (4xx o 200, no 500)"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-12"]
+      mitigates: []
+      story: "US-011"
+      spec: "tests/api/live-stream-schedule-edge.integration.spec.js"
+  - id: "LIVE-TC-73"
+    titulo: "GET schedules responde en menos de 5 segundos (smoke performance)"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-9"]
+      mitigates: []
+      story: "US-011"
+      spec: "tests/api/live-stream-schedule-edge.integration.spec.js"
+  - id: "LIVE-TC-74"
+    titulo: "GET schedules sin token responde 401/403"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-9"]
+      mitigates: []
+      story: "US-011"
+      spec: "tests/api/live-stream-schedule-edge.integration.spec.js"
+  - id: "LIVE-TC-75"
+    titulo: "POST schedules sin token responde 401/403"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-9"]
+      mitigates: []
+      story: "US-011"
+      spec: "tests/api/live-stream-schedule-edge.integration.spec.js"
+  - id: "LIVE-TC-76"
+    titulo: "DELETE schedules sin token responde 401/403"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-9"]
+      mitigates: []
+      story: "US-011"
+      spec: "tests/api/live-stream-schedule-edge.integration.spec.js"
