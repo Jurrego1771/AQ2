@@ -287,11 +287,11 @@ Al final del run (en teardown):
 | Fase | Capa | Entregable | Esfuerzo | Impacto | Status |
 |---|---|---|---|---|---|
 | **F1** | C0 | Capa 0 (naming) + `qaName()` helper + refactor de fixtures/factories para usarlo | 1 sesión | habilitador de C2/C4 | ✅ commit `bdc9110` |
-| **F2** | C2 | Capa 2 (ResourceRegistry) + integración con `ResourceCleaner` | 0.5 sesión | observabilidad | pendiente |
+| **F2** | C2 | Capa 2 (ResourceRegistry) + integración con `ResourceCleaner` | 0.5 sesión | observabilidad | ✅ commit `<f2>` |
 | **F3** | C4 | Capa 4 (`globalTeardown` sweep por `[QA-AUTO][run=<id>]`) | 1 sesión | safety net real | ✅ commit `7d3830c` |
 | **F4** | C7 | Capa 7 (semáforo por tipo) | 0.5 sesión | mata los 502 del dev | ✅ commit `f82cdc1` |
 | **F5** | C3 | Capa 3 (auto-tracking o `qaCreate`) — elegir una | 1 sesión | elimina `register()` manual | pendiente |
-| **F6** | C5+C8 | Capa 5 (pre-flight) + Capa 8 (métricas en reporte) | 1 sesión | observabilidad histórica | pendiente |
+| **F6** | C5+C8 | Capa 5 (pre-flight) + Capa 8 (métricas en reporte) | 1 sesión | observabilidad histórica | parcial: provisioning report ya generado |
 | **F7** | C6 | Capa 6 (cascade-aware DELETERS) — para módulos con hijos no cascade | según módulo | completa la cobertura | pendiente |
 
 > **Nota sobre los identificadores de commit:** los hashes listados arriba son
@@ -301,19 +301,19 @@ Al final del run (en teardown):
 Costo total: ~5 sesiones para tener las 7 capas activas. Cada fase es
 **independiente**: se puede parar en cualquiera y seguir con valor.
 
-### Estado actual (post-F4)
+### Estado actual (post-F2)
 
 | Capa | Estado |
 |---|---|
 | C0 — naming convention | ✅ activo, usado por 4 fixtures + 3 factories |
-| C1 — per-test ResourceCleaner | ✅ pre-existente, sin cambios |
-| C2 — ResourceRegistry global | ⏳ pendiente |
+| C1 — per-test ResourceCleaner | ✅ pre-existente, ahora notifica al ResourceRegistry |
+| **C2 — ResourceRegistry global** | ✅ activo, `flush()` por test, snapshot per-worker en `reports/provisioning-w<id>-<runId>.json`, agregado en `reports/provisioning-<runId>.json` |
 | C3 — auto-tracking / `qaCreate` | ⏳ pendiente |
 | **C4 — globalTeardown sweep** | ✅ activo, escribe `reports/cleanup-<runId>.json` |
 | C5 — pre-flight check | ⏳ pendiente |
 | C6 — cascade-aware DELETERS | ⏳ pendiente (LIVE → schedule ya cascade) |
 | **C7 — semáforo por tipo** | ✅ activo en `createLiveStream`, opt-in via `QA_MAX_CONCURRENT_CREATE` |
-| C8 — métricas en reporte | parcial: cleanup JSON ya tiene stats; falta resumen agregado por run |
+| **C8 — métricas en reporte** | ✅ provisioning report con created/deleted/leaked por tipo, p50/p95 de duraciones, per-worker |
 
 ## Criterios de éxito (SLAs)
 

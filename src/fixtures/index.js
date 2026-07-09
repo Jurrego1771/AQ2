@@ -131,8 +131,10 @@ const test = base.test.extend({
   // Live-stream REAL self-contained: lo crea por API y lo borra al terminar
   // (teardown idempotente via ResourceCleaner). El test recibe el id ya creado.
   // A diferencia de transcodedMedia, no hay gate de transcoding que esperar.
+  // El testId (titulo del test) se envia al ResourceRegistry para auditoria
+  // en reports/provisioning-<runId>.json (C2 de la estrategia).
   liveStream: async ({ api }, use, testInfo) => {
-    const cleaner = new ResourceCleaner(api);
+    const cleaner = new ResourceCleaner(api, { testId: testInfo.title });
     const name = qaName({ type: 'Live', testTitle: testInfo.title });
     const id = await createLiveStream(api, { name, type: 'video' });
     cleaner.register('live-stream', id);
@@ -143,7 +145,7 @@ const test = base.test.extend({
   // Live-stream de AUDIO self-contained (mismo patrón). Necesario para el bloque
   // de song metadata del schedule, que solo se renderiza en lives de audio (sm2#8463).
   audioLiveStream: async ({ api }, use, testInfo) => {
-    const cleaner = new ResourceCleaner(api);
+    const cleaner = new ResourceCleaner(api, { testId: testInfo.title });
     const name = qaName({ type: 'Audio Live', testTitle: testInfo.title });
     const id = await createLiveStream(api, { name, type: 'audio' });
     cleaner.register('live-stream', id);
@@ -154,7 +156,7 @@ const test = base.test.extend({
   // Media REAL self-contained: ingesta remota + gate de transcoding; se borra
   // al terminar (teardown idempotente). El test recibe el id ya listo.
   transcodedMedia: async ({ api }, use, testInfo) => {
-    const cleaner = new ResourceCleaner(api);
+    const cleaner = new ResourceCleaner(api, { testId: testInfo.title });
     const fileName = qaName({ type: 'Media', testTitle: testInfo.title });
     const id = await createTranscodedMedia(api, { fileUrl: SAMPLE_VIDEO_URL, fileName });
     cleaner.register('media', id);
@@ -166,7 +168,7 @@ const test = base.test.extend({
   // idempotente via ResourceCleaner con deleter `ad`). El test recibe el id ya
   // creado. No hay gate asíncrono: el POST responde 200 con jsonp {data: ad}.
   ad: async ({ api }, use, testInfo) => {
-    const cleaner = new ResourceCleaner(api);
+    const cleaner = new ResourceCleaner(api, { testId: testInfo.title });
     const name = qaName({ type: 'Ad', testTitle: testInfo.title });
     const id = await createAd(api, { name, type: 'local' });
     cleaner.register('ad', id);

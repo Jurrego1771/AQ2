@@ -1097,3 +1097,106 @@ tests:
       mitigates: []
       story: "US-010"
       spec: "tests/api/live-stream-quizzes.integration.spec.js"
+
+  # ---- Infra de provisioning: ResourceRegistry (F2) ----
+  # Unit: ciclo de vida del registry (register/markDeleted/stats).
+  - id: "LIVE-TC-92"
+    titulo: "ResourceRegistry: register agrega a created y leaked lo expone"
+    modulo: "live-stream"
+    tipo: "unit"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: []
+      mitigates: []
+      story: "US-010"
+      spec: "tests/unit/resource-registry.unit.spec.js"
+  - id: "LIVE-TC-93"
+    titulo: "ResourceRegistry: markDeleted mueve de created a deleted con timestamp y duracion"
+    modulo: "live-stream"
+    tipo: "unit"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: []
+      mitigates: []
+      story: "US-010"
+      spec: "tests/unit/resource-registry.unit.spec.js"
+  - id: "LIVE-TC-94"
+    titulo: "ResourceRegistry: markDeleted con id no registrado lo agrega a deleted igual"
+    modulo: "live-stream"
+    tipo: "unit"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: []
+      mitigates: []
+      story: "US-010"
+      spec: "tests/unit/resource-registry.unit.spec.js"
+  - id: "LIVE-TC-95"
+    titulo: "ResourceRegistry: register es idempotente (no duplica por id)"
+    modulo: "live-stream"
+    tipo: "unit"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: []
+      mitigates: []
+      story: "US-010"
+      spec: "tests/unit/resource-registry.unit.spec.js"
+  - id: "LIVE-TC-96"
+    titulo: "ResourceRegistry: get() devuelve el MISMO singleton (compartido entre cleaners)"
+    modulo: "live-stream"
+    tipo: "unit"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: []
+      mitigates: []
+      story: "US-010"
+      spec: "tests/unit/resource-registry.unit.spec.js"
+  - id: "LIVE-TC-97"
+    titulo: "ResourceRegistry: stats() agrega por tipo y calcula p50/p95 de duraciones"
+    modulo: "live-stream"
+    tipo: "unit"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: []
+      mitigates: []
+      story: "US-010"
+      spec: "tests/unit/resource-registry.unit.spec.js"
+  # Integration: registry se integra con los fixtures self-contained.
+  - id: "LIVE-TC-98"
+    titulo: "liveStream fixture registra en created durante la ejecucion"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: []
+      mitigates: []
+      story: "US-010"
+      spec: "tests/api/resource-registry.integration.spec.js"
+  - id: "LIVE-TC-99"
+    titulo: "dos fixtures (liveStream + ad) coexisten en el registry compartido"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: []
+      mitigates: []
+      story: "US-010"
+      spec: "tests/api/resource-registry.integration.spec.js"
+  - id: "LIVE-TC-100"
+    titulo: "stats() del registry refleja los creates y los deletes del run"
+    modulo: "live-stream"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: []
+      mitigates: []
+      story: "US-010"
+      spec: "tests/api/resource-registry.integration.spec.js"
