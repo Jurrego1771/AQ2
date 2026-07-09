@@ -4,7 +4,7 @@
 # AC ids unicos por modulo: LIVE-AC-N.
 version: 1
 epic: "Live Stream Management"
-ultima_actualizacion: '2026-06-21'
+ultima_actualizacion: '2026-07-09'
 
 stories:
   - id: "US-009"
@@ -143,3 +143,12 @@ stories:
       marca sm: -> AQ2#24); la UI se cubre por data-name como excepcion documentada. Nota: en
       exploracion se observo una lectura post-escritura inconsistente del schedule-job (GET
       devolvio campos vacios justo tras el POST), no reproducible de forma fiable -> no filado.
+
+  # US-029: abierta en sesion QA 2026-07-09, sin US formal todavia.
+  # Los AC LIVE-AC-19/20 son requisitos transversales al modulo (no ligados a
+  # un flujo nuevo), por eso no se asignan a una US tradicional. Se referencian
+  # directamente desde LIVE-TC-116..123.
+  - id: "LIVE-AC-19"
+    criterio: "El detalle de un live-stream carga sin errores de consola ni 404 a /api/live-stream/:id/records"
+  - id: "LIVE-AC-20"
+    criterio: "Los controles UI persistentes del detalle (AI Live Transcription, Playout, Next Settings, Recording, etc.) exponen marca sm: para soportar cobertura automatizada"

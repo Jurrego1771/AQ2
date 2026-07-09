@@ -3,6 +3,7 @@ const base = require('@playwright/test');
 const { MediaPage } = require('../pages/media.page');
 const { MediaDetailPage } = require('../pages/media-detail.page');
 const { LiveStreamPage } = require('../pages/live-stream.page');
+const { LiveStreamDetailPage } = require('../pages/live-stream-detail.page');
 const { ShowPage } = require('../pages/show.page');
 const { LiveEditorPage } = require('../pages/live-editor.page');
 const { PlaylistPage } = require('../pages/playlist.page');
@@ -47,6 +48,11 @@ const test = base.test.extend({
   // Page Object del listado de Live Stream
   liveStreamPage: async ({ page }, use) => {
     await use(new LiveStreamPage(page));
+  },
+
+  // Page Object del detalle/edicion de Live Stream (/live-stream/:id y /live-stream/new)
+  liveStreamDetailPage: async ({ page }, use) => {
+    await use(new LiveStreamDetailPage(page));
   },
 
   // Page Object del módulo Show (listado + detalle)

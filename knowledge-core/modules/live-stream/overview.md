@@ -5,6 +5,15 @@
 > `riesgos.yaml`, poblado explorando en vivo. La verdad es el entorno corriendo,
 > no los `.coffee`.
 
+**Actualización 2026-07-09** (sesión de cobertura de secciones inexploradas):
+- Cosecha de marcas del detalle en dev v7.0.75 → 207 nodos / 180 marcas únicas.
+- POM nuevo del detalle: `src/pages/live-stream-detail.page.js`.
+- Spec nuevo: `tests/regression/live-stream-detail-unexplored.regression.spec.js`
+  (LIVE-TC-116..123; 3 verdes + 5 vivos por issues AQ2#50/#51/#52/#53/#54).
+- Riesgos nuevos: `LIVE-RISK-13` (TypeError consola), `LIVE-RISK-14` (404 `/records`),
+  `LIVE-RISK-15` (AI Live Transcription sin sm:), `LIVE-RISK-16` (Playout y Next Settings
+  sin sm:).
+
 Prefijo de IDs: **LIVE** · Rutas: listado `/live-stream` (vista `live_streams.coffee`),
 detalle/creación `/live-stream/:id` y `/live-stream/new[?type=audio]` (vista
 `live_stream.coffee`, ~2.9k líneas). POM del listado: `src/pages/live-stream.page.js`.

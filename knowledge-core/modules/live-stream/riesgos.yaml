@@ -2,7 +2,7 @@
 # Defectos = issues GitHub (Jurrego1771/AQ2#N). NO se escribe mitigado_por_test (derivado).
 version: 1
 modulo: "live-stream"
-ultima_actualizacion: '2026-07-04'
+ultima_actualizacion: '2026-07-09'
 
 riesgos:
   - id: "LIVE-RISK-1"
@@ -325,3 +325,115 @@ riesgos:
       schedule usa selects que limitan a 0-59, pero el endpoint API no - cualquier
       consumidor externo (clientes custom, scripts, integraciones) puede meter
       valores invalidos.
+
+  - id: "LIVE-RISK-13"
+    severidad: "medium"
+    probabilidad: "high"
+    titulo: "TypeError en consola del detalle: addParamToURL de live_dynamic_preview.js"
+    descripcion: >
+      Cada carga de /live-stream/:id (cualquier live, recien creado o preexistente)
+      dispara Uncaught TypeError en consola desde live_dynamic_preview.js. La traza
+      indica null.split en addParamToURL(...:3321), llamada desde process_load_preview
+      y reload_previews (live_streams.js:8283). Reproducible en al menos 2 cuentas
+      distintas del dev: el mio recien creado (entry_points.primary=[]) y 'Full RTMP'
+      (entry_points.primary con 1 entry). Por tanto NO es especifico de un live sin
+      ingest. El bug es general y rompe la calidad de la consola, ocultando errores
+      reales del modulo.
+    detonador:
+      - "GET /live-stream/<id> en cualquier live del entorno dev"
+    mitigacion: >
+      Null-check antes de .split en addParamToURL; o cortocircuitar la llamada cuando
+      la URL del preview es null (caso 'sin ingest' / 'live recien creado'). Para el
+      fix real se requiere source maps (stack apunta a linea 3321 de bundle minificado).
+    archivos_afectados:
+      - "src/client/live_dynamic_preview.js (coffee compilado, stack: live_dynamic_preview.js:3321 / live_streams.js:8283)"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#50"
+    prioridad_prueba: "MUST"
+    nota_industria: >
+      Fiabilidad/consola (heuristica del skill qa-module). Enmascarar errores 1ra
+      linea (no manejar null) lleva a UX 'misteriosa' - el feature parece OK pero
+      queda stack en consola.
+
+  - id: "LIVE-RISK-14"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "El front pide /api/live-stream/:id/records en cada carga, que siempre devuelve 404"
+    descripcion: >
+      El detalle hace GET /api/live-stream/&lt;id&gt;/records?limit=5 en cada carga. El
+      endpoint no existe documentado y responde {status:'ERROR', data:'NOT_FOUND'}
+      (HTTP 404) consistentemente. Probable bug de contrato: el back expone
+      /api/live-stream/:id/recording (que devuelve 200), y /records es o un leftover o
+      un typo. No afecta funcionalidad visible (la UI no pinta nada a partir del
+      resultado), pero delata drift entre el front y el back que en un futuro podria
+      tirar un .catch silencioso a una ruta que SI exista.
+    detonador:
+      - "GET /api/live-stream/<id>/records?limit=5 desde el detalle"
+    mitigacion: >
+      Front: dejar de pedir /records y usar /recording (o eliminarlo si no se usa).
+      Back: si la intencion era exponer /records (variante de /recording), crearlo y
+      documentarlo; si no, eliminar el endpoint faltante.
+    archivos_afectados:
+      - "src/client/live_stream.coffee (handler que pide /records)"
+      - "src/server/routes/api/live-stream/recording/ (probable rename histórico)"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#51"
+    prioridad_prueba: "COULD"
+    nota_industria: >
+      Contrato cliente-servidor: un 404 persistente entre back y front suele preceder
+      a un break silencioso cuando el back se modifica.
+
+  - id: "LIVE-RISK-15"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "AI Live Transcription sin marcas sm: (cobertura UI bloqueada)"
+    descripcion: >
+      La seccion 'AI Live Transcription' del detalle (h3) NO expone ningun sm= ni
+      data-name= en sus controles: ni el toggle Enabled (ON/OFF) ni el 'Select a
+      Language' (con 100+ idiomas) son direccionables. La API subyacente
+      (liveTranscription.enabled + language) SI persiste al guardar, pero la cobertura
+      UI de la seccion es 100% no automatizable bajo la regla 'solo sm:' del
+      proyecto. Verificado en dev v7.0.75 (runId=274d02). Mismo patron que
+      Schedules (LIVE-RISK-8 / AQ2#24) - deuda de testabilidad.
+    detonador:
+      - "Intentar automatizar un assert sobre el toggle o el select de AI Live Transcription"
+    mitigacion: >
+      Agregar marcas sm: semanticas en live_stream.coffee: ai-transcription-enabled,
+      ai-transcription-language (o equivalentes).
+    archivos_afectados:
+      - "src/client/live_stream.coffee (render del bloque AI Live Transcription)"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#52"
+    prioridad_prueba: "MUST"
+    nota_industria: >
+      Testabilidad / contrato QA. La ausencia de marcadores rompe el principio de
+      'selector estable' que QA usa para aserciones robustas.
+
+  - id: "LIVE-RISK-16"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "Playout y Next Settings sin marcas sm: (toggle Enable + 5 controles no automatizables)"
+    descripcion: >
+      En el detalle del live, las secciones Playout y Next Settings no exponen
+      marcas sm: ni data-name= en sus controles:
+      - Playout: toggle Enable + select (Prueba, ...).
+      - Next Settings: Always On toggle + Alternative Label input + Disable Chat
+        toggle + Alternative Canonical URL input + Redirect To input.
+      La API persiste los valores correctamente (next_settings.always_on, etc.),
+      pero la cobertura UI completa no es automatizable. Mismo patron que
+      LIVE-RISK-15 (AI Live Transcription) y LIVE-RISK-8 (Schedules).
+    detonador:
+      - "Intentar automatizar aserciones sobre Playout.Enable / Next Settings.Disable Chat / etc."
+    mitigacion: >
+      Agregar sm="playout-enabled", sm="playout-asset", sm="next-always-on",
+      sm="next-disable-chat", sm="next-canonical-url", sm="next-alternative-label",
+      sm="next-redirect" en live_stream.coffee.
+    archivos_afectados:
+      - "src/client/live_stream.coffee"
+    defectos_relacionados:
+      - "Jurrego1771/AQ2#53"
+      - "Jurrego1771/AQ2#54"
+    prioridad_prueba: "MUST"
+    nota_industria: >
+      Testabilidad / contrato QA. Patrón recurrente: secciones con estado persistente
+      en la API pero sin selectores estables → cobertura UI bloqueada.

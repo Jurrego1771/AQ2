@@ -3,7 +3,7 @@
 # y /live-stream/new[?type=audio] (live_stream.coffee). Usar sm()/smPrefix().
 version: 1
 modulo: "live-stream"
-ultima_actualizacion: '2026-06-21'
+ultima_actualizacion: '2026-07-09'
 
 # ---- Listado /live-stream ----
 listado:
@@ -152,6 +152,75 @@ detalle:
   thumbs:
     container: "thumbs"
     list: "thumb-list"
+
+# ---- Detalle: secciones no documentadas previamente (cosecha 2026-07-09 dev v7.0.75) ----
+# 180 marcas unicas; el POM src/pages/live-stream-detail.page.js las mantiene
+# en sync. Seleccion representativa:
+detalle_extra:
+  background_image: "background-image"
+  background_upload: "background-upload"
+  background_delete: "background-delete"
+  copy_origin_url: "copy-origin-url"
+  copy_publishing_token: "copy-publishing-token"
+  copy_server: "copy-server"
+  copy_stream_name: "copy-stream-name"
+  copy_metadata: "copy-metadata"
+  copy_audio_icecast_us: "copy-audio-icecast-us"
+  copy_audio_icecast_eu: "copy-audio-icecast-eu"
+  copy_audio_icecast_sa: "copy-audio-icecast-sa"
+  copy_audio_rtmp_us: "copy-audio-rtmp-us"
+  copy_audio_rtmp_eu: "copy-audio-rtmp-eu"
+  copy_audio_rtmp_sa: "copy-audio-rtmp-sa"
+  copy_http_push: "copy-http-push"
+  customer_access_list: "customer-access-list"
+  dvr_share_accounts: "dvr-share-accounts"
+  embed_image_large: "embed-image-large"
+  embed_image_medium: "embed-image-medium"
+  embed_image_small: "embed-image-small"
+  itg_channel: "itg-channel"           # ya estaba
+  live_restreaming: "live-restreaming"
+  add_live_restream_alert: "add-live-restream-alert"
+  monitor_errors: "monitor-errors"
+  monitor_global_status: "monitor-global-status"
+  monitor_left_icon: "monitor-left-icon"
+  monitor_status_text: "monitor-status-text"
+  monitor_zone_status: "monitor-zone-status"
+  player: "player"
+  player_toolbar: "player-toolbar"
+  quiz_content: "quiz-content"
+  quiz_editor: "quiz-editor"
+  quiz_list: "quiz-list"
+  quiz_list_empty: "quiz-list-empty"
+  quiz_loader: "quiz-loader"
+  quiz_total: "quiz-total"
+  quiz_page_size: "quiz-page-size"
+  quiz_pagination: "quiz-pagination"
+  quiz_questions: "quiz-questions"
+  quiz_title: "quiz-title"
+  save_quiz: "save-quiz"
+  stream_name: "stream-name"
+  stream_url_clip_code: "stream-url-clip-code"
+  stream_url_clip_embed: "stream-url-clip-embed"
+  switch_playanywhere_always_visible: "switch-playanywhere-always-visible"
+  social_streaming_main: "social-streaming-main"
+  sgai_rotation_enabled: "sgai-rotation-enabled"
+  sgai_rotation_add_row: "sgai-rotation-add-row"
+  sgai_rotation_rows: "sgai-rotation-rows"
+  sgai_rotation_save: "sgai-rotation-save"
+  back_to_list: "back-to-list"
+  editor_title: "editor-title"
+  edit_thumbnail: "edit-thumbnail"
+  save_edited_thumbnail: "save-edited-thumbnail"
+  thumb_url_container: "thumb-url-container"
+  remove_table_row: "remove-table-row"
+  page_actions: "page-actions"
+  copy: "copy"
+  # GAP (AQ2#52/#53/#54 / LIVE-RISK-15/16): las siguientes secciones NO exponen
+  # sm: en sus controles; documentadas como deuda de testabilidad:
+  gaps:
+    ai_live_transcription: "TODO sm= en ai-transcription-enabled + ai-transcription-language (#52)"
+    playout: "TODO sm= en playout-enabled + playout-asset (#53)"
+    next_settings: "TODO sm= en next-always-on/next-disable-chat/next-canonical-url/next-alternative-label/next-redirect (#54)"
 
 # ---- Tipos de evento (verificado en vivo) ----
 tipos:

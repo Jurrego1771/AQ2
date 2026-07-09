@@ -3,7 +3,7 @@
 # correlacion @LIVE-TC-N (+ la capa @smoke/@regression/@api).
 version: 1
 modulo: "live-stream"
-ultima_actualizacion: '2026-07-03'
+ultima_actualizacion: '2026-07-09'
 
 tests:
   # ---- US-009: listado, filtros y busqueda ----
@@ -1376,3 +1376,102 @@ tests:
       spec: "tests/api/live-stream-ingest.api.spec.js"
     # test.fail() en el spec: rojo-esperado hasta corregir AQ2#49 (entry_points
     # vacio en API-created live). Requiere ffmpeg en PATH.
+
+  # ---- Cobertura nueva: secciones inexploradas del detalle (sesion QA 2026-07-09)
+  # Es la primera vez que estas secciones son cubiertas por UI automatizada.
+  # Cosecha de marcas sm: (180 marcas unicas en dev v7.0.75) vivida en vivo
+  # con Playwright MCP; el POM del detalle es src/pages/live-stream-detail.page.js.
+  # Ver tests/regression/live-stream-detail-unexplored.regression.spec.js.
+  - id: "LIVE-TC-116"
+    titulo: "detalle: renderiza >=120 marcas sm: unicas tras cargar /live-stream/:id"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-19"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/regression/live-stream-detail-unexplored.regression.spec.js"
+  - id: "LIVE-TC-117"
+    titulo: "Start Recording arranca disabled: el panel time-recording lista los motivos"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-20"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/regression/live-stream-detail-unexplored.regression.spec.js"
+  - id: "LIVE-TC-118"
+    titulo: "EPG, Distribution Policy, PlayAnywhere (4 controles) e ITG exponen sm: y arrancan consistentes"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6", "LIVE-AC-19"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/regression/live-stream-detail-unexplored.regression.spec.js"
+  - id: "LIVE-TC-119"
+    titulo: "consola limpia al cargar /live-stream/:id (sin TypeError) [prueba viva BUG #50]"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-19"]
+      mitigates: ["LIVE-RISK-13"]
+      story: "US-010"
+      spec: "tests/regression/live-stream-detail-unexplored.regression.spec.js"
+    # test.fail() en el spec: rojo-esperado hasta corregir AQ2#50.
+  - id: "LIVE-TC-120"
+    titulo: "GET /api/live-stream/:id/records NO devuelve 404 [prueba viva BUG #51]"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-5"]
+      mitigates: ["LIVE-RISK-14"]
+      story: "US-010"
+      spec: "tests/regression/live-stream-detail-unexplored.regression.spec.js"
+    # test.fail() en el spec: rojo-esperado hasta corregir AQ2#51.
+  - id: "LIVE-TC-121"
+    titulo: "AI Live Transcription expone >=1 control con marca sm: [prueba viva TECH-DEBT #52]"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-20"]
+      mitigates: ["LIVE-RISK-15"]
+      story: "US-010"
+      spec: "tests/regression/live-stream-detail-unexplored.regression.spec.js"
+    # test.fail() en el spec: rojo-esperado hasta corregir AQ2#52.
+  - id: "LIVE-TC-122"
+    titulo: "Playout expone >=1 control con marca sm: [prueba viva TECH-DEBT #53]"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-20"]
+      mitigates: ["LIVE-RISK-16"]
+      story: "US-010"
+      spec: "tests/regression/live-stream-detail-unexplored.regression.spec.js"
+    # test.fail() en el spec: rojo-esperado hasta corregir AQ2#53.
+  - id: "LIVE-TC-123"
+    titulo: "Next Settings expone >=1 control con marca sm: [prueba viva TECH-DEBT #54]"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-20"]
+      mitigates: ["LIVE-RISK-16"]
+      story: "US-010"
+      spec: "tests/regression/live-stream-detail-unexplored.regression.spec.js"
+    # test.fail() en el spec: rojo-esperado hasta corregir AQ2#54.
