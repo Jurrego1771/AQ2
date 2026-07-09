@@ -414,3 +414,251 @@ tests:
       mitigates: []
       story: "US-010"
       spec: "tests/unit/semaphore.unit.spec.js"
+
+  # ---- Cobertura nueva: endpoints avanzados del detalle (port de api_test_flow) ----
+  # Ver tests/regression/live-stream-advanced.regression.spec.js. Cubre update
+  # parcial, search, filtros del listado, paginacion, toggle-online/bookmark,
+  # refresh-token, recording, thumbs, logo position, DVR, assign player/ad,
+  # medialive, publish URLs, restream, schedule GET.
+  - id: "LIVE-TC-32"
+    titulo: "update: rename persiste el nuevo nombre y el id se mantiene"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: ["LIVE-RISK-4"]
+      story: "US-010"
+      spec: "tests/regression/live-stream-advanced.regression.spec.js"
+  - id: "LIVE-TC-33"
+    titulo: "update: dvr=true persiste"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/regression/live-stream-advanced.regression.spec.js"
+  - id: "LIVE-TC-34"
+    titulo: "search: busqueda por nombre exacto devuelve el live creado"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-4"]
+      mitigates: []
+      story: "US-009"
+      spec: "tests/regression/live-stream-advanced.regression.spec.js"
+  - id: "LIVE-TC-35"
+    titulo: "list: ?type=video acepta y devuelve data[]"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-2"]
+      mitigates: []
+      story: "US-009"
+      spec: "tests/regression/live-stream-advanced.regression.spec.js"
+  - id: "LIVE-TC-36"
+    titulo: "list: ?monitor=true acepta y devuelve data[]"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-2"]
+      mitigates: []
+      story: "US-009"
+      spec: "tests/regression/live-stream-advanced.regression.spec.js"
+  - id: "LIVE-TC-37"
+    titulo: "list: ?monitor=false acepta y devuelve data[]"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-2"]
+      mitigates: []
+      story: "US-009"
+      spec: "tests/regression/live-stream-advanced.regression.spec.js"
+  - id: "LIVE-TC-38"
+    titulo: "list: ?bookmark=true acepta y devuelve data[]"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-2"]
+      mitigates: []
+      story: "US-009"
+      spec: "tests/regression/live-stream-advanced.regression.spec.js"
+  - id: "LIVE-TC-39"
+    titulo: "list: sort=-date_created acepta y devuelve data[]"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-2"]
+      mitigates: []
+      story: "US-009"
+      spec: "tests/regression/live-stream-advanced.regression.spec.js"
+  - id: "LIVE-TC-40"
+    titulo: "pagination: limit=5 + skip=5 no se solapan"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-1"]
+      mitigates: []
+      story: "US-009"
+      spec: "tests/regression/live-stream-advanced.regression.spec.js"
+  - id: "LIVE-TC-41"
+    titulo: "toggle-online: responde 200 (idempotente)"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/regression/live-stream-advanced.regression.spec.js"
+  - id: "LIVE-TC-42"
+    titulo: "toggle-bookmark: 1ra activa, 2da desactiva"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/regression/live-stream-advanced.regression.spec.js"
+  - id: "LIVE-TC-43"
+    titulo: "refresh-token: regenera el token"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/regression/live-stream-advanced.regression.spec.js"
+  - id: "LIVE-TC-44"
+    titulo: "start-record: responde 200/400/404/500 (tolerante al backend)"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/regression/live-stream-advanced.regression.spec.js"
+  - id: "LIVE-TC-45"
+    titulo: "listThumbs: GET /:id/thumb responde 200"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/regression/live-stream-advanced.regression.spec.js"
+  - id: "LIVE-TC-46"
+    titulo: "logo: update logo_live_position persiste"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/regression/live-stream-advanced.regression.spec.js"
+  - id: "LIVE-TC-47"
+    titulo: "dvr: GET refleja el valor persistido por update previo (dvr=false)"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/regression/live-stream-advanced.regression.spec.js"
+  - id: "LIVE-TC-48"
+    titulo: "assign player: asigna si existe al menos 1 player"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/regression/live-stream-advanced.regression.spec.js"
+  - id: "LIVE-TC-49"
+    titulo: "assign ad: asigna y luego desasigna con ad vacio"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/regression/live-stream-advanced.regression.spec.js"
+  - id: "LIVE-TC-50"
+    titulo: "medialive: habilita y persiste (tolerante a 500 si no configurado)"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/regression/live-stream-advanced.regression.spec.js"
+  - id: "LIVE-TC-51"
+    titulo: "detail: incluye stream_id y/o publishing_token"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/regression/live-stream-advanced.regression.spec.js"
+  - id: "LIVE-TC-52"
+    titulo: "listRestream: GET /:id/restream responde 200"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-6"]
+      mitigates: []
+      story: "US-010"
+      spec: "tests/regression/live-stream-advanced.regression.spec.js"
+  - id: "LIVE-TC-53"
+    titulo: "schedules: GET /:id/schedule-job/ responde 200"
+    modulo: "live-stream"
+    tipo: "regression"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["LIVE-AC-9"]
+      mitigates: []
+      story: "US-011"
+      spec: "tests/regression/live-stream-advanced.regression.spec.js"

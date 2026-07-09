@@ -29,12 +29,47 @@ class LiveStreamClient extends BaseClient {
   create(payload) {
     return this.post('/', payload);
   }
+  /**
+   * Update parcial del evento. El contrato sm2 es POST /:id (no PUT) con body
+   * parcial: cualquier subset de campos actualizables (name, dvr, ad, player,
+   * logo_live_position, etc.). La implementación de sm2 acepta tanto JSON
+   * como form-encoded; JSON es más predecible para tests.
+   * @param {string} id
+   * @param {Record<string, any>} payload
+   */
+  update(id, payload) {
+    return this.post(`/${id}`, payload);
+  }
   remove(id) {
     return this.delete(`/${id}`);
   }
   /** Grabaciones del evento. Sufijo /recording (ver bug #20). */
   recording(id) {
     return this.get(`/${id}/recording`);
+  }
+
+  // --- Estado online / bookmark (toggles) ---
+  toggleOnline(id) {
+    return this.post(`/${id}/toggle-online`, {});
+  }
+  toggleBookmark(id) {
+    return this.post(`/${id}/toggle-bookmark`, {});
+  }
+  /** Regenera el publishing token del evento. */
+  refreshToken(id) {
+    return this.post(`/${id}/refresh-token`, {});
+  }
+  /** Inicia grabacion del evento. Endpoint verificado: /start-record. */
+  startRecord(id) {
+    return this.post(`/${id}/start-record`, {});
+  }
+  /** Lista thumbnails del evento. */
+  listThumbs(id) {
+    return this.get(`/${id}/thumb`);
+  }
+  /** Lista restream targets del evento. */
+  listRestream(id) {
+    return this.get(`/${id}/restream`);
   }
 
   // --- Schedules (onetime / recurrent). Contrato verificado en vivo ---
