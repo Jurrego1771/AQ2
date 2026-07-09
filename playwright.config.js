@@ -14,6 +14,9 @@ module.exports = defineConfig({
   // Genera QA_RUN_ID una sola vez por corrida; lo consumen qaName() y el
   // sweep global. Ver knowledge-core/cross-cutting/test-provisioning/overview.md.
   globalSetup: './src/fixtures/global-setup.js',
+  // Safety net (Capa 4): barre [QA-AUTO][run=<runId>] no limpiados per-test.
+  // Best-effort, idempotente, skip en prod.
+  globalTeardown: './src/fixtures/global-teardown.js',
   // Falla el build si quedó un test.only olvidado en CI.
   forbidOnly: isCI,
   fullyParallel: true,
