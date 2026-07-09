@@ -354,3 +354,63 @@ tests:
     # No valida un AC de producto: protege la infraestructura de provisioning
     # self-contained. Ver knowledge-core/cross-cutting/test-provisioning/overview.md
     # (Capa 4, safety net).
+
+  # ---- Infra de provisioning: rate-limit dev (F7) ----
+  # Unit del Semaphore: protege la concurrencia que AQ2 mete contra el dev
+  # compartido (mitiga 502 Bad Gateway intermitentes). Activar con
+  # QA_MAX_CONCURRENT_CREATE=N.
+  - id: "LIVE-TC-27"
+    titulo: "Semaphore permits=0 corre inline (sin cola)"
+    modulo: "live-stream"
+    tipo: "unit"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: []
+      mitigates: []
+      story: "US-010"
+      spec: "tests/unit/semaphore.unit.spec.js"
+  - id: "LIVE-TC-28"
+    titulo: "Semaphore permits=2 serializa a 2 en vuelo"
+    modulo: "live-stream"
+    tipo: "unit"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: []
+      mitigates: []
+      story: "US-010"
+      spec: "tests/unit/semaphore.unit.spec.js"
+  - id: "LIVE-TC-29"
+    titulo: "Semaphore permits=1 serializa todo (FIFO estricto)"
+    modulo: "live-stream"
+    tipo: "unit"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: []
+      mitigates: []
+      story: "US-010"
+      spec: "tests/unit/semaphore.unit.spec.js"
+  - id: "LIVE-TC-30"
+    titulo: "Semaphore: un error no rompe la cola (siguiente tarea corre)"
+    modulo: "live-stream"
+    tipo: "unit"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: []
+      mitigates: []
+      story: "US-010"
+      spec: "tests/unit/semaphore.unit.spec.js"
+  - id: "LIVE-TC-31"
+    titulo: "Semaphore registry: mismo nombre devuelve misma instancia"
+    modulo: "live-stream"
+    tipo: "unit"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: []
+      mitigates: []
+      story: "US-010"
+      spec: "tests/unit/semaphore.unit.spec.js"

@@ -63,6 +63,12 @@ module.exports = defineConfig({
       dependencies: ['setup'],
     },
     {
+      name: 'unit',
+      testDir: './tests/unit',
+      grep: /@unit/,
+      // Tests puros de infra (sin servidor, sin auth). El más rápido de todos.
+    },
+    {
       name: 'e2e',
       testDir: './tests/e2e',
       grep: /@e2e/,
