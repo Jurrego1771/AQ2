@@ -11,9 +11,14 @@ description: >
 # qa-report — informe HTML de evidencias
 
 Convierte una sesión de QA en **un solo HTML autocontenido** (estilos embebidos + imágenes
-en base64) que muestra: resumen con conteos, qué se probó (y qué NO), tabla de tests
+en base64) que muestra: resumen con conteos, qué se probó, tabla de tests
 (passed/failed/rojo-esperado/skipped), hallazgos con severidad y capturas, recomendaciones,
 galería de evidencias y logs colapsables. Corre en el hilo principal; honra `CLAUDE.md`.
+
+> **Alcance del informe (no negociable):** el informe reporta SOLO **pruebas ejecutadas**,
+> su **evidencia**, hallazgos de defecto (bugs) de esas pruebas, y **recomendaciones**. **NO**
+> incluye huecos de cobertura, tests no realizados, ni notas de estrategia/metodología de QA:
+> eso es deuda de cobertura y vive en `knowledge-core` (riesgos.yaml), nunca en el informe.
 
 El argumento (opcional) es la **carpeta de evidencia** (`$ARGUMENTS`). Si falta, usa o crea
 `reports/<modulo>/<flujo>-<fecha>/` y pregunta lo mínimo necesario.
@@ -46,11 +51,9 @@ Crea `report.json` en la carpeta de evidencia copiando `manifest.example.json`. 
   **relativas al manifiesto**.
 - `findings[]`: `{ id, url, title, severity, type, description, evidence[], recommendation }`.
   `severity` ∈ `critical | high | medium | low | info`. Enlaza el issue real de GitHub
-  (`Jurrego1771/AQ2#N`). **No inflar severidad** (CLAUDE.md — honestidad de QA).
-- `coverageGaps[]`: `{ id, area, why, mitigation }`. Lo que la suite **NO cubre**:
-  huecos por scope, dependencias de entorno, datos no disponibles, endpoints sin
-  automatización, rutas que requieren scheduler o fixtures externos. **Importante**:
-  sin esta sección el informe miente al sugerir cobertura total.
+  (`Jurrego1771/AQ2#N`). **No inflar severidad** (CLAUDE.md — honestidad de QA). Son
+  **defectos observados en las pruebas ejecutadas** (bugs/ux/perf/a11y), NO notas de
+  estrategia, cobertura o tests pendientes.
 - `recommendations[]`: acciones priorizadas.
 - `evidence[]`: galería — `{ file, caption }`.
 - `logs[]`: `{ label, content }` o `{ label, file }`.
@@ -58,8 +61,8 @@ Crea `report.json` en la carpeta de evidencia copiando `manifest.example.json`. 
 
 > Honestidad: el informe refleja lo verificado. Tests que no se corrieron → no se listan
 > como passed. Hallazgos no confirmados → no se incluyen. Balancea con lo que funciona.
-> **Suite incompleta → declarar huecos en `coverageGaps[]`, no esconderlos.** El informe
-> tiene que servir para defender (o cuestionar) la cobertura real, no para aparentarla.
+> Un `coverageGaps[]` en el manifiesto se **ignora** al renderizar (no va al informe); la
+> deuda de cobertura pertenece a `knowledge-core`, no al reporte de evidencias.
 
 ### P2 — Generar el HTML
 ```
