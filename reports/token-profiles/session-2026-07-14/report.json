@@ -1,0 +1,190 @@
+{
+  "meta": {
+    "title": "Informe de QA — API Tokens (scope read/write)",
+    "subtitle": "Sesión /qa-module: crear tokens read/write y probar su scope contra los endpoints",
+    "module": "token-profiles",
+    "environment": "dev · https://dev.platform.mediastre.am",
+    "date": "2026-07-14",
+    "tester": "Julio Urrego"
+  },
+  "summary": "Sesión de exploración + cobertura del flujo self-service de **API tokens** (`/settings/api`), historia **US-036** (scope read/write). A diferencia del gate por TokenProfile (US-035, bloqueado por `is_admin` de plataforma), el acceso read/write **sí es explorable** con la cuenta QA — y desde hoy la cuenta puede **crear, listar, actualizar y borrar** sus tokens (permiso `api_tokens` + delete concedido 2026-07-14), lo que permite tests **self-contained**.\n\n**Veredicto: el scope funciona correctamente** (read rechaza escrituras, write escribe, borrado/deshabilitado invalidan al instante). **1 bug real** filado ([AQ2#55](https://github.com/Jurrego1771/AQ2/issues/55), medium): un token read-only en `POST /api/show` devuelve **500** en vez de 403. Además 4 mejoras no bloqueantes documentadas. **14 tests** nuevos (13 verdes + 1 rojo-esperado vivo del bug).",
+  "scope": [
+    "**Creación de tokens** read y write vía API (sesión) y vía UI (`/settings/api`).",
+    "**Scope de lectura**: token read → GET show/media (200) y POST (403).",
+    "**Scope de escritura**: token write → GET + POST /api/show (200).",
+    "**Ciclo de vida**: borrar y deshabilitar (toggle) un token → deja de autenticar al instante.",
+    "**Casos borde**: crear sin descripción, `access` como objeto vs string.",
+    "**UX/heurísticas**: feedback de creación, confirmación de borrado, nombres accesibles de los botones de acción."
+  ],
+  "tests": [
+    {
+      "id": "TOK-TC-014",
+      "title": "la pantalla /settings/api carga con form y tabla de tokens",
+      "layer": "smoke",
+      "status": "passed"
+    },
+    {
+      "id": "TOK-TC-005",
+      "title": "crear token read persiste access {read:true, write:false}",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "TOK-TC-006",
+      "title": "crear token write persiste access {read:true, write:true}",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "TOK-TC-007",
+      "title": "token read: GET /api/show/list y GET /api/media responden 200",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "TOK-TC-008",
+      "title": "token read: POST a media/live-stream/playlist responde 403",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "TOK-TC-009",
+      "title": "token write: GET y POST /api/show (crear) responden 200",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "TOK-TC-010",
+      "title": "token borrado se invalida al instante (GET -> 403)",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "TOK-TC-011",
+      "title": "token read: POST /api/show responde 403 (no 500)",
+      "layer": "api",
+      "status": "xfail",
+      "notes": "Rojo esperado: prueba viva del bug AQ2#55 (POST /api/show con token read = 500 en vez de 403)."
+    },
+    {
+      "id": "TOK-TC-012",
+      "title": "crear token SIN descripción es aceptado (200)",
+      "layer": "api",
+      "status": "passed",
+      "notes": "Documenta mejora TOK-RISK-005 (se acepta token sin descripción)."
+    },
+    {
+      "id": "TOK-TC-013",
+      "title": "access como objeto cae a read-only en silencio",
+      "layer": "api",
+      "status": "passed",
+      "notes": "Documenta mejora TOK-RISK-006 (access objeto -> read-only silencioso)."
+    },
+    {
+      "id": "TOK-TC-015",
+      "title": "crear token Read por UI aparece en la tabla con Access \"Read\"",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "TOK-TC-016",
+      "title": "crear token Write por UI aparece con Access \"Read+Write\"",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "TOK-TC-017",
+      "title": "borrar un token pide confirmación y elimina la fila",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "TOK-TC-018",
+      "title": "toggle deshabilita un token y deja de autenticar",
+      "layer": "regression",
+      "status": "passed"
+    }
+  ],
+  "findings": [
+    {
+      "id": "AQ2#55",
+      "url": "https://github.com/Jurrego1771/AQ2/issues/55",
+      "title": "Token read-only: POST /api/show devuelve 500 en vez de 403",
+      "severity": "medium",
+      "type": "bug",
+      "description": "Un token de solo lectura que intenta escribir en `/api/show` recibe **500 `{\"message\":null}`**, mientras que `media`, `live-stream` y `playlist` devuelven el **403** correcto. El gate de escritura por token en la ruta del nuevo módulo de shows lanza una excepción no capturada en vez del 403 estándar. **Verificado en vivo.**",
+      "recommendation": "Devolver 403 (consistente con el resto de recursos). Prueba viva `@TOK-TC-011` (test.fail) en rojo-esperado hasta el fix."
+    },
+    {
+      "id": "MEJORA-form",
+      "title": "Crear token por UI no da feedback y no limpia el formulario",
+      "severity": "low",
+      "type": "ux",
+      "description": "Tras **Create New Token** no hay toast/mensaje de éxito (solo aparece la fila) y el campo Description conserva lo tecleado → invita a crear duplicados. Nielsen #1 (visibilidad de estado) / #5 (prevención de errores). **No bloqueante.**",
+      "recommendation": "Mostrar confirmación de creación y resetear el form tras éxito. (TOK-RISK-004)"
+    },
+    {
+      "id": "MEJORA-desc",
+      "title": "Se puede crear un token sin descripción",
+      "severity": "low",
+      "type": "ux",
+      "description": "`POST /api/account/token` sin `description` responde 200 y crea el token → tokens difíciles de auditar ('¿de qué integración es este?'). **No bloqueante.**",
+      "recommendation": "Considerar exigir descripción/etiqueta al emitir un token (al menos en la UI). (TOK-RISK-005)"
+    },
+    {
+      "id": "MEJORA-access",
+      "title": "access estructurado cae a read-only en silencio",
+      "severity": "low",
+      "type": "security-smell",
+      "description": "El server solo activa write si `access === 'write'` (string). Un `access` como objeto `{read,write}` se ignora y el token queda read-only, con 200 sin aviso. **Falla hacia el lado seguro** (menos privilegio) pero silencioso: un integrador cree que hizo un token write y no. **No bloqueante.**",
+      "recommendation": "Rechazar con 400 un `access` no reconocido, o documentar el formato exacto. (TOK-RISK-006)"
+    },
+    {
+      "id": "MEJORA-msg",
+      "title": "Rechazo por falta de scope dice INVALID_TOKEN",
+      "severity": "low",
+      "type": "ux",
+      "description": "Un token read-only en un POST recibe `403 {\"data\":\"INVALID_TOKEN\"}`. El token **no es inválido** — es válido y activo, solo le falta write scope. El código confunde al integrador (sospecha de token mal/expirado). El comportamiento (403) es correcto; el mensaje engaña. **No bloqueante.**",
+      "recommendation": "Devolver un código específico (INSUFFICIENT_SCOPE / READ_ONLY_TOKEN). (TOK-RISK-007)"
+    }
+  ],
+  "coverageGaps": [
+    {
+      "id": "GAP-TOKENPROFILE",
+      "area": "Gate por TokenProfile (US-035, TOK-TC-001..004)",
+      "why": "Crear documentos `TokenProfile` exige `is_admin` de plataforma, sin vía alternativa (403 con la cuenta QA). Sin dos perfiles (con y sin `media.category`) no se puede ejercitar el gate por módulo del PR sm2#8451. Distinto del scope read/write, que sí es self-service.",
+      "mitigation": "Setup manual una sola vez: un admin crea los 2 TokenProfile + ids en `.env`. Ver TOK-RISK-001."
+    },
+    {
+      "id": "GAP-DISTRIBUTION-TOKENS",
+      "area": "Distribution Tokens (sección aparte de /settings/api)",
+      "why": "La pantalla tiene una segunda sección `distribution-token-*` (con category/live/ip access) no explorada en esta sesión; foco fue el token de cuenta read/write.",
+      "mitigation": "Explorar en una sesión futura si es prioritario para el negocio."
+    }
+  ],
+  "recommendations": [
+    "Corregir AQ2#55 (500 → 403 en POST /api/show con token sin write scope): rompe el contrato de autorización.",
+    "Aplicar las mejoras de UX/DX no bloqueantes: feedback+reset del form, código de error específico para falta de scope, y validar el formato de `access`.",
+    "Gestionar el setup admin (2 TokenProfile + ids en .env) para desbloquear la cobertura del gate por perfil (US-035)."
+  ],
+  "evidence": [
+    {
+      "file": "token-settings.png",
+      "caption": "Pantalla API and Tokens (/settings/api): form de creación (Description, Access Read/Write, Expiration) + tabla con acciones toggle/edit/delete"
+    },
+    {
+      "file": "token-created.png",
+      "caption": "Tras crear un token Read por UI: aparece la fila con Access='Read' (form NO se limpia, sin feedback — mejora TOK-RISK-004)"
+    }
+  ],
+  "logs": [
+    {
+      "label": "Scope read-only contra endpoints (verificado en vivo)",
+      "content": "POST /api/media       -> 403 INVALID_TOKEN  (correcto)\nPOST /api/live-stream -> 403 INVALID_TOKEN  (correcto)\nPOST /api/playlist    -> 403 INVALID_TOKEN  (correcto)\nPOST /api/show        -> 500 {\"message\":null}  <-- BUG AQ2#55"
+    },
+    {
+      "label": "Ciclo de vida (verificado en vivo)",
+      "content": "crear read -> GET 200\nDELETE token -> GET 403 (inmediato y +2s)  [seguro]\ntoggle disabled:true -> GET 403 ; disabled:false -> GET 200  [seguro]"
+    }
+  ]
+}

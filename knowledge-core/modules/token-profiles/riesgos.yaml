@@ -73,3 +73,104 @@ riesgos:
       No es un defecto de producto: es una separacion de privilegios
       intencional (plataforma vs. cuenta). Documentado para no
       re-investigar el mismo bloqueo en el futuro.
+
+  # ---- US-036: scope read/write (sesion 2026-07-14) ----
+  - id: "TOK-RISK-003"
+    severidad: "medium"
+    probabilidad: "high"
+    titulo: "POST /api/show con token read-only devuelve 500 en vez de 403"
+    descripcion: >
+      Un API token de solo lectura que intenta escribir en /api/show recibe
+      HTTP 500 {"message":null}, mientras que media/live-stream/playlist
+      devuelven el 403 correcto. El gate de escritura por token en la ruta
+      del nuevo modulo de shows lanza una excepcion no capturada en vez de
+      responder el 403 estandar. Verificado en vivo 2026-07-14.
+    detonador:
+      - "POST /api/show con header X-API-TOKEN de un token access:{read:true,write:false}"
+    mitigacion: >
+      Corregir el manejo de error del gate de escritura en la ruta de show
+      para devolver 403 (igual que el resto de recursos). Prueba viva
+      TOK-TC-011 (test.fail) queda en rojo-esperado hasta el fix.
+    archivos_afectados:
+      - "src/server/routes/api/show/** (gate de escritura por token, nuevo modulo)"
+    defectos_relacionados: ["Jurrego1771/AQ2#55"]
+    prioridad_prueba: "MUST"
+    nota_industria: >
+      Un rechazo de autorizacion debe ser 4xx consistente; un 500 enmascara
+      la causa (falta de scope) como error de servidor y confunde al integrador.
+
+  - id: "TOK-RISK-004"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "Crear token por UI no da feedback y no limpia el form (mejora)"
+    descripcion: >
+      Tras 'Create New Token' no aparece ningun toast/mensaje de exito (solo
+      la fila nueva en la tabla) y el form conserva la descripcion tecleada.
+      Invita a re-enviar y crear tokens duplicados por accidente. Mejora de UX
+      no bloqueante (Nielsen #1 visibilidad de estado / #5 prevencion de error).
+    detonador:
+      - "Crear un token en /settings/api y observar la ausencia de feedback y el form sin resetear"
+    mitigacion: >
+      Mostrar confirmacion de creacion y resetear el formulario tras exito.
+    archivos_afectados:
+      - "views/settings/api.coffee (cliente)"
+    defectos_relacionados: []
+    prioridad_prueba: "SHOULD"
+
+  - id: "TOK-RISK-005"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "Se puede crear un token sin descripcion (auditabilidad, mejora)"
+    descripcion: >
+      POST /api/account/token sin campo description responde 200 y crea el
+      token. Tokens sin descripcion son dificiles de auditar ('de que
+      integracion es este?'). Mejora no bloqueante. TOK-TC-012 documenta el
+      contrato actual (200) para detectar si cambia.
+    detonador:
+      - "POST /api/account/token sin description"
+    mitigacion: >
+      Considerar exigir descripcion (o etiqueta) al emitir un token, al menos
+      en la UI, para trazabilidad.
+    archivos_afectados:
+      - "src/server/routes/api/account/token/update.js"
+    defectos_relacionados: []
+    prioridad_prueba: "COULD"
+
+  - id: "TOK-RISK-006"
+    severidad: "low"
+    probabilidad: "medium"
+    titulo: "access estructurado cae a read-only en silencio (mejora)"
+    descripcion: >
+      El server solo activa write si access === 'write' (string). Un access
+      enviado como objeto {read,write} o bracketed se ignora y el token queda
+      read-only, con respuesta 200 sin aviso. Falla hacia el lado seguro
+      (menos privilegio) pero silencioso: un integrador cree que hizo un token
+      write y no. TOK-TC-013 documenta el comportamiento.
+    detonador:
+      - "POST /api/account/token con access como objeto en vez del string 'write'"
+    mitigacion: >
+      Rechazar con 400 un valor de access no reconocido, o documentar el
+      formato exacto esperado.
+    archivos_afectados:
+      - "src/server/routes/api/account/token/update.js"
+    defectos_relacionados: []
+    prioridad_prueba: "COULD"
+
+  - id: "TOK-RISK-007"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "Rechazo por falta de scope de escritura dice INVALID_TOKEN (mejora)"
+    descripcion: >
+      Un token read-only en un POST recibe 403 {"data":"INVALID_TOKEN"}. El
+      token NO es invalido: es valido y activo, solo le falta write scope. El
+      codigo confunde al integrador (sospecha de token mal/expirado). Mejora
+      de DX (mensaje). El comportamiento (403) es correcto.
+    detonador:
+      - "POST con un token access:{read:true,write:false}"
+    mitigacion: >
+      Devolver un codigo especifico (INSUFFICIENT_SCOPE / READ_ONLY_TOKEN) en
+      vez de INVALID_TOKEN.
+    archivos_afectados:
+      - "src/server/middleware/** (gate de escritura por token)"
+    defectos_relacionados: []
+    prioridad_prueba: "COULD"

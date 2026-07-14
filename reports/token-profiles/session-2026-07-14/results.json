@@ -1,0 +1,830 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "D:\\repos\\jurrego1771\\AQ2\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tests/api/integration/token-profiles",
+      "tests/smoke/token-profiles",
+      "tests/regression/token-profiles",
+      "--workers=1",
+      "--reporter=json"
+    ],
+    "configFile": "D:\\repos\\jurrego1771\\AQ2\\playwright.config.js",
+    "rootDir": "D:/repos/jurrego1771/AQ2/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": "D:\\repos\\jurrego1771\\AQ2\\src\\fixtures\\global-setup.js",
+    "globalTeardown": "D:\\repos\\jurrego1771\\AQ2\\src\\fixtures\\global-teardown.js",
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/repos/jurrego1771/AQ2/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "setup",
+        "name": "setup",
+        "testDir": "D:/repos/jurrego1771/AQ2/src/fixtures",
+        "testIgnore": [],
+        "testMatch": [
+          "/.*\\.setup\\.js/"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "D:/repos/jurrego1771/AQ2/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "smoke",
+        "name": "smoke",
+        "testDir": "D:/repos/jurrego1771/AQ2/tests/smoke",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "D:/repos/jurrego1771/AQ2/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "api",
+        "name": "api",
+        "testDir": "D:/repos/jurrego1771/AQ2/tests/api",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "D:/repos/jurrego1771/AQ2/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "unit",
+        "name": "unit",
+        "testDir": "D:/repos/jurrego1771/AQ2/tests/unit",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "D:/repos/jurrego1771/AQ2/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "e2e",
+        "name": "e2e",
+        "testDir": "D:/repos/jurrego1771/AQ2/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "D:/repos/jurrego1771/AQ2/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "regression",
+        "name": "regression",
+        "testDir": "D:/repos/jurrego1771/AQ2/tests/regression",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "..\\src\\fixtures\\auth.setup.js",
+      "file": "../src/fixtures/auth.setup.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "authenticate",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "setup",
+              "projectName": "setup",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3999,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-07-14T15:40:39.691Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f376efe52c54b1a876fd-1fee911d1baa95a60aef",
+          "file": "../src/fixtures/auth.setup.js",
+          "line": 18,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "smoke\\token-profiles\\token.smoke.spec.js",
+      "file": "smoke/token-profiles/token.smoke.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "API Tokens @smoke @token",
+          "file": "smoke/token-profiles/token.smoke.spec.js",
+          "line": 9,
+          "column": 6,
+          "specs": [
+            {
+              "title": "la pantalla /settings/api carga con form y tabla de tokens @TOK-TC-014",
+              "ok": true,
+              "tags": [
+                "smoke",
+                "token",
+                "TOK-TC-014"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "smoke",
+                  "projectName": "smoke",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2240,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T15:40:59.460Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "16d7df05592ea1b5ce96-fccb03c02eb3ff8540b1",
+              "file": "smoke/token-profiles/token.smoke.spec.js",
+              "line": 10,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "api\\integration\\token-profiles\\token-access.integration.spec.js",
+      "file": "api/integration/token-profiles/token-access.integration.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "API Tokens — scope read/write @api @token",
+          "file": "api/integration/token-profiles/token-access.integration.spec.js",
+          "line": 21,
+          "column": 6,
+          "specs": [
+            {
+              "title": "crear token read persiste access {read:true, write:false} @TOK-TC-005",
+              "ok": true,
+              "tags": [
+                "api",
+                "token",
+                "TOK-TC-005"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 735,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T15:41:02.288Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e2c2c41ce0bf2dbb9443-b6b25f9c9d34adc81c03",
+              "file": "api/integration/token-profiles/token-access.integration.spec.js",
+              "line": 65,
+              "column": 3
+            },
+            {
+              "title": "crear token write persiste access {read:true, write:true} @TOK-TC-006",
+              "ok": true,
+              "tags": [
+                "api",
+                "token",
+                "TOK-TC-006"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 478,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T15:41:03.052Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e2c2c41ce0bf2dbb9443-f801aa7adc8987d1ca2d",
+              "file": "api/integration/token-profiles/token-access.integration.spec.js",
+              "line": 71,
+              "column": 3
+            },
+            {
+              "title": "token read: GET /api/show/list y GET /api/media responden 200 @TOK-TC-007",
+              "ok": true,
+              "tags": [
+                "api",
+                "token",
+                "TOK-TC-007"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 729,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T15:41:03.539Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e2c2c41ce0bf2dbb9443-39ae70f4fc1ce41cdc4b",
+              "file": "api/integration/token-profiles/token-access.integration.spec.js",
+              "line": 79,
+              "column": 3
+            },
+            {
+              "title": "token read: POST a media/live-stream/playlist responde 403 @TOK-TC-008",
+              "ok": true,
+              "tags": [
+                "api",
+                "token",
+                "TOK-TC-008"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 699,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T15:41:04.276Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e2c2c41ce0bf2dbb9443-b487a3ad7ff84eb1e037",
+              "file": "api/integration/token-profiles/token-access.integration.spec.js",
+              "line": 90,
+              "column": 3
+            },
+            {
+              "title": "token write: GET y POST /api/show (crear) responden 200 @TOK-TC-009",
+              "ok": true,
+              "tags": [
+                "api",
+                "token",
+                "TOK-TC-009"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1015,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T15:41:04.984Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e2c2c41ce0bf2dbb9443-db0d711745303744297a",
+              "file": "api/integration/token-profiles/token-access.integration.spec.js",
+              "line": 109,
+              "column": 3
+            },
+            {
+              "title": "token borrado se invalida al instante (GET -> 403) @TOK-TC-010",
+              "ok": true,
+              "tags": [
+                "api",
+                "token",
+                "TOK-TC-010"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 708,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T15:41:06.006Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e2c2c41ce0bf2dbb9443-f1c5ba85f4d1abacae44",
+              "file": "api/integration/token-profiles/token-access.integration.spec.js",
+              "line": 128,
+              "column": 3
+            },
+            {
+              "title": "token read: POST /api/show responde 403 (no 500) @TOK-TC-011",
+              "ok": true,
+              "tags": [
+                "api",
+                "token",
+                "TOK-TC-011"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "fail",
+                      "description": "BUG Jurrego1771/AQ2#55: read-only token en POST /api/show devuelve 500 {\"message\":null} en vez del 403 que dan media/live-stream/playlist. Manejo de error inconsistente en el gate de escritura.",
+                      "location": {
+                        "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\api\\integration\\token-profiles\\token-access.integration.spec.js",
+                        "line": 148,
+                        "column": 10
+                      }
+                    }
+                  ],
+                  "expectedStatus": "failed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 583,
+                      "error": {
+                        "message": "Error: esperado 403, obtenido 500\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m403\u001b[39m\nReceived: \u001b[31m500\u001b[39m",
+                        "stack": "Error: esperado 403, obtenido 500\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m403\u001b[39m\nReceived: \u001b[31m500\u001b[39m\n    at D:\\repos\\jurrego1771\\AQ2\\tests\\api\\integration\\token-profiles\\token-access.integration.spec.js:157:66",
+                        "location": {
+                          "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\api\\integration\\token-profiles\\token-access.integration.spec.js",
+                          "column": 66,
+                          "line": 157
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 155 |\u001b[39m     \u001b[36mtry\u001b[39m {\n \u001b[90m 156 |\u001b[39m       \u001b[36mconst\u001b[39m r \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m ctx\u001b[33m.\u001b[39mpost(\u001b[32m'/api/show'\u001b[39m\u001b[33m,\u001b[39m { form\u001b[33m:\u001b[39m { type\u001b[33m:\u001b[39m \u001b[32m'tvshow'\u001b[39m\u001b[33m,\u001b[39m title\u001b[33m:\u001b[39m \u001b[32m'x'\u001b[39m } })\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 157 |\u001b[39m       expect(r\u001b[33m.\u001b[39mstatus()\u001b[33m,\u001b[39m \u001b[32m`esperado 403, obtenido ${r.status()}`\u001b[39m)\u001b[33m.\u001b[39mtoBe(\u001b[35m403\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                                                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 158 |\u001b[39m     } \u001b[36mfinally\u001b[39m {\n \u001b[90m 159 |\u001b[39m       \u001b[36mawait\u001b[39m ctx\u001b[33m.\u001b[39mdispose()\u001b[33m;\u001b[39m\n \u001b[90m 160 |\u001b[39m     }\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\api\\integration\\token-profiles\\token-access.integration.spec.js",
+                            "column": 66,
+                            "line": 157
+                          },
+                          "message": "Error: esperado 403, obtenido 500\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m403\u001b[39m\nReceived: \u001b[31m500\u001b[39m\n\n  155 |     try {\n  156 |       const r = await ctx.post('/api/show', { form: { type: 'tvshow', title: 'x' } });\n> 157 |       expect(r.status(), `esperado 403, obtenido ${r.status()}`).toBe(403);\n      |                                                                  ^\n  158 |     } finally {\n  159 |       await ctx.dispose();\n  160 |     }\n    at D:\\repos\\jurrego1771\\AQ2\\tests\\api\\integration\\token-profiles\\token-access.integration.spec.js:157:66"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T15:41:06.721Z",
+                      "annotations": [
+                        {
+                          "type": "fail",
+                          "description": "BUG Jurrego1771/AQ2#55: read-only token en POST /api/show devuelve 500 {\"message\":null} en vez del 403 que dan media/live-stream/playlist. Manejo de error inconsistente en el gate de escritura.",
+                          "location": {
+                            "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\api\\integration\\token-profiles\\token-access.integration.spec.js",
+                            "line": 148,
+                            "column": 10
+                          }
+                        }
+                      ],
+                      "attachments": [
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "D:\\repos\\jurrego1771\\AQ2\\test-results\\integration-token-profiles-c8929-ponde-403-no-500-TOK-TC-011-api\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\api\\integration\\token-profiles\\token-access.integration.spec.js",
+                        "column": 66,
+                        "line": 157
+                      }
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e2c2c41ce0bf2dbb9443-e9e109b53c18d492c578",
+              "file": "api/integration/token-profiles/token-access.integration.spec.js",
+              "line": 147,
+              "column": 3
+            },
+            {
+              "title": "crear token SIN descripción es aceptado (200) @TOK-TC-012",
+              "ok": true,
+              "tags": [
+                "api",
+                "token",
+                "TOK-TC-012"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 522,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T15:41:07.316Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e2c2c41ce0bf2dbb9443-6fc8106cf6c0fd39fb34",
+              "file": "api/integration/token-profiles/token-access.integration.spec.js",
+              "line": 165,
+              "column": 3
+            },
+            {
+              "title": "access como objeto cae a read-only en silencio @TOK-TC-013",
+              "ok": true,
+              "tags": [
+                "api",
+                "token",
+                "TOK-TC-013"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 444,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T15:41:07.847Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e2c2c41ce0bf2dbb9443-5f2493182da3ff802c36",
+              "file": "api/integration/token-profiles/token-access.integration.spec.js",
+              "line": 180,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "regression\\token-profiles\\token.regression.spec.js",
+      "file": "regression/token-profiles/token.regression.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "API Tokens — flujo UI @regression @token",
+          "file": "regression/token-profiles/token.regression.spec.js",
+          "line": 15,
+          "column": 6,
+          "specs": [
+            {
+              "title": "crear token Read por UI aparece en la tabla con Access \"Read\" @TOK-TC-015",
+              "ok": true,
+              "tags": [
+                "regression",
+                "token",
+                "TOK-TC-015"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "regression",
+                  "projectName": "regression",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3888,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T15:41:08.686Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2b7127356ca5101cea43-b1845a0cfdd15122c1b4",
+              "file": "regression/token-profiles/token.regression.spec.js",
+              "line": 28,
+              "column": 3
+            },
+            {
+              "title": "crear token Write por UI aparece con Access \"Read+Write\" @TOK-TC-016",
+              "ok": true,
+              "tags": [
+                "regression",
+                "token",
+                "TOK-TC-016"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "regression",
+                  "projectName": "regression",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3278,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T15:41:12.753Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2b7127356ca5101cea43-b586a01eb71647692ef1",
+              "file": "regression/token-profiles/token.regression.spec.js",
+              "line": 39,
+              "column": 3
+            },
+            {
+              "title": "borrar un token pide confirmación y elimina la fila @TOK-TC-017",
+              "ok": true,
+              "tags": [
+                "regression",
+                "token",
+                "TOK-TC-017"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "regression",
+                  "projectName": "regression",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4054,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T15:41:16.040Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2b7127356ca5101cea43-10a10573de542b289bd5",
+              "file": "regression/token-profiles/token.regression.spec.js",
+              "line": 50,
+              "column": 3
+            },
+            {
+              "title": "toggle deshabilita un token y deja de autenticar @TOK-TC-018",
+              "ok": true,
+              "tags": [
+                "regression",
+                "token",
+                "TOK-TC-018"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "regression",
+                  "projectName": "regression",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4365,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T15:41:20.104Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2b7127356ca5101cea43-aea539974de0652f9a06",
+              "file": "regression/token-profiles/token.regression.spec.js",
+              "line": 65,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-07-14T15:40:39.249Z",
+    "duration": 46955.878,
+    "expected": 15,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

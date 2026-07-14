@@ -10,6 +10,7 @@ const { PlaylistPage } = require('../pages/playlist.page');
 const { IntegrationsPage } = require('../pages/integrations.page');
 const { SchedulePage } = require('../pages/schedule.page');
 const { AdsPage } = require('../pages/ads.page');
+const { TokenPage } = require('../pages/token.page');
 const { MediaClient } = require('../api/media.client');
 const { LiveStreamClient } = require('../api/live-stream.client');
 const { EditorClient, LiveEditorClient, DvrClient } = require('../api/live-editor.client');
@@ -60,6 +61,11 @@ const test = base.test.extend({
   // Page Object del módulo Show (listado + detalle)
   showPage: async ({ page }, use) => {
     await use(new ShowPage(page));
+  },
+
+  // Page Object de la pantalla API and Tokens (/settings/api)
+  tokenPage: async ({ page }, use) => {
+    await use(new TokenPage(page));
   },
 
   // Page Object del editor de un evento (live editor detail)

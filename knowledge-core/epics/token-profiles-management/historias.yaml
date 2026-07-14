@@ -43,3 +43,36 @@ stories:
         El PR sm2#8451 agrega 'media.category' a @client/admin_accounts.coffee lines 15+;
         el coverage del dropdown queda como gap de UI (mismo problema que live-stream
         y otros modulos admin-only).
+
+  - id: "US-036"
+    titulo: "Scope read/write de los API tokens de cuenta"
+    rol: "cliente/integrador con cuenta (self-service, sin is_admin)"
+    meta: "Emitir API tokens con acceso de solo-lectura o lectura-escritura y que cada token respete su scope contra los endpoints de la API"
+    beneficio: "Dar a integraciones el mínimo privilegio (un token read-only no puede mutar datos), y poder revocar/deshabilitar tokens al instante"
+    descripcion: |
+      Como dueño de una cuenta de platform,
+      quiero crear API tokens eligiendo su acceso (Read o Read+Write) en /settings/api,
+      para que un token de solo lectura pueda consultar la API pero nunca escribir, y
+      poder borrar o deshabilitar un token y que deje de funcionar de inmediato.
+
+      A diferencia del gate por TokenProfile (US-035, requiere is_admin de plataforma),
+      el scope read/write SI es self-service: el campo `access` del form no está gateado
+      por is_admin. Verificado en vivo 2026-07-14 con la cuenta QA.
+    acceptance_criteria:
+      - id: "TOK-AC-3"
+        criterio: "Un API token con access 'read' responde 200 a lecturas (GET) y 403 a escrituras (POST) en los recursos protegidos"
+      - id: "TOK-AC-4"
+        criterio: "Un API token con access 'write' responde 200 tanto a lecturas (GET) como a escrituras (POST)"
+      - id: "TOK-AC-5"
+        criterio: "Un API token borrado o deshabilitado (toggle) deja de autenticar de inmediato (403) en el siguiente request"
+    prioridad: "medium"
+    tipo: "feature"
+    dependencias:
+      - "Modulo de cuenta api_tokens habilitado (create/update/delete) en la cuenta QA (concedido 2026-07-14)"
+    notas: |
+      Cobertura (sesion 2026-07-14): 14 tests verdes/rojo-esperado.
+      - API: tests/api/integration/token-profiles/token-access.integration.spec.js (TOK-TC-005..013).
+      - UI: tests/smoke/token-profiles/token.smoke.spec.js (TOK-TC-014) +
+            tests/regression/token-profiles/token.regression.spec.js (TOK-TC-015..018).
+      - Bug vivo: TOK-TC-011 (Jurrego1771/AQ2#55) POST /api/show con token read = 500 en vez de 403.
+      - Mejoras no bloqueantes documentadas en riesgos: TOK-RISK-003..006.

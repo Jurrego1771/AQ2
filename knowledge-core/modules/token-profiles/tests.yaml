@@ -83,3 +83,161 @@ tests:
   # Vive en knowledge-core/modules/category/tests.yaml (CAT-TC-001..004). Se
   # referencian aca porque son el proxy observable del fix sm2#8451 que
   # interesa al flow AragonTV.
+  # ---- US-036: scope read/write de API tokens (sesion 2026-07-14) ----
+  # Self-contained: los tokens se crean/borran por sesion (delete habilitado en la
+  # cuenta QA 2026-07-14). El campo access no esta gateado por is_admin.
+  - id: "TOK-TC-005"
+    titulo: "Crear token read persiste access {read:true, write:false}"
+    modulo: "token-profiles"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["TOK-AC-3"]
+      mitigates: []
+      story: "US-036"
+      spec: "tests/api/integration/token-profiles/token-access.integration.spec.js"
+  - id: "TOK-TC-006"
+    titulo: "Crear token write persiste access {read:true, write:true}"
+    modulo: "token-profiles"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["TOK-AC-4"]
+      mitigates: []
+      story: "US-036"
+      spec: "tests/api/integration/token-profiles/token-access.integration.spec.js"
+  - id: "TOK-TC-007"
+    titulo: "Token read: GET show/list y GET media responden 200"
+    modulo: "token-profiles"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["TOK-AC-3"]
+      mitigates: []
+      story: "US-036"
+      spec: "tests/api/integration/token-profiles/token-access.integration.spec.js"
+  - id: "TOK-TC-008"
+    titulo: "Token read: POST a media/live-stream/playlist responde 403"
+    modulo: "token-profiles"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["TOK-AC-3"]
+      mitigates: []
+      story: "US-036"
+      spec: "tests/api/integration/token-profiles/token-access.integration.spec.js"
+  - id: "TOK-TC-009"
+    titulo: "Token write: GET y POST /api/show (crear) responden 200"
+    modulo: "token-profiles"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["TOK-AC-4"]
+      mitigates: []
+      story: "US-036"
+      spec: "tests/api/integration/token-profiles/token-access.integration.spec.js"
+  - id: "TOK-TC-010"
+    titulo: "Token borrado se invalida al instante (GET -> 403)"
+    modulo: "token-profiles"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["TOK-AC-5"]
+      mitigates: []
+      story: "US-036"
+      spec: "tests/api/integration/token-profiles/token-access.integration.spec.js"
+  - id: "TOK-TC-011"
+    titulo: "Token read: POST /api/show responde 403 (no 500) [prueba viva BUG #55]"
+    modulo: "token-profiles"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["TOK-AC-3"]
+      mitigates: ["TOK-RISK-003"]
+      story: "US-036"
+      spec: "tests/api/integration/token-profiles/token-access.integration.spec.js"
+    # test.fail() en el spec: rojo esperado hasta corregir Jurrego1771/AQ2#55.
+  - id: "TOK-TC-012"
+    titulo: "Crear token sin descripcion es aceptado (200)"
+    modulo: "token-profiles"
+    tipo: "integration"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: []
+      mitigates: ["TOK-RISK-005"]
+      story: "US-036"
+      spec: "tests/api/integration/token-profiles/token-access.integration.spec.js"
+  - id: "TOK-TC-013"
+    titulo: "access como objeto cae a read-only en silencio"
+    modulo: "token-profiles"
+    tipo: "integration"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: []
+      mitigates: ["TOK-RISK-006"]
+      story: "US-036"
+      spec: "tests/api/integration/token-profiles/token-access.integration.spec.js"
+  - id: "TOK-TC-014"
+    titulo: "La pantalla /settings/api carga con form y tabla de tokens"
+    modulo: "token-profiles"
+    tipo: "smoke"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["TOK-AC-3"]
+      mitigates: []
+      story: "US-036"
+      spec: "tests/smoke/token-profiles/token.smoke.spec.js"
+  - id: "TOK-TC-015"
+    titulo: "Crear token Read por UI aparece con Access 'Read'"
+    modulo: "token-profiles"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["TOK-AC-3"]
+      mitigates: []
+      story: "US-036"
+      spec: "tests/regression/token-profiles/token.regression.spec.js"
+  - id: "TOK-TC-016"
+    titulo: "Crear token Write por UI aparece con Access 'Read+Write'"
+    modulo: "token-profiles"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["TOK-AC-4"]
+      mitigates: []
+      story: "US-036"
+      spec: "tests/regression/token-profiles/token.regression.spec.js"
+  - id: "TOK-TC-017"
+    titulo: "Borrar un token pide confirmacion y elimina la fila"
+    modulo: "token-profiles"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["TOK-AC-5"]
+      mitigates: []
+      story: "US-036"
+      spec: "tests/regression/token-profiles/token.regression.spec.js"
+  - id: "TOK-TC-018"
+    titulo: "Toggle deshabilita un token y deja de autenticar"
+    modulo: "token-profiles"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["TOK-AC-5"]
+      mitigates: []
+      story: "US-036"
+      spec: "tests/regression/token-profiles/token.regression.spec.js"
