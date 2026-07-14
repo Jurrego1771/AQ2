@@ -11,6 +11,7 @@ const { IntegrationsPage } = require('../pages/integrations.page');
 const { SchedulePage } = require('../pages/schedule.page');
 const { AdsPage } = require('../pages/ads.page');
 const { TokenPage } = require('../pages/token.page');
+const { MoaiPage } = require('../pages/moai.page');
 const { MediaClient } = require('../api/media.client');
 const { LiveStreamClient } = require('../api/live-stream.client');
 const { EditorClient, LiveEditorClient, DvrClient } = require('../api/live-editor.client');
@@ -66,6 +67,11 @@ const test = base.test.extend({
   // Page Object de la pantalla API and Tokens (/settings/api)
   tokenPage: async ({ page }, use) => {
     await use(new TokenPage(page));
+  },
+
+  // Page Object de MoAI Options (/settings/ai)
+  moaiPage: async ({ page }, use) => {
+    await use(new MoaiPage(page));
   },
 
   // Page Object del editor de un evento (live editor detail)
@@ -189,6 +195,19 @@ const test = base.test.extend({
     const cleaner = new ResourceCleaner(api, { testId: testInfo.title });
     const fileName = qaName({ type: 'Media', testTitle: testInfo.title });
     const id = await createTranscodedMedia(api, { fileUrl: SAMPLE_VIDEO_URL, fileName });
+    cleaner.register('media', id);
+    await use(id);
+    await cleaner.clean();
+  },
+
+  // Media de AUDIO REAL para features de IA (transcription/Deepgram): ingesta
+  // remota del audio de prueba (env.sampleAudioUrl) + gate de transcoding; se
+  // borra al terminar. Se salta si no hay URL configurada.
+  aiAudioMedia: async ({ api }, use, testInfo) => {
+    if (!env.sampleAudioUrl) throw new Error('QA_SAMPLE_AUDIO_URL no configurado en .env');
+    const cleaner = new ResourceCleaner(api, { testId: testInfo.title });
+    const fileName = qaName({ type: 'Media', testTitle: testInfo.title }) + '.m4a';
+    const id = await createTranscodedMedia(api, { fileUrl: env.sampleAudioUrl, fileName, genre: 'podcast' });
     cleaner.register('media', id);
     await use(id);
     await cleaner.clean();

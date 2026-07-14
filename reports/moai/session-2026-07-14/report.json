@@ -1,0 +1,134 @@
+{
+  "meta": {
+    "title": "Informe de QA — MoAI Options (configuración de IA)",
+    "subtitle": "Sesión /qa-module: cómo hacer QA de features de IA (determinista vs no-determinista)",
+    "module": "moai",
+    "environment": "dev · https://dev.platform.mediastre.am",
+    "date": "2026-07-14",
+    "tester": "Julio Urrego"
+  },
+  "summary": "Sesión de exploración + cobertura del módulo **MoAI Options** (`/settings/ai`): configuración de IA de la cuenta (prompts, transcripción con Deepgram/Whisper, imágenes con Gemini, metadata/highlights/chapters, MCP tokens), historia **US-037**.\n\n**Enfoque metodológico (el foco de la sesión): cómo se le hace QA a la IA.** La clave es **separar dos capas y usar oráculos distintos**:\n- **Determinista** (CRUD de prompts, config, validación) → aserción exacta, como cualquier módulo.\n- **No-determinista** (invocación viva a OpenAI/Deepgram/Gemini) → aserción de **CONTRATO** (estructura de respuesta + ciclo `completed` + modelo + duración), **nunca del contenido generado** (flaky por diseño y consume cuota del proveedor). Validar *calidad* del output sería un eval offline aparte, fuera de la regresión.\n\n**Veredicto: sin bugs funcionales.** Contrato de prompts (list/create/delete/improve) y de MCP Tokens (list API + CRUD por UI) verificado en vivo. **8 tests verdes** (6 API + 1 UI smoke + 1 UI regression), incluyendo 1 invocación IA viva de contrato (con guard `QA_SKIP_AI_LIVE` para no quemar cuota en CI).\n\n**Cierre de gaps:** se cerró **MCP Tokens** (list + CRUD UI) y **transcripción de audio (Deepgram/Whisper)** — con un **fixture `aiAudioMedia`** que sube el audio de prueba por ingesta remota (Dropbox `dl=1`), espera transcoding y limpia. La transcripción se cubre por **contrato del disparo async** (200 `TRANSCRIPTION_PROCESSING` + jobId), no por el texto. Total: **10 tests verdes** (2 invocaciones IA vivas: improve + transcription).\n\n**Hallazgo de flujo (imagen):** una imagen **no entra por el flujo de media** — `media/upload?type=remote` la rechaza (`INVALID_FILE_EXTENSION`); las imágenes van por `/api/image` y el ai-image de Gemini **genera** imágenes (no analiza una subida). Por eso la cobertura de imagen requiere un flujo distinto, pendiente de explorar.",
+  "scope": [
+    "**CRUD de prompts** (determinista): `GET/POST/DELETE /api/settings/ai/prompts` — crear, listar, borrar.",
+    "**Validación** de la invocación IA: `improve` sin campos requeridos → 400 (sin crash).",
+    "**Invocación IA viva** (contrato): `improve` → OpenAI, asertando estructura `{status:completed, model, duration, prompt}` sin tocar el contenido.",
+    "**Carga de la UI** (`/settings/ai`): MCP Tokens, AI Audio Transcription, AI Images (Gemini), guardado global.",
+    "**Mapa del módulo**: 10 secciones, superficie de endpoints y modelos de IA cosechados en vivo."
+  ],
+  "tests": [
+    {
+      "id": "MOAI-TC-1",
+      "title": "GET prompts responde 200 con lista de prompts estructurados",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "MOAI-TC-2",
+      "title": "crear un prompt persiste y aparece en la lista",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "MOAI-TC-3",
+      "title": "borrar un prompt responde 200 y desaparece de la lista",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "MOAI-TC-4",
+      "title": "improve sin title responde 400 (no 500/crash)",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "MOAI-TC-5",
+      "title": "improve invoca la IA y responde con el contrato esperado",
+      "layer": "api",
+      "status": "passed",
+      "notes": "IA viva (OpenAI improve): contrato, no contenido. Guard QA_SKIP_AI_LIVE."
+    },
+    {
+      "id": "MOAI-TC-6",
+      "title": "la pantalla /settings/ai carga con los controles de configuración de IA",
+      "layer": "smoke",
+      "status": "passed"
+    },
+    {
+      "id": "MOAI-TC-7",
+      "title": "GET token/mcp responde 200 con la lista de tokens MCP",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "MOAI-TC-8",
+      "title": "crear un MCP token por UI aparece en la tabla y se puede borrar",
+      "layer": "regression",
+      "status": "passed",
+      "notes": "MCP token por UI (el front resuelve el TokenProfile MoAI); limpiado por API."
+    },
+    {
+      "id": "MOAI-TC-9",
+      "title": "transcription sobre un media inexistente responde 404",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "MOAI-TC-10",
+      "title": "disparar transcripción de un audio devuelve el contrato async (jobId)",
+      "layer": "api",
+      "status": "passed",
+      "notes": "IA viva (Deepgram/Whisper): fixture sube audio + espera transcoding; asercion de contrato async (jobId), no del texto. Guard QA_SKIP_AI_LIVE."
+    }
+  ],
+  "findings": [
+    {
+      "id": "METODO-IA",
+      "title": "Estrategia de QA para features de IA: contrato, no contenido",
+      "severity": "info",
+      "type": "methodology",
+      "description": "Para las invocaciones a proveedores de IA (Deepgram, Gemini, OpenAI) **no se aserta el contenido generado** (es no-determinista y quema cuota). Se aserta el **contrato**: HTTP 200, estructura de respuesta (`status:'completed'`, `model`, `duration`, output no-vacío) y el ciclo async. La validación de *calidad* del output pertenece a un harness de evals offline (dataset fijo + métricas/LLM-judge), separado de esta suite de regresión. Los tests de invocación viva llevan guard `QA_SKIP_AI_LIVE` + `prodGuard` para controlar costo.",
+      "recommendation": "Extender esta estrategia de contrato al resto de invocaciones vivas (ver hueco de cobertura)."
+    }
+  ],
+  "coverageGaps": [
+    {
+      "id": "GAP-HIGHLIGHTS-CHAPTERS",
+      "area": "highlights y chapters (dependen del resultado async de la transcripción)",
+      "why": "highlights/chapters consumen la transcripción ya generada del media. Encadenar subir→transcodificar→transcribir (async, minutos)→highlights en un solo test sería lento y frágil. La transcripción quedó cubierta hasta el disparo (jobId), no hasta el resultado.",
+      "mitigation": "Cubrir con un media pre-transcrito estable (sembrado una vez) o esperando el resultado async de transcription con un poll de timeout amplio, con guard `QA_SKIP_AI_LIVE`. Contrato: acepta el trabajo + estructura, no el contenido."
+    },
+    {
+      "id": "GAP-IMAGEN",
+      "area": "Features de imagen (ai-image/Gemini) — flujo distinto al de media",
+      "why": "Una imagen no se sube como media transcodificable (`media/upload?type=remote` → `INVALID_FILE_EXTENSION`); va por `/api/image`. Y ai-image (Gemini) **genera** imágenes, no analiza una subida. El flujo de imagen es otro y no se pudo cubrir con el patrón de media.",
+      "mitigation": "Explorar `/api/image` (upload/gestión) y el flujo de generación ai-image (Gemini) por separado, capturando sus contratos reales en vivo."
+    },
+    {
+      "id": "GAP-MODELOS",
+      "area": "Persistencia de modelos de IA por feature (metadata/highlights/article/i18n/chapters/transcription)",
+      "why": "Cada feature permite configurar un modelo custom via un modal propio (add/edit). Capturar el contrato de cada uno es laborioso y de valor nicho; se difirió frente a MCP, prompts y transcription.",
+      "mitigation": "Capturar el contrato de guardado por UI (como se hizo con prompts/improve) y cubrir la persistencia de al menos un feature representativo en una próxima iteración."
+    }
+  ],
+  "recommendations": [
+    "Extender la cobertura de contrato a highlights, chapters (dependen de la transcripción async) y al flujo de imagen (ai-image/Gemini + /api/image) — cerrados improve y transcription en esta sesión.",
+    "Mantener la separación determinista/no-determinista como estándar para todo QA de IA del producto.",
+    "Si se requiere validar la *calidad* de la salida de IA, montar un harness de evals offline (dataset + métricas), independiente de la regresión funcional."
+  ],
+  "evidence": [
+    {
+      "file": "moai-02-settings-ai.png",
+      "caption": "MoAI Options (/settings/ai): MCP Tokens, AI Faces, AI Audio Transcription — el hub de configuración de IA de la cuenta"
+    },
+    {
+      "file": "moai-01-landing.png",
+      "caption": "AI Studio (/machine-learning): catálogo de reconocimiento facial — superficie distinta, no confundir con MoAI Options"
+    }
+  ],
+  "logs": [
+    {
+      "label": "Contrato de prompts verificado en vivo (paths capturados de la red real)",
+      "content": "GET    /api/settings/ai/prompts            -> 200 (list)\nPOST   /api/settings/ai/prompts            -> 200 (create; form title/customPromptText/type)\nDELETE /api/settings/ai/prompts/:id        -> 200 (delete)\nPOST   /api/settings/ai/prompts/:id/improve -> 200 (OpenAI; {status:completed, model, duration, prompt})\nPOST   .../:id/improve sin campos          -> 400 (rechaza sin crash)"
+    }
+  ]
+}

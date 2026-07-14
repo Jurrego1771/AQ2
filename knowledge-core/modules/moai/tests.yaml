@@ -1,0 +1,129 @@
+# Tests - Modulo MoAI (MoAI Options, /settings/ai). Definicion (sin estado de
+# ejecucion: eso es derivado). refs = FUENTE UNICA de los vinculos.
+version: 1
+modulo: "moai"
+ultima_actualizacion: '2026-07-14'
+
+# Estrategia IA: CRUD/config/validacion = deterministas (asercion exacta). La
+# invocacion viva (improve -> OpenAI) = contrato (estructura + ciclo completado),
+# nunca el contenido generado. Paths capturados de la red real, no inferidos.
+
+tests:
+  - id: "MOAI-TC-1"
+    titulo: "GET prompts responde 200 con lista estructurada"
+    modulo: "moai"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["MOAI-AC-1"]
+      mitigates: []
+      story: "US-037"
+      spec: "tests/api/integration/moai/moai-prompts.integration.spec.js"
+  - id: "MOAI-TC-2"
+    titulo: "Crear un prompt persiste y aparece en la lista"
+    modulo: "moai"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["MOAI-AC-2"]
+      mitigates: []
+      story: "US-037"
+      spec: "tests/api/integration/moai/moai-prompts.integration.spec.js"
+  - id: "MOAI-TC-3"
+    titulo: "Borrar un prompt responde 200 y desaparece de la lista"
+    modulo: "moai"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["MOAI-AC-3"]
+      mitigates: []
+      story: "US-037"
+      spec: "tests/api/integration/moai/moai-prompts.integration.spec.js"
+  - id: "MOAI-TC-4"
+    titulo: "improve sin title responde 400 (no 500/crash)"
+    modulo: "moai"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["MOAI-AC-4"]
+      mitigates: ["MOAI-RISK-2"]
+      story: "US-037"
+      spec: "tests/api/integration/moai/moai-prompts.integration.spec.js"
+  - id: "MOAI-TC-5"
+    titulo: "improve invoca la IA y responde con el contrato esperado (1 llamada viva)"
+    modulo: "moai"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["MOAI-AC-5"]
+      mitigates: ["MOAI-RISK-3"]
+      story: "US-037"
+      spec: "tests/api/integration/moai/moai-prompts.integration.spec.js"
+    # Dispara 1 llamada real a OpenAI (cuota). Guard QA_SKIP_AI_LIVE=1 para
+    # desactivar. Asercion de CONTRATO (status/model/duration/prompt no-vacio),
+    # NUNCA del contenido generado (no-determinista).
+  - id: "MOAI-TC-6"
+    titulo: "La pantalla /settings/ai carga con los controles de configuracion de IA"
+    modulo: "moai"
+    tipo: "smoke"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["MOAI-AC-6"]
+      mitigates: ["MOAI-RISK-1"]
+      story: "US-037"
+      spec: "tests/smoke/moai/moai.smoke.spec.js"
+  - id: "MOAI-TC-7"
+    titulo: "GET token/mcp responde 200 con la lista de tokens MCP"
+    modulo: "moai"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["MOAI-AC-7"]
+      mitigates: []
+      story: "US-037"
+      spec: "tests/api/integration/moai/moai-prompts.integration.spec.js"
+  - id: "MOAI-TC-8"
+    titulo: "Crear un MCP token por UI aparece en la tabla y se puede borrar"
+    modulo: "moai"
+    tipo: "regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["MOAI-AC-7", "MOAI-AC-8"]
+      mitigates: []
+      story: "US-037"
+      spec: "tests/regression/moai/moai-mcp.regression.spec.js"
+    # MCP token = token de cuenta con TokenProfile MoAI. El front resuelve el
+    # profile; el create por API puro requiere ese id (no expuesto por GET limpio).
+  - id: "MOAI-TC-9"
+    titulo: "transcription sobre un media inexistente responde 404"
+    modulo: "moai"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["MOAI-AC-9"]
+      mitigates: []
+      story: "US-037"
+      spec: "tests/api/integration/moai/moai-transcription.integration.spec.js"
+  - id: "MOAI-TC-10"
+    titulo: "disparar transcripcion de un audio devuelve el contrato async (jobId)"
+    modulo: "moai"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["MOAI-AC-9"]
+      mitigates: ["MOAI-RISK-3"]
+      story: "US-037"
+      spec: "tests/api/integration/moai/moai-transcription.integration.spec.js"
+    # IA VIVA (Deepgram/Whisper): fixture aiAudioMedia sube audio + espera
+    # transcoding, luego dispara. Asercion de CONTRATO async (200 PROCESSING +
+    # jobId), NUNCA el texto transcrito. Guard QA_SKIP_AI_LIVE.

@@ -1,0 +1,82 @@
+# Riesgos - Modulo MoAI (MoAI Options). Poblado desde exploracion en vivo
+# (2026-07-14) + lectura de codigo sm2. Defectos = issues GitHub.
+version: 1
+modulo: "moai"
+ultima_actualizacion: '2026-07-14'
+
+# NOTA de honestidad: durante la exploracion se vieron 500 DB_ERROR al llamar
+# /prompts/create y /prompts/improve, pero eran PATHS INVENTADOS por QA (el
+# contrato real es POST /prompts y POST /prompts/:id/improve). Verificado por
+# captura de la red real -> NO son bugs del producto. Retractado.
+
+riesgos:
+  - id: "MOAI-RISK-1"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "Botones de prompt (Add/edit/improve) sin marca sm: (testabilidad)"
+    descripcion: >
+      Los botones "Add Prompt" (#add-<feature>-prompt), "edit-prompt-<id>" e
+      "improve-prompt-<id>" no exponen atributo sm:, solo id/clase. El contrato
+      de selectores del proyecto prioriza sm:. No bloquea cobertura (se usa id
+      como fallback) pero es deuda de testabilidad del front.
+    detonador:
+      - "Automatizar el flujo de crear/editar/mejorar prompt desde la UI"
+    mitigacion: >
+      Pedir al front agregar sm: a esos botones (sm=add-prompt-<feature>,
+      sm=edit-prompt, sm=improve-prompt). Mientras tanto el POM usa id.
+    archivos_afectados:
+      - "views/settings/ai/index.coffee"
+    defectos_relacionados: []
+    prioridad_prueba: "COULD"
+
+  - id: "MOAI-RISK-2"
+    severidad: "low"
+    probabilidad: "medium"
+    titulo: "improve responde MISSING_PROMPT_ID cuando falta el title (mensaje enganoso)"
+    descripcion: >
+      POST /api/settings/ai/prompts/:id/improve sin title responde 400 con
+      data: MISSING_PROMPT_ID, aunque el id va en la URL y lo que falta es el
+      title. El handler lee `id` de req.body (no de req.params), por eso exige
+      el id tambien en el body. El comportamiento (rechazar 400 sin crash) es
+      CORRECTO; el codigo/mensaje confunde (deberia ser MISSING_TITLE, o leer
+      el id de params). Mejora de DX no bloqueante.
+    detonador:
+      - "Llamar improve con el id solo en la URL y sin title en el body"
+    mitigacion: >
+      Leer el id de req.params.id (ya esta en la ruta) y devolver el codigo de
+      error correcto por campo faltante (MISSING_TITLE).
+    archivos_afectados:
+      - "src/server/routes/api/settings/ai/prompts/improve.js"
+    defectos_relacionados: []
+    prioridad_prueba: "COULD"
+
+  - id: "MOAI-RISK-3"
+    severidad: "medium"
+    probabilidad: "medium"
+    titulo: "Invocaciones de IA viva sin cobertura de contrato (costo/fiabilidad)"
+    descripcion: >
+      Las features que llaman proveedores de IA en vivo -transcription
+      (Deepgram/Whisper), ai-image (Gemini), highlights, chapters, metadata-
+      no tienen cobertura de contrato salvo improve (MOAI-TC-5). Riesgos: (1)
+      un cambio de contrato del proveedor o del wrapper rompe la feature sin
+      que la suite lo note; (2) probar contenido es no-determinista y quema
+      cuota. La mitigacion NO es asertar el contenido, sino el CONTRATO
+      (estructura + ciclo pending->completed/failed + registro de usage-ai).
+    detonador:
+      - "Un cambio en el wrapper de IA o en la API del proveedor que altere la estructura de respuesta"
+    mitigacion: >
+      Extender la cobertura de contrato (1 llamada viva por feature, con guard
+      de cuota tipo QA_SKIP_AI_LIVE) a transcription/ai-image/highlights/
+      chapters. Verificar el ciclo async y el registro en /api/ai/usage-ai. La
+      validacion de CALIDAD del output (si se requiere) va como eval offline
+      con dataset fijo, fuera de la suite de regresion.
+    archivos_afectados:
+      - "src/server/lib/ai_services/**"
+      - "src/server/routes/api/media/{transcription,highlights,chapters,metadata}/**"
+      - "src/server/routes/api/category/ai-image/**"
+    defectos_relacionados: []
+    prioridad_prueba: "SHOULD"
+    nota_industria: >
+      QA de features de IA (LLM/ML): asertar propiedades/contrato, no salidas
+      exactas. Los tests de contenido pertenecen a un harness de evals separado
+      (dataset + metricas/LLM-judge), no a la regresion funcional.

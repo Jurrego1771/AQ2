@@ -31,6 +31,9 @@ const env = {
   // login UI (401). Lo consume el fixture `apiToken`. Acepta sufijo por-env
   // (API_TOKEN_DEV) y cae al global API_TOKEN.
   apiToken: pick('API_TOKEN', process.env.API_TOKEN || ''),
+  // Media de prueba para features de IA (fixture aiMedia). Dropbox debe usar dl=1.
+  sampleAudioUrl: pick('QA_SAMPLE_AUDIO_URL', process.env.QA_SAMPLE_AUDIO_URL || ''),
+  sampleImageUrl: pick('QA_SAMPLE_IMAGE_URL', process.env.QA_SAMPLE_IMAGE_URL || ''),
   // prod-us / prod-eu bloquean mutaciones (prodGuard en specs que escriben).
   isProd: ENV.startsWith('prod'),
   // Token Profiles (sm2#8451): ids de TokenProfile pre-creados una sola vez por un

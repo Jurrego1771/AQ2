@@ -1,0 +1,60 @@
+version: 1
+epic: "moai-management"
+ultima_actualizacion: '2026-07-14'
+
+# MoAI Options (/settings/ai): configuración de IA de la cuenta. Agrupa MCP Tokens,
+# transcripción (Deepgram/Whisper), imágenes (Gemini), generación de metadata/
+# highlights/article/i18n/chapters y prompts custom por feature.
+#
+# Estrategia de QA para IA (sesión 2026-07-14): separar la capa DETERMINISTA
+# (CRUD/config/validación, asertada exacta) de la NO-DETERMINISTA (invocación viva
+# a proveedores, asertada por CONTRATO — estructura + ciclo async, nunca contenido).
+
+stories:
+  - id: "US-037"
+    titulo: "Gestión de prompts de IA de la cuenta (MoAI Options)"
+    rol: "administrador de cuenta que configura la generación con IA"
+    meta: "Crear, listar y borrar prompts custom por feature, y mejorarlos con IA (improve)"
+    beneficio: "Adaptar la salida de IA (metadata, chapters, etc.) al tono/idioma de la cuenta sin tocar código"
+    descripcion: |
+      Como administrador de cuenta,
+      quiero gestionar prompts custom para las features de IA y poder "mejorarlos"
+      con un asistente,
+      para controlar cómo la plataforma genera metadata/capítulos/etc. con IA.
+
+      El CRUD de prompts es determinista (persistencia). El "improve" invoca a
+      OpenAI en vivo: se prueba por contrato (estructura de respuesta + ciclo
+      completado), no por el texto generado.
+    acceptance_criteria:
+      - id: "MOAI-AC-1"
+        criterio: "GET /api/settings/ai/prompts devuelve 200 con la lista de prompts de la cuenta (cada uno con _id, title, type)"
+      - id: "MOAI-AC-2"
+        criterio: "POST /api/settings/ai/prompts (title, type, customPromptText) crea el prompt (200) y queda consultable en la lista"
+      - id: "MOAI-AC-3"
+        criterio: "DELETE /api/settings/ai/prompts/:id elimina el prompt (200) y deja de aparecer en la lista"
+      - id: "MOAI-AC-4"
+        criterio: "POST /api/settings/ai/prompts/:id/improve sin los campos requeridos responde 4xx (nunca 500/crash)"
+      - id: "MOAI-AC-5"
+        criterio: "POST /api/settings/ai/prompts/:id/improve válido responde 200 con contrato {status:'completed', model, duration, data.prompt no-vacío} — sin asertar el contenido generado"
+      - id: "MOAI-AC-6"
+        criterio: "La pantalla /settings/ai (MoAI Options) carga con los controles de configuración: MCP Tokens, AI Audio Transcription, AI Images (Gemini) y guardado global"
+      - id: "MOAI-AC-7"
+        criterio: "GET /api/account/token/mcp devuelve 200 con los tokens MCP de la cuenta (cada uno con token, profile MoAI y access)"
+      - id: "MOAI-AC-8"
+        criterio: "Crear un MCP token desde /settings/ai lo hace aparecer en la tabla de MCP tokens con el TokenProfile MoAI, y puede borrarse"
+      - id: "MOAI-AC-9"
+        criterio: "POST /api/media/:id/transcription sobre un audio transcodificado acepta el trabajo (200, data:'TRANSCRIPTION_PROCESSING', jobId); sobre un media inexistente responde 404 MEDIA_NOT_FOUND"
+    prioridad: "medium"
+    tipo: "feature"
+    dependencias:
+      - "Cuenta con módulos de IA habilitados (transcription, metadata, images...)"
+    notas: |
+      Cobertura (sesión 2026-07-14): 6 tests verdes.
+      - API: tests/api/integration/moai/moai-prompts.integration.spec.js (MOAI-TC-1..5).
+        MOAI-TC-5 dispara 1 llamada viva a OpenAI (guard QA_SKIP_AI_LIVE para desactivar).
+      - UI: tests/smoke/moai/moai.smoke.spec.js (MOAI-TC-6).
+      - Sin bugs funcionales: los 500 vistos al explorar eran paths inventados por QA,
+        no del producto (retractado). Mejoras low: MOAI-RISK-1 (botones sin sm:),
+        MOAI-RISK-2 (mensaje MISSING_PROMPT_ID engañoso).
+      - GAP: invocaciones vivas de transcription (Deepgram), ai-image (Gemini),
+        highlights, chapters — no cubiertas aún (contrato pendiente, ver riesgos).
