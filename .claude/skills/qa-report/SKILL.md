@@ -11,9 +11,9 @@ description: >
 # qa-report — informe HTML de evidencias
 
 Convierte una sesión de QA en **un solo HTML autocontenido** (estilos embebidos + imágenes
-en base64) que muestra: resumen con conteos, qué se probó, tabla de tests (passed/failed/
-rojo-esperado/skipped), hallazgos con severidad y capturas, recomendaciones, galería de
-evidencias y logs colapsables. Corre en el hilo principal; honra `CLAUDE.md`.
+en base64) que muestra: resumen con conteos, qué se probó (y qué NO), tabla de tests
+(passed/failed/rojo-esperado/skipped), hallazgos con severidad y capturas, recomendaciones,
+galería de evidencias y logs colapsables. Corre en el hilo principal; honra `CLAUDE.md`.
 
 El argumento (opcional) es la **carpeta de evidencia** (`$ARGUMENTS`). Si falta, usa o crea
 `reports/<modulo>/<flujo>-<fecha>/` y pregunta lo mínimo necesario.
@@ -47,6 +47,10 @@ Crea `report.json` en la carpeta de evidencia copiando `manifest.example.json`. 
 - `findings[]`: `{ id, url, title, severity, type, description, evidence[], recommendation }`.
   `severity` ∈ `critical | high | medium | low | info`. Enlaza el issue real de GitHub
   (`Jurrego1771/AQ2#N`). **No inflar severidad** (CLAUDE.md — honestidad de QA).
+- `coverageGaps[]`: `{ id, area, why, mitigation }`. Lo que la suite **NO cubre**:
+  huecos por scope, dependencias de entorno, datos no disponibles, endpoints sin
+  automatización, rutas que requieren scheduler o fixtures externos. **Importante**:
+  sin esta sección el informe miente al sugerir cobertura total.
 - `recommendations[]`: acciones priorizadas.
 - `evidence[]`: galería — `{ file, caption }`.
 - `logs[]`: `{ label, content }` o `{ label, file }`.
@@ -54,6 +58,8 @@ Crea `report.json` en la carpeta de evidencia copiando `manifest.example.json`. 
 
 > Honestidad: el informe refleja lo verificado. Tests que no se corrieron → no se listan
 > como passed. Hallazgos no confirmados → no se incluyen. Balancea con lo que funciona.
+> **Suite incompleta → declarar huecos en `coverageGaps[]`, no esconderlos.** El informe
+> tiene que servir para defender (o cuestionar) la cobertura real, no para aparentarla.
 
 ### P2 — Generar el HTML
 ```

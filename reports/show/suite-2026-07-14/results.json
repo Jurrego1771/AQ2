@@ -1,0 +1,3991 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "D:\\repos\\jurrego1771\\AQ2\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "show",
+      "--reporter=json"
+    ],
+    "configFile": "D:\\repos\\jurrego1771\\AQ2\\playwright.config.js",
+    "rootDir": "D:/repos/jurrego1771/AQ2/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": "D:\\repos\\jurrego1771\\AQ2\\src\\fixtures\\global-setup.js",
+    "globalTeardown": "D:\\repos\\jurrego1771\\AQ2\\src\\fixtures\\global-teardown.js",
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 8
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/repos/jurrego1771/AQ2/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 8
+        },
+        "id": "setup",
+        "name": "setup",
+        "testDir": "D:/repos/jurrego1771/AQ2/src/fixtures",
+        "testIgnore": [],
+        "testMatch": [
+          "/.*\\.setup\\.js/"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "D:/repos/jurrego1771/AQ2/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 8
+        },
+        "id": "smoke",
+        "name": "smoke",
+        "testDir": "D:/repos/jurrego1771/AQ2/tests/smoke",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "D:/repos/jurrego1771/AQ2/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 8
+        },
+        "id": "api",
+        "name": "api",
+        "testDir": "D:/repos/jurrego1771/AQ2/tests/api",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "D:/repos/jurrego1771/AQ2/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 8
+        },
+        "id": "unit",
+        "name": "unit",
+        "testDir": "D:/repos/jurrego1771/AQ2/tests/unit",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "D:/repos/jurrego1771/AQ2/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 8
+        },
+        "id": "e2e",
+        "name": "e2e",
+        "testDir": "D:/repos/jurrego1771/AQ2/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "D:/repos/jurrego1771/AQ2/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 8
+        },
+        "id": "regression",
+        "name": "regression",
+        "testDir": "D:/repos/jurrego1771/AQ2/tests/regression",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.0",
+    "workers": 8,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "..\\src\\fixtures\\auth.setup.js",
+      "file": "../src/fixtures/auth.setup.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "authenticate",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "setup",
+              "projectName": "setup",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3784,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-07-14T14:06:42.461Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f376efe52c54b1a876fd-1fee911d1baa95a60aef",
+          "file": "../src/fixtures/auth.setup.js",
+          "line": 18,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "smoke\\show.smoke.spec.js",
+      "file": "smoke/show.smoke.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Show @smoke",
+          "file": "smoke/show.smoke.spec.js",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "el módulo Show carga para un usuario autenticado @SHW-TC-001",
+              "ok": true,
+              "tags": [
+                "smoke",
+                "SHW-TC-001"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "smoke",
+                  "projectName": "smoke",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3631,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T14:06:47.183Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a1fab9d001a865c574dc-eccd3ef5cb60fe057c64",
+              "file": "smoke/show.smoke.spec.js",
+              "line": 5,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "api\\contract\\show\\show.contract.spec.js",
+      "file": "api/contract/show/show.contract.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Show API @api - Contract",
+          "file": "api/contract/show/show.contract.spec.js",
+          "line": 21,
+          "column": 6,
+          "specs": [
+            {
+              "title": "TC_CON_SHW_001 POST /api/show response schema @SHW-TC-CON-001",
+              "ok": true,
+              "tags": [
+                "api",
+                "SHW-TC-CON-001"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 661,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T14:06:47.332Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "990478f51a043cc48c09-6a2f23d640af5c428709",
+              "file": "api/contract/show/show.contract.spec.js",
+              "line": 24,
+              "column": 3
+            },
+            {
+              "title": "TC_CON_SHW_002 GET /api/show/:id response schema @SHW-TC-CON-002",
+              "ok": true,
+              "tags": [
+                "api",
+                "SHW-TC-CON-002"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 867,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T14:06:47.316Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "990478f51a043cc48c09-0f3c09544dd9632f3db7",
+              "file": "api/contract/show/show.contract.spec.js",
+              "line": 52,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "api\\contract\\show.api.contract.spec.js",
+      "file": "api/contract/show.api.contract.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Show API @api - Contract",
+          "file": "api/contract/show.api.contract.spec.js",
+          "line": 23,
+          "column": 6,
+          "specs": [
+            {
+              "title": "SHW-TC-LST GET /api/show/list devuelve items con shape minimo (id/title/type) @SHW-TC-LST",
+              "ok": true,
+              "tags": [
+                "api",
+                "SHW-TC-LST"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 673,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T14:06:47.385Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a7a047264da7547122e6-beee65d0e9907b5a18bf",
+              "file": "api/contract/show.api.contract.spec.js",
+              "line": 26,
+              "column": 3
+            },
+            {
+              "title": "SHW-TC-LST-ALL GET /api/show/list?all=true bypasea filtro de status @SHW-TC-LST-ALL",
+              "ok": true,
+              "tags": [
+                "api",
+                "SHW-TC-LST-ALL"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 4,
+                      "status": "passed",
+                      "duration": 5056,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T14:06:47.368Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a7a047264da7547122e6-2ce7109d319bf8250b09",
+              "file": "api/contract/show.api.contract.spec.js",
+              "line": 46,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "api\\integration\\show\\show-episodes.integration.spec.js",
+      "file": "api/integration/show/show-episodes.integration.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Show Episode @api @integration - Full CRUD",
+          "file": "api/integration/show/show-episodes.integration.spec.js",
+          "line": 29,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "Create POST /api/show/:id/season/:seasonId/episode",
+              "file": "api/integration/show/show-episodes.integration.spec.js",
+              "line": 130,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "SHW-TC-EP-CRT-001 POST episode valid @SHW-TC-EP-CRT-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-EP-CRT-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 5,
+                          "status": "passed",
+                          "duration": 2414,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:47.589Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "16ecaa5a526024069310-8b13d27ca459a64756bb",
+                  "file": "api/integration/show/show-episodes.integration.spec.js",
+                  "line": 144,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-EP-CRT-002 with optional fields @SHW-TC-EP-CRT-002",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-EP-CRT-002"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 5,
+                          "status": "passed",
+                          "duration": 2726,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:51.736Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "16ecaa5a526024069310-951beef431c832771852",
+                  "file": "api/integration/show/show-episodes.integration.spec.js",
+                  "line": 161,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-EP-CRT-003 order auto assigned @SHW-TC-EP-CRT-003",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-EP-CRT-003"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 5,
+                          "status": "passed",
+                          "duration": 1892,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:54.470Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "16ecaa5a526024069310-23641dfee4923f721c8e",
+                  "file": "api/integration/show/show-episodes.integration.spec.js",
+                  "line": 179,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-EP-CRT-VAL-001 missing title @SHW-TC-EP-CRT-VAL-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-EP-CRT-VAL-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 6,
+                          "status": "passed",
+                          "duration": 1333,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:47.608Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "16ecaa5a526024069310-909da92c055c9a2b917b",
+                  "file": "api/integration/show/show-episodes.integration.spec.js",
+                  "line": 193,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-EP-CRT-VAL-002 missing content @SHW-TC-EP-CRT-VAL-002",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-EP-CRT-VAL-002"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 6,
+                          "status": "passed",
+                          "duration": 931,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:50.863Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "16ecaa5a526024069310-62d5e2c52452bcdbf1fb",
+                  "file": "api/integration/show/show-episodes.integration.spec.js",
+                  "line": 203,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-EP-CRT-NEG-001 season not found @SHW-TC-EP-CRT-NEG-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-EP-CRT-NEG-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 6,
+                          "status": "passed",
+                          "duration": 472,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:51.802Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "16ecaa5a526024069310-204cf88b4ae86e90ea62",
+                  "file": "api/integration/show/show-episodes.integration.spec.js",
+                  "line": 213,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-EP-CRT-AUTH-001 no token @SHW-TC-EP-CRT-AUTH-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-EP-CRT-AUTH-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 8,
+                          "parallelIndex": 7,
+                          "status": "passed",
+                          "duration": 1253,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:47.585Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "16ecaa5a526024069310-87a728734fb5be72ed62",
+                  "file": "api/integration/show/show-episodes.integration.spec.js",
+                  "line": 224,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "List GET /api/show/:id/season/:seasonId/episode",
+              "file": "api/integration/show/show-episodes.integration.spec.js",
+              "line": 245,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "SHW-TC-EP-LST-001 valid @SHW-TC-EP-LST-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-EP-LST-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 8,
+                          "parallelIndex": 7,
+                          "status": "passed",
+                          "duration": 4071,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:50.674Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "16ecaa5a526024069310-c19391028e3d6637d41c",
+                  "file": "api/integration/show/show-episodes.integration.spec.js",
+                  "line": 257,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-EP-LST-002 empty season @SHW-TC-EP-LST-002",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-EP-LST-002"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 8,
+                          "parallelIndex": 7,
+                          "status": "passed",
+                          "duration": 850,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:54.755Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "16ecaa5a526024069310-eb86de529643d0e3f242",
+                  "file": "api/integration/show/show-episodes.integration.spec.js",
+                  "line": 269,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-EP-LST-003 with limit @SHW-TC-EP-LST-003",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-EP-LST-003"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 3615,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:48.168Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "16ecaa5a526024069310-5bcb24f395694d7dcb34",
+                  "file": "api/integration/show/show-episodes.integration.spec.js",
+                  "line": 278,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-EP-LST-AUTH-001 no token @SHW-TC-EP-LST-AUTH-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-EP-LST-AUTH-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 814,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:53.854Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "16ecaa5a526024069310-ccadf2b891d8a1ac04d6",
+                  "file": "api/integration/show/show-episodes.integration.spec.js",
+                  "line": 293,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "Get by ID GET /api/show/:id/season/:seasonId/episode/:episodeId",
+              "file": "api/integration/show/show-episodes.integration.spec.js",
+              "line": 306,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "SHW-TC-EP-GET-001 valid @SHW-TC-EP-GET-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-EP-GET-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 1454,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:54.680Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "16ecaa5a526024069310-ac9a87b5d93e71ae865f",
+                  "file": "api/integration/show/show-episodes.integration.spec.js",
+                  "line": 318,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-EP-GET-NEG-001 not found @SHW-TC-EP-GET-NEG-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-EP-GET-NEG-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 1548,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:48.234Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "16ecaa5a526024069310-0d393ae4fb40ac54de09",
+                  "file": "api/integration/show/show-episodes.integration.spec.js",
+                  "line": 331,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-EP-GET-AUTH-001 no token @SHW-TC-EP-GET-AUTH-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-EP-GET-AUTH-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 1247,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:51.988Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "16ecaa5a526024069310-622f1909024d20a98b5e",
+                  "file": "api/integration/show/show-episodes.integration.spec.js",
+                  "line": 339,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "Update POST /api/show/:id/season/:seasonId/episode/:episodeId",
+              "file": "api/integration/show/show-episodes.integration.spec.js",
+              "line": 353,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "SHW-TC-EP-UPD-001 update title @SHW-TC-EP-UPD-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-EP-UPD-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 1460,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:53.249Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "16ecaa5a526024069310-e7932cc0df73cccad62c",
+                  "file": "api/integration/show/show-episodes.integration.spec.js",
+                  "line": 365,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-EP-UPD-002 update description @SHW-TC-EP-UPD-002",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-EP-UPD-002"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 1591,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:48.373Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "16ecaa5a526024069310-e79d2bab821028773c4b",
+                  "file": "api/integration/show/show-episodes.integration.spec.js",
+                  "line": 378,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-EP-UPD-003 update persists @SHW-TC-EP-UPD-003",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-EP-UPD-003"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 2191,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:52.661Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "16ecaa5a526024069310-786da812bdf4a3ecc6fe",
+                  "file": "api/integration/show/show-episodes.integration.spec.js",
+                  "line": 390,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-EP-UPD-NEG-001 not found @SHW-TC-EP-UPD-NEG-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-EP-UPD-NEG-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 890,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:54.868Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "16ecaa5a526024069310-bb8336a7263fcedd591a",
+                  "file": "api/integration/show/show-episodes.integration.spec.js",
+                  "line": 406,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-EP-UPD-AUTH-001 no token @SHW-TC-EP-UPD-AUTH-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-EP-UPD-AUTH-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 9,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1308,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:51.849Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "16ecaa5a526024069310-181ab760291cc1b60d65",
+                  "file": "api/integration/show/show-episodes.integration.spec.js",
+                  "line": 415,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "Delete DELETE /api/show/:id/season/:seasonId/episode/:episodeId",
+              "file": "api/integration/show/show-episodes.integration.spec.js",
+              "line": 430,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "SHW-TC-EP-DEL-001 valid @SHW-TC-EP-DEL-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-EP-DEL-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 9,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1210,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:54.060Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "16ecaa5a526024069310-e771c70abd6f616c4a30",
+                  "file": "api/integration/show/show-episodes.integration.spec.js",
+                  "line": 442,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-EP-DEL-NEG-001 not found @SHW-TC-EP-DEL-NEG-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-EP-DEL-NEG-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 9,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 939,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:55.279Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "16ecaa5a526024069310-cd477b8a0260bc118ee0",
+                  "file": "api/integration/show/show-episodes.integration.spec.js",
+                  "line": 460,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-EP-DEL-AUTH-001 no token @SHW-TC-EP-DEL-AUTH-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-EP-DEL-AUTH-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 1619,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:52.670Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "16ecaa5a526024069310-19ed1f208e8a64315df5",
+                  "file": "api/integration/show/show-episodes.integration.spec.js",
+                  "line": 468,
+                  "column": 5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "api\\integration\\show\\show-recommended.integration.spec.js",
+      "file": "api/integration/show/show-recommended.integration.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Show Recommended Shows @api @integration POST /show/:id",
+          "file": "api/integration/show/show-recommended.integration.spec.js",
+          "line": 97,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "1. Shows Criteria",
+              "file": "api/integration/show/show-recommended.integration.spec.js",
+              "line": 114,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "SHW-TC-REC-001 UPDATE ShowsCriteriaEnabled @SHW-TC-REC-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-REC-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Set SHOW_API_TOKEN=<JWT> in .env to validate recommended_shows persistence",
+                          "location": {
+                            "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\api\\integration\\show\\show-recommended.integration.spec.js",
+                            "line": 116,
+                            "column": 12
+                          }
+                        }
+                      ],
+                      "expectedStatus": "skipped",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 6,
+                          "status": "skipped",
+                          "duration": 2,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:53.114Z",
+                          "annotations": [
+                            {
+                              "type": "skip",
+                              "description": "Set SHOW_API_TOKEN=<JWT> in .env to validate recommended_shows persistence",
+                              "location": {
+                                "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\api\\integration\\show\\show-recommended.integration.spec.js",
+                                "line": 116,
+                                "column": 12
+                              }
+                            }
+                          ],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "45578115556404570538-ea86510f68db06a6f39d",
+                  "file": "api/integration/show/show-recommended.integration.spec.js",
+                  "line": 115,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-REC-002 UPDATE ShowsCriteriaDisabled @SHW-TC-REC-002",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-REC-002"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 6,
+                          "status": "passed",
+                          "duration": 664,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:53.146Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "45578115556404570538-e1439bdcb28bca4c0f0b",
+                  "file": "api/integration/show/show-recommended.integration.spec.js",
+                  "line": 155,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "2. Categories Criteria",
+              "file": "api/integration/show/show-recommended.integration.spec.js",
+              "line": 187,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "SHW-TC-REC-010 UPDATE CategoriesCriteriaEnabled @SHW-TC-REC-010",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-REC-010"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Set SHOW_API_TOKEN=<JWT> in .env to validate recommended_shows persistence",
+                          "location": {
+                            "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\api\\integration\\show\\show-recommended.integration.spec.js",
+                            "line": 189,
+                            "column": 12
+                          }
+                        }
+                      ],
+                      "expectedStatus": "skipped",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 6,
+                          "status": "skipped",
+                          "duration": 2,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:53.820Z",
+                          "annotations": [
+                            {
+                              "type": "skip",
+                              "description": "Set SHOW_API_TOKEN=<JWT> in .env to validate recommended_shows persistence",
+                              "location": {
+                                "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\api\\integration\\show\\show-recommended.integration.spec.js",
+                                "line": 189,
+                                "column": 12
+                              }
+                            }
+                          ],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "45578115556404570538-106b0bd965ab431d79ab",
+                  "file": "api/integration/show/show-recommended.integration.spec.js",
+                  "line": 188,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-REC-011 UPDATE CategoriesSortByDateCreated @SHW-TC-REC-011",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-REC-011"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 6,
+                          "status": "passed",
+                          "duration": 513,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:53.851Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "45578115556404570538-04f8a63ccad96bbdb1bf",
+                  "file": "api/integration/show/show-recommended.integration.spec.js",
+                  "line": 229,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "3. Genres Criteria",
+              "file": "api/integration/show/show-recommended.integration.spec.js",
+              "line": 263,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "SHW-TC-REC-020 UPDATE GenresCriteriaEnabled @SHW-TC-REC-020",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-REC-020"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Set SHOW_API_TOKEN=<JWT> in .env to validate recommended_shows persistence",
+                          "location": {
+                            "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\api\\integration\\show\\show-recommended.integration.spec.js",
+                            "line": 265,
+                            "column": 12
+                          }
+                        }
+                      ],
+                      "expectedStatus": "skipped",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 6,
+                          "status": "skipped",
+                          "duration": 1,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:54.383Z",
+                          "annotations": [
+                            {
+                              "type": "skip",
+                              "description": "Set SHOW_API_TOKEN=<JWT> in .env to validate recommended_shows persistence",
+                              "location": {
+                                "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\api\\integration\\show\\show-recommended.integration.spec.js",
+                                "line": 265,
+                                "column": 12
+                              }
+                            }
+                          ],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "45578115556404570538-af97039c9f6a669b2d6f",
+                  "file": "api/integration/show/show-recommended.integration.spec.js",
+                  "line": 264,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-REC-021 UPDATE GenresMultipleValues @SHW-TC-REC-021",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-REC-021"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 6,
+                          "status": "passed",
+                          "duration": 597,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:54.392Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "45578115556404570538-f163cc0f5db1acb3a1c1",
+                  "file": "api/integration/show/show-recommended.integration.spec.js",
+                  "line": 295,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "4. Episodes Criteria",
+              "file": "api/integration/show/show-recommended.integration.spec.js",
+              "line": 319,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "SHW-TC-REC-030 UPDATE EpisodesCriteriaEnabled @SHW-TC-REC-030",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-REC-030"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 6,
+                          "status": "passed",
+                          "duration": 518,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:55.024Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "45578115556404570538-937a923fe0565cadcbae",
+                  "file": "api/integration/show/show-recommended.integration.spec.js",
+                  "line": 320,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-REC-031 UPDATE EpisodesCriteriaDisabled @SHW-TC-REC-031",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-REC-031"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 6,
+                          "status": "passed",
+                          "duration": 585,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:55.570Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "45578115556404570538-bae923851dbbbb2b8d33",
+                  "file": "api/integration/show/show-recommended.integration.spec.js",
+                  "line": 351,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "5. All Criteria Combined",
+              "file": "api/integration/show/show-recommended.integration.spec.js",
+              "line": 375,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "SHW-TC-REC-040 UPDATE AllCriteriaEnabled @SHW-TC-REC-040",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-REC-040"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Set SHOW_API_TOKEN=<JWT> in .env to validate recommended_shows persistence",
+                          "location": {
+                            "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\api\\integration\\show\\show-recommended.integration.spec.js",
+                            "line": 377,
+                            "column": 12
+                          }
+                        }
+                      ],
+                      "expectedStatus": "skipped",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 6,
+                          "status": "skipped",
+                          "duration": 12,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:56.169Z",
+                          "annotations": [
+                            {
+                              "type": "skip",
+                              "description": "Set SHOW_API_TOKEN=<JWT> in .env to validate recommended_shows persistence",
+                              "location": {
+                                "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\api\\integration\\show\\show-recommended.integration.spec.js",
+                                "line": 377,
+                                "column": 12
+                              }
+                            }
+                          ],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "45578115556404570538-759255b9ef7ab0bfe655",
+                  "file": "api/integration/show/show-recommended.integration.spec.js",
+                  "line": 376,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-REC-041 UPDATE AllCriteriaDisabled @SHW-TC-REC-041",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-REC-041"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 565,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:55.454Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "45578115556404570538-f085157c4eab592f188f",
+                  "file": "api/integration/show/show-recommended.integration.spec.js",
+                  "line": 430,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "6. Persistence GET after UPDATE",
+              "file": "api/integration/show/show-recommended.integration.spec.js",
+              "line": 459,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "SHW-TC-REC-050 GET RecommendedShowsPersistedAfterUpdate @SHW-TC-REC-050",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-REC-050"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Set SHOW_API_TOKEN=<JWT> in .env to validate recommended_shows persistence",
+                          "location": {
+                            "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\api\\integration\\show\\show-recommended.integration.spec.js",
+                            "line": 461,
+                            "column": 12
+                          }
+                        }
+                      ],
+                      "expectedStatus": "skipped",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 3,
+                          "status": "skipped",
+                          "duration": 3,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:56.035Z",
+                          "annotations": [
+                            {
+                              "type": "skip",
+                              "description": "Set SHOW_API_TOKEN=<JWT> in .env to validate recommended_shows persistence",
+                              "location": {
+                                "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\api\\integration\\show\\show-recommended.integration.spec.js",
+                                "line": 461,
+                                "column": 12
+                              }
+                            }
+                          ],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "45578115556404570538-737a31afe3af1f392e7e",
+                  "file": "api/integration/show/show-recommended.integration.spec.js",
+                  "line": 460,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-REC-051 GET RecommendedShowsCriteriaStructure @SHW-TC-REC-051",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-REC-051"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 686,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:56.046Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "45578115556404570538-13b79c1fcea0642674a5",
+                  "file": "api/integration/show/show-recommended.integration.spec.js",
+                  "line": 505,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "7. Negative Cases",
+              "file": "api/integration/show/show-recommended.integration.spec.js",
+              "line": 549,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "SHW-TC-REC-NEG-001 UPDATE InvalidShowIdInCriteria @SHW-TC-REC-NEG-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-REC-NEG-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 593,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:55.671Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "45578115556404570538-7d9b38ceec97998962a4",
+                  "file": "api/integration/show/show-recommended.integration.spec.js",
+                  "line": 550,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-REC-NEG-002 UPDATE InvalidGenreInCriteria @SHW-TC-REC-NEG-002",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-REC-NEG-002"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 468,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:56.286Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "45578115556404570538-9acdd10c828049dbcab0",
+                  "file": "api/integration/show/show-recommended.integration.spec.js",
+                  "line": 573,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-REC-NEG-003 UPDATE EmptyShowsArrayWhenEnabled @SHW-TC-REC-NEG-003",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-REC-NEG-003"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 528,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:56.768Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "45578115556404570538-a70149a89949f39916cb",
+                  "file": "api/integration/show/show-recommended.integration.spec.js",
+                  "line": 593,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-REC-NEG-004 UPDATE MultipleShowsInCriteria @SHW-TC-REC-NEG-004",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-REC-NEG-004"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 6,
+                          "status": "passed",
+                          "duration": 1332,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:56.225Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "45578115556404570538-022e2dd41bcc952f9bbe",
+                  "file": "api/integration/show/show-recommended.integration.spec.js",
+                  "line": 613,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-REC-NEG-005 UPDATE NonExistentShowTarget @SHW-TC-REC-NEG-005",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-REC-NEG-005"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 6,
+                          "status": "passed",
+                          "duration": 180,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:57.584Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "45578115556404570538-83bf6f7a0b762022633d",
+                  "file": "api/integration/show/show-recommended.integration.spec.js",
+                  "line": 647,
+                  "column": 5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "api\\integration\\show\\show-seasons.integration.spec.js",
+      "file": "api/integration/show/show-seasons.integration.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Show Season @api @integration - Read / Update / Delete",
+          "file": "api/integration/show/show-seasons.integration.spec.js",
+          "line": 13,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "List GET /api/show/:id/season",
+              "file": "api/integration/show/show-seasons.integration.spec.js",
+              "line": 45,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "SHW-TC-SS-INT-LST-001 list valid @SHW-TC-SS-INT-LST-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-SS-INT-LST-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 8,
+                          "parallelIndex": 7,
+                          "status": "passed",
+                          "duration": 932,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:56.312Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "76c9997de9e215df50ed-16d6b6139ae387e6a4b7",
+                  "file": "api/integration/show/show-seasons.integration.spec.js",
+                  "line": 55,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-SS-INT-LST-002 empty show @SHW-TC-SS-INT-LST-002",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-SS-INT-LST-002"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 560,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:56.658Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "76c9997de9e215df50ed-633c96b3b89586e91401",
+                  "file": "api/integration/show/show-seasons.integration.spec.js",
+                  "line": 63,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-SS-INT-LST-003 with limit @SHW-TC-SS-INT-LST-003",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-SS-INT-LST-003"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 1341,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:56.762Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "76c9997de9e215df50ed-ac51d9586e85a77b9386",
+                  "file": "api/integration/show/show-seasons.integration.spec.js",
+                  "line": 69,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-SS-INT-LST-NEG-001 show not found @SHW-TC-SS-INT-LST-NEG-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-SS-INT-LST-NEG-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 545,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:56.797Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "76c9997de9e215df50ed-21c9a17bfa4d4afcefca",
+                  "file": "api/integration/show/show-seasons.integration.spec.js",
+                  "line": 77,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-SS-INT-LST-AUTH-001 no token @SHW-TC-SS-INT-LST-AUTH-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-SS-INT-LST-AUTH-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 9,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 538,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:56.951Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "76c9997de9e215df50ed-21f9cc3491e1dc69c829",
+                  "file": "api/integration/show/show-seasons.integration.spec.js",
+                  "line": 83,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "Get by ID GET /api/show/:id/season/:seasonId",
+              "file": "api/integration/show/show-seasons.integration.spec.js",
+              "line": 92,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "SHW-TC-SS-INT-GET-001 valid @SHW-TC-SS-INT-GET-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-SS-INT-GET-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 882,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:57.229Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "76c9997de9e215df50ed-3dd2f307fb4555a21158",
+                  "file": "api/integration/show/show-seasons.integration.spec.js",
+                  "line": 102,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-SS-INT-GET-002 with populate @SHW-TC-SS-INT-GET-002",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-SS-INT-GET-002"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 8,
+                          "parallelIndex": 7,
+                          "status": "passed",
+                          "duration": 921,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:57.254Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "76c9997de9e215df50ed-a240d201ea59808590c1",
+                  "file": "api/integration/show/show-seasons.integration.spec.js",
+                  "line": 111,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-SS-INT-GET-NEG-001 not found @SHW-TC-SS-INT-GET-NEG-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-SS-INT-GET-NEG-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 600,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:57.330Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "76c9997de9e215df50ed-6b18a747f38db6af38d4",
+                  "file": "api/integration/show/show-seasons.integration.spec.js",
+                  "line": 121,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-SS-INT-GET-AUTH-001 no token @SHW-TC-SS-INT-GET-AUTH-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-SS-INT-GET-AUTH-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 818,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:57.359Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "76c9997de9e215df50ed-bc54cbe245be8b12b7cb",
+                  "file": "api/integration/show/show-seasons.integration.spec.js",
+                  "line": 128,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "Update POST /api/show/:id/season/:seasonId",
+              "file": "api/integration/show/show-seasons.integration.spec.js",
+              "line": 138,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "SHW-TC-SS-INT-UPD-001 update title @SHW-TC-SS-INT-UPD-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-SS-INT-UPD-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 9,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 897,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:57.500Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "76c9997de9e215df50ed-9070732dd2067946f8e8",
+                  "file": "api/integration/show/show-seasons.integration.spec.js",
+                  "line": 148,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-SS-INT-UPD-002 update description @SHW-TC-SS-INT-UPD-002",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-SS-INT-UPD-002"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 5,
+                          "status": "passed",
+                          "duration": 837,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:57.709Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "76c9997de9e215df50ed-5f115fbd050eb65dfd68",
+                  "file": "api/integration/show/show-seasons.integration.spec.js",
+                  "line": 160,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-SS-INT-UPD-003 update persists @SHW-TC-SS-INT-UPD-003",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-SS-INT-UPD-003"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 6,
+                          "status": "passed",
+                          "duration": 987,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:57.791Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "76c9997de9e215df50ed-5083b44a3124a4312a95",
+                  "file": "api/integration/show/show-seasons.integration.spec.js",
+                  "line": 171,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-SS-INT-UPD-NEG-001 not found @SHW-TC-SS-INT-UPD-NEG-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-SS-INT-UPD-NEG-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 508,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:57.949Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "76c9997de9e215df50ed-d2f07e0ca22122d02f7c",
+                  "file": "api/integration/show/show-seasons.integration.spec.js",
+                  "line": 184,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-SS-INT-UPD-AUTH-001 no token @SHW-TC-SS-INT-UPD-AUTH-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-SS-INT-UPD-AUTH-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 749,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:58.113Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "76c9997de9e215df50ed-261e92d9fbbec6a4827a",
+                  "file": "api/integration/show/show-seasons.integration.spec.js",
+                  "line": 193,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "Delete DELETE /api/show/:id/season/:seasonId",
+              "file": "api/integration/show/show-seasons.integration.spec.js",
+              "line": 206,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "SHW-TC-SS-INT-DEL-001 valid @SHW-TC-SS-INT-DEL-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-SS-INT-DEL-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 681,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:58.121Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "76c9997de9e215df50ed-959f522abba80798feed",
+                  "file": "api/integration/show/show-seasons.integration.spec.js",
+                  "line": 216,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-SS-INT-DEL-002 confirm gone @SHW-TC-SS-INT-DEL-002",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-SS-INT-DEL-002"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 764,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:58.186Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "76c9997de9e215df50ed-9908d220561e6c1de763",
+                  "file": "api/integration/show/show-seasons.integration.spec.js",
+                  "line": 227,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-SS-INT-DEL-NEG-001 not found @SHW-TC-SS-INT-DEL-NEG-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-SS-INT-DEL-NEG-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 8,
+                          "parallelIndex": 7,
+                          "status": "passed",
+                          "duration": 467,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:58.188Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "76c9997de9e215df50ed-ca6930d4edf4e0ae6fad",
+                  "file": "api/integration/show/show-seasons.integration.spec.js",
+                  "line": 241,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-SS-INT-DEL-AUTH-001 no token @SHW-TC-SS-INT-DEL-AUTH-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "integration",
+                    "SHW-TC-SS-INT-DEL-AUTH-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 9,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 811,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:58.407Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "76c9997de9e215df50ed-585d3e5076a69e7a8203",
+                  "file": "api/integration/show/show-seasons.integration.spec.js",
+                  "line": 248,
+                  "column": 5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "api\\smoke\\show\\show-crud.smoke.spec.js",
+      "file": "api/smoke/show/show-crud.smoke.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Show API @api @smoke - CRUD",
+          "file": "api/smoke/show/show-crud.smoke.spec.js",
+          "line": 19,
+          "column": 6,
+          "specs": [
+            {
+              "title": "SHW-TC-CRUD-001 POST CreateMinimal @SHW-TC-CRUD-001",
+              "ok": true,
+              "tags": [
+                "api",
+                "smoke",
+                "SHW-TC-CRUD-001"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 4,
+                      "status": "passed",
+                      "duration": 359,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T14:06:58.473Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2efb0130caec6d9b35c5-e2b5aa6d2bd3149b687d",
+              "file": "api/smoke/show/show-crud.smoke.spec.js",
+              "line": 43,
+              "column": 3
+            },
+            {
+              "title": "SHW-TC-CRUD-010 GET ExistingShowDetail @SHW-TC-CRUD-010",
+              "ok": true,
+              "tags": [
+                "api",
+                "smoke",
+                "SHW-TC-CRUD-010"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 5,
+                      "status": "passed",
+                      "duration": 520,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T14:06:58.560Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2efb0130caec6d9b35c5-f6dcf062c8b2580f5ab6",
+              "file": "api/smoke/show/show-crud.smoke.spec.js",
+              "line": 64,
+              "column": 3
+            },
+            {
+              "title": "SHW-TC-CRUD-NEG-010 GET NonExistentShow @SHW-TC-CRUD-NEG-010",
+              "ok": true,
+              "tags": [
+                "api",
+                "smoke",
+                "SHW-TC-CRUD-NEG-010"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [
+                    {
+                      "workerIndex": 8,
+                      "parallelIndex": 7,
+                      "status": "passed",
+                      "duration": 293,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T14:06:58.677Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2efb0130caec6d9b35c5-31e96db8216fb9665bc8",
+              "file": "api/smoke/show/show-crud.smoke.spec.js",
+              "line": 81,
+              "column": 3
+            },
+            {
+              "title": "SHW-TC-CRUD-050 DELETE Success @SHW-TC-CRUD-050",
+              "ok": true,
+              "tags": [
+                "api",
+                "smoke",
+                "SHW-TC-CRUD-050"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 6,
+                      "status": "passed",
+                      "duration": 311,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T14:06:58.788Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2efb0130caec6d9b35c5-445bbaaf2701a32663bf",
+              "file": "api/smoke/show/show-crud.smoke.spec.js",
+              "line": 89,
+              "column": 3
+            },
+            {
+              "title": "SHW-TC-CRUD-NEG-002 POST MissingTitle @SHW-TC-CRUD-NEG-002",
+              "ok": true,
+              "tags": [
+                "api",
+                "smoke",
+                "SHW-TC-CRUD-NEG-002"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api",
+                  "projectName": "api",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 129,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T14:06:58.819Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2efb0130caec6d9b35c5-5ba5f20c11b24e417def",
+              "file": "api/smoke/show/show-crud.smoke.spec.js",
+              "line": 98,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "api\\smoke\\show\\show-seasons.smoke.spec.js",
+      "file": "api/smoke/show/show-seasons.smoke.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Show Season API @api @smoke - Create POST /api/show/:id/season",
+          "file": "api/smoke/show/show-seasons.smoke.spec.js",
+          "line": 18,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "Happy Path",
+              "file": "api/smoke/show/show-seasons.smoke.spec.js",
+              "line": 26,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "SHW-TC-SS-001 POST season valid @SHW-TC-SS-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "smoke",
+                    "SHW-TC-SS-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 316,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:58.969Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "0504aa469f2f8e29f653-b3e593fcbbde29998ab9",
+                  "file": "api/smoke/show/show-seasons.smoke.spec.js",
+                  "line": 66,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-SS-002 POST season with optional fields @SHW-TC-SS-002",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "smoke",
+                    "SHW-TC-SS-002"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 327,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:58.972Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "0504aa469f2f8e29f653-5431efcba3d9657f790c",
+                  "file": "api/smoke/show/show-seasons.smoke.spec.js",
+                  "line": 83,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-SS-003 POST season order auto-assigned @SHW-TC-SS-003",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "smoke",
+                    "SHW-TC-SS-003"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 8,
+                          "parallelIndex": 7,
+                          "status": "passed",
+                          "duration": 710,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:58.989Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "0504aa469f2f8e29f653-76198ea10445d2655a5f",
+                  "file": "api/smoke/show/show-seasons.smoke.spec.js",
+                  "line": 100,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-SS-004 POST season show linked in response @SHW-TC-SS-004",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "smoke",
+                    "SHW-TC-SS-004"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 333,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:58.992Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "0504aa469f2f8e29f653-37576b02f385d904401c",
+                  "file": "api/smoke/show/show-seasons.smoke.spec.js",
+                  "line": 120,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "Authentication",
+              "file": "api/smoke/show/show-seasons.smoke.spec.js",
+              "line": 135,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "SHW-TC-SS-AUTH-001 POST season no token @SHW-TC-SS-AUTH-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "smoke",
+                    "SHW-TC-SS-AUTH-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 117,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:59.024Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "0504aa469f2f8e29f653-e0d4099a77bf4cc5e00a",
+                  "file": "api/smoke/show/show-seasons.smoke.spec.js",
+                  "line": 153,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-SS-AUTH-002 POST season invalid token @SHW-TC-SS-AUTH-002",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "smoke",
+                    "SHW-TC-SS-AUTH-002"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 5,
+                          "status": "passed",
+                          "duration": 147,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:59.095Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "0504aa469f2f8e29f653-5ae7def1b08a88a63c9f",
+                  "file": "api/smoke/show/show-seasons.smoke.spec.js",
+                  "line": 172,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "Validation",
+              "file": "api/smoke/show/show-seasons.smoke.spec.js",
+              "line": 193,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "SHW-TC-SS-VAL-001 POST season missing title @SHW-TC-SS-VAL-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "smoke",
+                    "SHW-TC-SS-VAL-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 6,
+                          "status": "passed",
+                          "duration": 120,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:59.114Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "0504aa469f2f8e29f653-a874c1e0e3b5771ba3ab",
+                  "file": "api/smoke/show/show-seasons.smoke.spec.js",
+                  "line": 211,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-SS-VAL-002 POST season empty title @SHW-TC-SS-VAL-002",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "smoke",
+                    "SHW-TC-SS-VAL-002"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 9,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 129,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:59.251Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "0504aa469f2f8e29f653-fad6256557cf1b85b65d",
+                  "file": "api/smoke/show/show-seasons.smoke.spec.js",
+                  "line": 217,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "Error Cases",
+              "file": "api/smoke/show/show-seasons.smoke.spec.js",
+              "line": 224,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "SHW-TC-SS-ERR-001 POST season show not found @SHW-TC-SS-ERR-001",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "smoke",
+                    "SHW-TC-SS-ERR-001"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 138,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:58.847Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "0504aa469f2f8e29f653-5e4527a522e6ebc35a46",
+                  "file": "api/smoke/show/show-seasons.smoke.spec.js",
+                  "line": 225,
+                  "column": 5
+                },
+                {
+                  "title": "SHW-TC-SS-ERR-002 POST season invalid show id @SHW-TC-SS-ERR-002",
+                  "ok": true,
+                  "tags": [
+                    "api",
+                    "smoke",
+                    "SHW-TC-SS-ERR-002"
+                  ],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "api",
+                      "projectName": "api",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 135,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T14:06:58.878Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "0504aa469f2f8e29f653-19f5db4467b7cba96f1c",
+                  "file": "api/smoke/show/show-seasons.smoke.spec.js",
+                  "line": 235,
+                  "column": 5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "regression\\media-show-picker.regression.spec.js",
+      "file": "regression/media-show-picker.regression.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Media — selector de Show excluye shows borrados @regression @media",
+          "file": "regression/media-show-picker.regression.spec.js",
+          "line": 23,
+          "column": 6,
+          "specs": [
+            {
+              "title": "GET /api/show/list filtra por status: sin all=true solo OK, con all=true incluye DELETE @MED-TC-022",
+              "ok": true,
+              "tags": [
+                "regression",
+                "media",
+                "MED-TC-022"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "regression",
+                  "projectName": "regression",
+                  "results": [
+                    {
+                      "workerIndex": 10,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 1615,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T14:07:00.147Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5dd9ca64bda0e0f9dc47-fa82372388c7b4318c97",
+              "file": "regression/media-show-picker.regression.spec.js",
+              "line": 24,
+              "column": 3
+            },
+            {
+              "title": "el selector de Show del detalle no incluye shows borrados @MED-TC-023",
+              "ok": true,
+              "tags": [
+                "regression",
+                "media",
+                "MED-TC-023"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "regression",
+                  "projectName": "regression",
+                  "results": [
+                    {
+                      "workerIndex": 11,
+                      "parallelIndex": 6,
+                      "status": "passed",
+                      "duration": 14489,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T14:07:00.265Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5dd9ca64bda0e0f9dc47-e80b7a071cdac4851bf1",
+              "file": "regression/media-show-picker.regression.spec.js",
+              "line": 50,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "regression\\show-list.regression.spec.js",
+      "file": "regression/show-list.regression.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Show list — búsqueda @regression @show",
+          "file": "regression/show-list.regression.spec.js",
+          "line": 9,
+          "column": 6,
+          "specs": [
+            {
+              "title": "búsqueda por título reduce el listado @SHW-TC-002",
+              "ok": true,
+              "tags": [
+                "regression",
+                "show",
+                "SHW-TC-002"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "regression",
+                  "projectName": "regression",
+                  "results": [
+                    {
+                      "workerIndex": 12,
+                      "parallelIndex": 5,
+                      "status": "passed",
+                      "duration": 7651,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T14:07:00.319Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0341f6d215e4b7cf2efe-b9c081b2c9bfae4561ab",
+              "file": "regression/show-list.regression.spec.js",
+              "line": 15,
+              "column": 3
+            },
+            {
+              "title": "limpiar búsqueda restaura el listado completo @SHW-TC-003",
+              "ok": true,
+              "tags": [
+                "regression",
+                "show",
+                "SHW-TC-003"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "regression",
+                  "projectName": "regression",
+                  "results": [
+                    {
+                      "workerIndex": 13,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 8166,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T14:07:00.321Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0341f6d215e4b7cf2efe-b2b478ac8404bd61a2c0",
+              "file": "regression/show-list.regression.spec.js",
+              "line": 31,
+              "column": 3
+            },
+            {
+              "title": "el panel de búsqueda avanzada se abre con el botón @SHW-TC-004",
+              "ok": true,
+              "tags": [
+                "regression",
+                "show",
+                "SHW-TC-004"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "regression",
+                  "projectName": "regression",
+                  "results": [
+                    {
+                      "workerIndex": 14,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 12558,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).not.\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('[sm=\"search-filter-container\"]')\nExpected: not visible\nReceived: visible\nTimeout:  7500ms\n\nCall log:\n\u001b[2m  - Expect \"not toBeVisible\" with timeout 7500ms\u001b[22m\n\u001b[2m  - waiting for locator('[sm=\"search-filter-container\"]')\u001b[22m\n\u001b[2m    18 × locator resolved to <div sm=\"search-filter-container\">…</div>\u001b[22m\n\u001b[2m       - unexpected value \"visible\"\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).not.\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('[sm=\"search-filter-container\"]')\nExpected: not visible\nReceived: visible\nTimeout:  7500ms\n\nCall log:\n\u001b[2m  - Expect \"not toBeVisible\" with timeout 7500ms\u001b[22m\n\u001b[2m  - waiting for locator('[sm=\"search-filter-container\"]')\u001b[22m\n\u001b[2m    18 × locator resolved to <div sm=\"search-filter-container\">…</div>\u001b[22m\n\u001b[2m       - unexpected value \"visible\"\u001b[22m\n\n    at D:\\repos\\jurrego1771\\AQ2\\tests\\regression\\show-list.regression.spec.js:50:52",
+                        "location": {
+                          "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\regression\\show-list.regression.spec.js",
+                          "column": 52,
+                          "line": 50
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 48 |\u001b[39m     \u001b[36mawait\u001b[39m expect(showPage\u001b[33m.\u001b[39madvancedSearchPanel)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 49 |\u001b[39m     \u001b[36mawait\u001b[39m showPage\u001b[33m.\u001b[39mcancelSearchButton\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 50 |\u001b[39m     \u001b[36mawait\u001b[39m expect(showPage\u001b[33m.\u001b[39madvancedSearchPanel)\u001b[33m.\u001b[39mnot\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                    \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 51 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 52 |\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 53 |\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\regression\\show-list.regression.spec.js",
+                            "column": 52,
+                            "line": 50
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).not.\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('[sm=\"search-filter-container\"]')\nExpected: not visible\nReceived: visible\nTimeout:  7500ms\n\nCall log:\n\u001b[2m  - Expect \"not toBeVisible\" with timeout 7500ms\u001b[22m\n\u001b[2m  - waiting for locator('[sm=\"search-filter-container\"]')\u001b[22m\n\u001b[2m    18 × locator resolved to <div sm=\"search-filter-container\">…</div>\u001b[22m\n\u001b[2m       - unexpected value \"visible\"\u001b[22m\n\n\n  48 |     await expect(showPage.advancedSearchPanel).toBeVisible();\n  49 |     await showPage.cancelSearchButton.click();\n> 50 |     await expect(showPage.advancedSearchPanel).not.toBeVisible();\n     |                                                    ^\n  51 |   });\n  52 | });\n  53 |\n    at D:\\repos\\jurrego1771\\AQ2\\tests\\regression\\show-list.regression.spec.js:50:52"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T14:07:00.392Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "D:\\repos\\jurrego1771\\AQ2\\test-results\\show-list.regression-Show--199ba-bre-con-el-botón-SHW-TC-004-regression\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "D:\\repos\\jurrego1771\\AQ2\\test-results\\show-list.regression-Show--199ba-bre-con-el-botón-SHW-TC-004-regression\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "D:\\repos\\jurrego1771\\AQ2\\test-results\\show-list.regression-Show--199ba-bre-con-el-botón-SHW-TC-004-regression\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\regression\\show-list.regression.spec.js",
+                        "column": 52,
+                        "line": 50
+                      }
+                    },
+                    {
+                      "workerIndex": 17,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 5176,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-07-14T14:07:13.864Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "D:\\repos\\jurrego1771\\AQ2\\test-results\\show-list.regression-Show--199ba-bre-con-el-botón-SHW-TC-004-regression-retry1\\trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "flaky"
+                }
+              ],
+              "id": "0341f6d215e4b7cf2efe-a8a1c6fa29c0c7d90f88",
+              "file": "regression/show-list.regression.spec.js",
+              "line": 45,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "regression\\show-seasons.regression.spec.js",
+      "file": "regression/show-seasons.regression.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Show seasons @regression @show",
+          "file": "regression/show-seasons.regression.spec.js",
+          "line": 9,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Save con season vacía muestra validación en lugar de lanzar TypeError [BUG #25] @SHW-TC-005",
+              "ok": true,
+              "tags": [
+                "regression",
+                "show",
+                "SHW-TC-005"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "fail",
+                      "description": "BUG #25: saveSeason() lanza TypeError en lugar de mostrar season-modal-alert — https://github.com/Jurrego1771/AQ2/issues/25",
+                      "location": {
+                        "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\regression\\show-seasons.regression.spec.js",
+                        "line": 21,
+                        "column": 12
+                      }
+                    }
+                  ],
+                  "expectedStatus": "failed",
+                  "projectId": "regression",
+                  "projectName": "regression",
+                  "results": [
+                    {
+                      "workerIndex": 15,
+                      "parallelIndex": 4,
+                      "status": "failed",
+                      "duration": 14171,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('[sm=\"season-modal-alert\"]')\nExpected: visible\nReceived: hidden\nTimeout:  7500ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 7500ms\u001b[22m\n\u001b[2m  - waiting for locator('[sm=\"season-modal-alert\"]')\u001b[22m\n\u001b[2m    17 × locator resolved to <div sm=\"season-modal-alert\"></div>\u001b[22m\n\u001b[2m       - unexpected value \"hidden\"\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('[sm=\"season-modal-alert\"]')\nExpected: visible\nReceived: hidden\nTimeout:  7500ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 7500ms\u001b[22m\n\u001b[2m  - waiting for locator('[sm=\"season-modal-alert\"]')\u001b[22m\n\u001b[2m    17 × locator resolved to <div sm=\"season-modal-alert\"></div>\u001b[22m\n\u001b[2m       - unexpected value \"hidden\"\u001b[22m\n\n    at D:\\repos\\jurrego1771\\AQ2\\tests\\regression\\show-seasons.regression.spec.js:31:47",
+                        "location": {
+                          "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\regression\\show-seasons.regression.spec.js",
+                          "column": 47,
+                          "line": 31
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 29 |\u001b[39m\n \u001b[90m 30 |\u001b[39m       \u001b[90m// Esperado (post-fix): el alert del modal es visible con un mensaje de error.\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 31 |\u001b[39m       \u001b[36mawait\u001b[39m expect(showPage\u001b[33m.\u001b[39mseasonModalAlert)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                               \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 32 |\u001b[39m       expect(\u001b[36mawait\u001b[39m showPage\u001b[33m.\u001b[39mseasonModalAlert\u001b[33m.\u001b[39minnerText())\u001b[33m.\u001b[39mtoMatch(\u001b[35m/required|obligatorio/i\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 33 |\u001b[39m\n \u001b[90m 34 |\u001b[39m       \u001b[90m// La consola NO debe tener el TypeError de saveSeason.\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\regression\\show-seasons.regression.spec.js",
+                            "column": 47,
+                            "line": 31
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('[sm=\"season-modal-alert\"]')\nExpected: visible\nReceived: hidden\nTimeout:  7500ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 7500ms\u001b[22m\n\u001b[2m  - waiting for locator('[sm=\"season-modal-alert\"]')\u001b[22m\n\u001b[2m    17 × locator resolved to <div sm=\"season-modal-alert\"></div>\u001b[22m\n\u001b[2m       - unexpected value \"hidden\"\u001b[22m\n\n\n  29 |\n  30 |       // Esperado (post-fix): el alert del modal es visible con un mensaje de error.\n> 31 |       await expect(showPage.seasonModalAlert).toBeVisible();\n     |                                               ^\n  32 |       expect(await showPage.seasonModalAlert.innerText()).toMatch(/required|obligatorio/i);\n  33 |\n  34 |       // La consola NO debe tener el TypeError de saveSeason.\n    at D:\\repos\\jurrego1771\\AQ2\\tests\\regression\\show-seasons.regression.spec.js:31:47"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T14:07:00.467Z",
+                      "annotations": [
+                        {
+                          "type": "fail",
+                          "description": "BUG #25: saveSeason() lanza TypeError en lugar de mostrar season-modal-alert — https://github.com/Jurrego1771/AQ2/issues/25",
+                          "location": {
+                            "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\regression\\show-seasons.regression.spec.js",
+                            "line": 21,
+                            "column": 12
+                          }
+                        }
+                      ],
+                      "attachments": [
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "D:\\repos\\jurrego1771\\AQ2\\test-results\\show-seasons.regression-Sh-56d21-TypeError-BUG-25-SHW-TC-005-regression\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\regression\\show-seasons.regression.spec.js",
+                        "column": 47,
+                        "line": 31
+                      }
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4aeb2491d43d39481830-0272ed2ba4efd425fd5a",
+              "file": "regression/show-seasons.regression.spec.js",
+              "line": 18,
+              "column": 3
+            },
+            {
+              "title": "POST /show/:id/season debe retornar 201 al guardar con título válido [BUG #26] @SHW-TC-006",
+              "ok": true,
+              "tags": [
+                "regression",
+                "show",
+                "SHW-TC-006"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "fail",
+                      "description": "BUG #26: POST /show/<id>/season falla con ERR_FAILED (CORS/network) — https://github.com/Jurrego1771/AQ2/issues/26",
+                      "location": {
+                        "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\regression\\show-seasons.regression.spec.js",
+                        "line": 46,
+                        "column": 12
+                      }
+                    }
+                  ],
+                  "expectedStatus": "failed",
+                  "projectId": "regression",
+                  "projectName": "regression",
+                  "results": [
+                    {
+                      "workerIndex": 16,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 15866,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m201\u001b[39m\nReceived: \u001b[31m200\u001b[39m\n\nCall Log:\n- Timeout 10000ms exceeded while waiting on the predicate",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m201\u001b[39m\nReceived: \u001b[31m200\u001b[39m\n\nCall Log:\n- Timeout 10000ms exceeded while waiting on the predicate\n    at D:\\repos\\jurrego1771\\AQ2\\tests\\regression\\show-seasons.regression.spec.js:66:10",
+                        "location": {
+                          "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\regression\\show-seasons.regression.spec.js",
+                          "column": 10,
+                          "line": 66
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 64 |\u001b[39m       \u001b[36mawait\u001b[39m expect\n \u001b[90m 65 |\u001b[39m         \u001b[33m.\u001b[39mpoll(() \u001b[33m=>\u001b[39m seasonStatus\u001b[33m,\u001b[39m { timeout\u001b[33m:\u001b[39m \u001b[35m10\u001b[39m_000 })\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 66 |\u001b[39m         \u001b[33m.\u001b[39mtoBe(\u001b[35m201\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 67 |\u001b[39m       \u001b[36mawait\u001b[39m expect(showPage\u001b[33m.\u001b[39mseasonModalAlert)\u001b[33m.\u001b[39mnot\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 68 |\u001b[39m     }\n \u001b[90m 69 |\u001b[39m   )\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\regression\\show-seasons.regression.spec.js",
+                            "column": 10,
+                            "line": 66
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m201\u001b[39m\nReceived: \u001b[31m200\u001b[39m\n\nCall Log:\n- Timeout 10000ms exceeded while waiting on the predicate\n\n  64 |       await expect\n  65 |         .poll(() => seasonStatus, { timeout: 10_000 })\n> 66 |         .toBe(201);\n     |          ^\n  67 |       await expect(showPage.seasonModalAlert).not.toBeVisible();\n  68 |     }\n  69 |   );\n    at D:\\repos\\jurrego1771\\AQ2\\tests\\regression\\show-seasons.regression.spec.js:66:10"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-14T14:07:00.771Z",
+                      "annotations": [
+                        {
+                          "type": "fail",
+                          "description": "BUG #26: POST /show/<id>/season falla con ERR_FAILED (CORS/network) — https://github.com/Jurrego1771/AQ2/issues/26",
+                          "location": {
+                            "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\regression\\show-seasons.regression.spec.js",
+                            "line": 46,
+                            "column": 12
+                          }
+                        }
+                      ],
+                      "attachments": [
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "D:\\repos\\jurrego1771\\AQ2\\test-results\\show-seasons.regression-Sh-89fe1-lo-válido-BUG-26-SHW-TC-006-regression\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "D:\\repos\\jurrego1771\\AQ2\\tests\\regression\\show-seasons.regression.spec.js",
+                        "column": 10,
+                        "line": 66
+                      }
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4aeb2491d43d39481830-c36a64317cbca29f526a",
+              "file": "regression/show-seasons.regression.spec.js",
+              "line": 43,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-07-14T14:06:38.003Z",
+    "duration": 43440.267,
+    "expected": 79,
+    "skipped": 5,
+    "unexpected": 0,
+    "flaky": 1
+  }
+}

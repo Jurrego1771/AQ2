@@ -26,6 +26,11 @@ const env = {
   user2: pick('TEST_USER2'),
   pass2: pick('TEST_PASS2'),
   totpSecret: pick('TOTP_SECRET'),
+  // API token de cuenta (Settings > API). Algunos endpoints (ej. el CRUD de
+  // /api/show) exigen el header X-API-TOKEN y rechazan la cookie de sesión del
+  // login UI (401). Lo consume el fixture `apiToken`. Acepta sufijo por-env
+  // (API_TOKEN_DEV) y cae al global API_TOKEN.
+  apiToken: pick('API_TOKEN', process.env.API_TOKEN || ''),
   // prod-us / prod-eu bloquean mutaciones (prodGuard en specs que escriben).
   isProd: ENV.startsWith('prod'),
   // Token Profiles (sm2#8451): ids de TokenProfile pre-creados una sola vez por un

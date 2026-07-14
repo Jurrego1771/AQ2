@@ -17,7 +17,7 @@ tests:
       validates: ["INTG-AC-1"]
       mitigates: ["INTG-RISK-1"]
       story: "US-027"
-      spec: "tests/regression/integrations.regression.spec.js"
+      spec: "tests/regression/integrations/integrations.regression.spec.js"
 
   - id: "INTG-TC-2"
     titulo: "Activar Stripe sin API Key muestra un warning y no envía el request al backend"
@@ -29,4 +29,4 @@ tests:
       validates: ["INTG-AC-2"]
       mitigates: ["INTG-RISK-2"]
       story: "US-027"
-      spec: "tests/regression/integrations.regression.spec.js"
+      spec: "tests/regression/integrations/integrations.regression.spec.js"

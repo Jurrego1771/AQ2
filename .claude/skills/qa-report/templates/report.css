@@ -124,6 +124,24 @@ table.tests tr { break-inside: avoid; }
 .finding .rec { margin-top: 10px; font-size: .92rem; background: var(--surface-2);
   border-left: 3px solid var(--accent); border-radius: 0 6px 6px 0; padding: 8px 12px; }
 .finding .rec b { color: var(--accent-ink); }
+
+/* ---------- huecos de cobertura (amber) ---------- */
+.gap { border: 1px solid var(--line); border-left: 5px solid #d97706; /* amber-600 */
+  border-radius: 8px; padding: 14px 18px; margin-bottom: 12px; break-inside: avoid;
+  background: #fffbeb; }
+.gap h3 { margin: 0 0 6px; font-size: .98rem; display: flex; flex-wrap: wrap;
+  gap: 8px; align-items: center; }
+.gap .desc { color: var(--soft); font-size: .94rem; margin-bottom: 6px; }
+.gap .rec { margin-top: 8px; font-size: .92rem; background: #fff;
+  border-left: 3px solid #d97706; border-radius: 0 6px 6px 0; padding: 8px 12px; }
+.gap .rec b { color: #92400e; }
+
+/* ---------- defectos de los tests: SECCION RETIRADA ----------
+   Por decision del usuario (2026-07-09), el informe NO menciona defectos
+   de los tests mismos (flaky, brittle, asserts tolerantes, etc.). El informe
+   solo reporta: tests+resultados, huecos de cobertura, hallazgos de producto.
+   Si en el futuro se reactiva, ver historial git (commit previo) para el
+   bloque .tdef que existia. */
 .pill { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .03em;
   padding: 2px 9px; border-radius: 6px; color: #fff; }
 .pill.s-critical { background: var(--sev-critical); } .pill.s-high { background: var(--sev-high); }

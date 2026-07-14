@@ -1,61 +1,60 @@
 # Tests - Modulo Playlist. Definicion (sin estado de ejecucion: eso es derivado).
-# refs = FUENTE UNICA de los vinculos. El spec lleva en su titulo solo el id de
-# correlacion @PLST-TC-N (+ la capa @api/@regression).
+# refs = FUENTE UNICA de los vinculos. El spec lleva en su titulo solo el id
+# de correlacion @PLST-TC-N (+ la capa @contract).
 version: 1
 modulo: "playlist"
-ultima_actualizacion: '2026-07-07'
+ultima_actualizacion: '2026-07-08'
 
 tests:
-  # ---- US-025: contrato de /api/playlist (capa API) ----
+  # ---- US-029: flag uses_reels (PR sm2#8076), capa API ----
   - id: "PLST-TC-1"
-    titulo: "POST /api/playlist con nombre válido crea playlist manual (200, _id, type)"
+    titulo: "El modulo Playlist carga para un usuario autenticado"
     modulo: "playlist"
-    tipo: "integration"
-    prioridad: "high"
+    tipo: "smoke"
+    prioridad: "critical"
     estado: "active"
     refs:
       validates: ["PLST-AC-1"]
       mitigates: []
-      story: "US-025"
-      spec: "tests/api/playlist.api.spec.js"
+      story: "US-026"
+      spec: "tests/smoke/playlist.smoke.spec.js"
 
   - id: "PLST-TC-2"
-    titulo: "GET /api/playlist/:id?all=true expone rules{manual,smart,series,playout} y access_rules"
+    titulo: "Filtrar por tipo reduce el listado y marca el chip activo"
     modulo: "playlist"
-    tipo: "integration"
-    prioridad: "medium"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["PLST-AC-2"]
+      mitigates: ["PLST-RISK-1"]
+      story: "US-026"
+      spec: "tests/regression/playlist/playlist.regression.spec.js"
+
+  - id: "PLST-TC-3"
+    titulo: "Quitar el filtro restaura el listado completo"
+    modulo: "playlist"
+    tipo: "regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["PLST-AC-2"]
+      mitigates: ["PLST-RISK-1"]
+      story: "US-026"
+      spec: "tests/regression/playlist/playlist.regression.spec.js"
+
+  - id: "PLST-TC-4"
+    titulo: "Buscar por titulo reduce el listado"
+    modulo: "playlist"
+    tipo: "regression"
+    prioridad: "high"
     estado: "active"
     refs:
       validates: ["PLST-AC-2"]
       mitigates: []
-      story: "US-025"
-      spec: "tests/api/playlist.api.spec.js"
+      story: "US-026"
+      spec: "tests/regression/playlist/playlist.regression.spec.js"
 
-  - id: "PLST-TC-3"
-    titulo: "DELETE /api/playlist/:id elimina la playlist y responde 200 OK"
-    modulo: "playlist"
-    tipo: "integration"
-    prioridad: "high"
-    estado: "active"
-    refs:
-      validates: ["PLST-AC-3"]
-      mitigates: []
-      story: "US-025"
-      spec: "tests/api/playlist.api.spec.js"
-
-  - id: "PLST-TC-4"
-    titulo: "POST /api/playlist con nombre vacío debe responder 400, no 500 [BUG #36]"
-    modulo: "playlist"
-    tipo: "integration"
-    prioridad: "high"
-    estado: "active"
-    refs:
-      validates: ["PLST-AC-4"]
-      mitigates: ["PLST-RISK-1"]
-      story: "US-025"
-      spec: "tests/api/playlist.api.spec.js"
-
-  # ---- US-026: form y navegación (capa UI) ----
   - id: "PLST-TC-5"
     titulo: "El form /playlist/new renderiza el selector de tipo y las acciones save/delete"
     modulo: "playlist"
@@ -63,77 +62,73 @@ tests:
     prioridad: "medium"
     estado: "active"
     refs:
-      validates: ["PLST-AC-5"]
-      mitigates: []
-      story: "US-026"
-      spec: "tests/regression/playlist.regression.spec.js"
-
-  - id: "PLST-TC-6"
-    titulo: "El panel de Playlists está disponible en /media"
-    modulo: "playlist"
-    tipo: "regression"
-    prioridad: "medium"
-    estado: "active"
-    refs:
-      validates: ["PLST-AC-6"]
-      mitigates: []
-      story: "US-026"
-      spec: "tests/regression/playlist.regression.spec.js"
-
-  - id: "PLST-TC-7"
-    titulo: "La ruta /playlist debe resolver a una vista válida, no a un 404 [BUG #37]"
-    modulo: "playlist"
-    tipo: "regression"
-    prioridad: "medium"
-    estado: "active"
-    refs:
-      validates: ["PLST-AC-7"]
+      validates: ["PLST-AC-3"]
       mitigates: ["PLST-RISK-2"]
       story: "US-026"
-      spec: "tests/regression/playlist.regression.spec.js"
+      spec: "tests/regression/playlist/playlist.regression.spec.js"
 
-  # ---- US-029: flag uses_reels (PR sm2#8076), capa API ----
+  - id: "PLST-TC-6"
+    titulo: "El panel de Playlists esta disponible en /media"
+    modulo: "playlist"
+    tipo: "regression"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["PLST-AC-4"]
+      mitigates: []
+      story: "US-026"
+      spec: "tests/regression/playlist/playlist.regression.spec.js"
+
+  - id: "PLST-TC-7"
+    titulo: "La ruta /playlist debe resolver a una vista valida, no a un 404 [BUG #37]"
+    modulo: "playlist"
+    tipo: "regression"
+    prioridad: "low"
+    estado: "active"
+    refs:
+      validates: ["PLST-AC-5"]
+      mitigates: ["PLST-RISK-3"]
+      story: "US-026"
+      spec: "tests/regression/playlist/playlist.regression.spec.js"
+
   - id: "PLST-TC-8"
     titulo: "POST /api/playlist persiste uses_reels:true y default a false al omitirlo"
     modulo: "playlist"
     tipo: "integration"
-    prioridad: "medium"
+    prioridad: "high"
     estado: "active"
     refs:
-      validates: ["PLST-AC-8"]
+      validates: ["PLST-AC-1"]
       mitigates: []
       story: "US-029"
-      spec: "tests/api/playlist.api.spec.js"
+      spec: "tests/regression/playlist/playlist.regression.spec.js"
 
   - id: "PLST-TC-9"
-    titulo: "GET /api/playlist?uses_reels=true devuelve solo playlists marcadas para reels"
+    titulo: "PUT /api/playlist/:id persiste cambios (incluye uses_reels)"
     modulo: "playlist"
     tipo: "integration"
-    prioridad: "medium"
+    prioridad: "high"
     estado: "active"
     refs:
-      validates: ["PLST-AC-9"]
-      mitigates: []
+      validates: ["PLST-AC-1"]
+      mitigates: ["PLST-RISK-2"]
       story: "US-029"
-      spec: "tests/api/playlist.api.spec.js"
+      spec: "tests/regression/playlist/playlist.regression.spec.js"
 
   - id: "PLST-TC-10"
-    titulo: "POST /api/playlist/:id apaga uses_reels y el false persiste (falsy-safe)"
+    titulo: "GET /api/playlist?medias=true devuelve la playlist con rules"
     modulo: "playlist"
     tipo: "integration"
     prioridad: "medium"
     estado: "active"
     refs:
-      validates: ["PLST-AC-10"]
+      validates: ["PLST-AC-2"]
       mitigates: []
-      story: "US-029"
-      spec: "tests/api/playlist.api.spec.js"
+      story: "US-026"
+      spec: "tests/regression/playlist/playlist.regression.spec.js"
 
-  # ---- US-029: checkbox 'Use for reels' (PR sm2#8076), capa UI ----
-  # Direccionado por data-name (escalera de selectores estables): el checkbox aun
-  # no tiene marca sm: (bug #38) pero SI expone data-name='playlist-uses-reels'.
   - id: "PLST-TC-11"
-    titulo: "El checkbox 'Use for reels' persiste tras guardar y recargar (UI, vía data-name)"
+    titulo: "El checkbox 'Use for reels' persiste tras guardar y recargar (UI, via data-name)"
     modulo: "playlist"
     tipo: "regression"
     prioridad: "medium"
@@ -142,7 +137,9 @@ tests:
       validates: ["PLST-AC-11"]
       mitigates: ["PLST-RISK-3"]
       story: "US-029"
-      spec: "tests/regression/playlist.regression.spec.js"
+      spec: "tests/regression/playlist/playlist.regression.spec.js"
+    # Direccionado por data-name (escalera de selectores estables): el checkbox aun
+    # no tiene marca sm: (bug #38) pero SI expone data-name='playlist-uses-reels'.
 
   # ---- Contratos HTTP (capa contract, blindaje contra drift de sm2) ----
   # Migrado de api_test_flow/tests/api/contract/playlist/playlist.contract.spec.js.
@@ -157,7 +154,7 @@ tests:
       validates: ["PLST-AC-1"]
       mitigates: []
       story: "US-026"
-      spec: "tests/api/contract/playlist.api.contract.spec.js"
+      spec: "tests/api/contract/playlist/playlist.api.contract.spec.js"
 
   - id: "PLST-TC-13"
     titulo: "GET /api/playlist/:id devuelve Get Response valido contra Zod"
@@ -169,7 +166,7 @@ tests:
       validates: ["PLST-AC-1"]
       mitigates: []
       story: "US-026"
-      spec: "tests/api/contract/playlist.api.contract.spec.js"
+      spec: "tests/api/contract/playlist/playlist.api.contract.spec.js"
 
   - id: "PLST-TC-14"
     titulo: "GET /api/playlist (list) devuelve List Response valido contra Zod"
@@ -181,7 +178,7 @@ tests:
       validates: ["PLST-AC-2"]
       mitigates: []
       story: "US-026"
-      spec: "tests/api/contract/playlist.api.contract.spec.js"
+      spec: "tests/api/contract/playlist/playlist.api.contract.spec.js"
 
   - id: "PLST-TC-15"
     titulo: "GET /api/playlist/:id?medias=true responde 200 con envelope jsonp valido"
@@ -193,7 +190,104 @@ tests:
       validates: ["PLST-AC-1"]
       mitigates: []
       story: "US-026"
-      spec: "tests/api/contract/playlist.api.contract.spec.js"
+      spec: "tests/api/contract/playlist/playlist.api.contract.spec.js"
     # Diferencia con el old repo: en esta version de sm2 ?medias=true devuelve la
     # playlist completa + rules, NO un array de medias. Conservamos el spec para
     # detectar drift en el envelope (status/data) sin atar a un shape interno.
+
+  # ---- PR sm2#8076: campo uses_reels + query param ----
+  # Migrado de la sesion de analisis del PR sm2#8076 (Jurrego1771/AQ2 reports/
+  # pr-context/2026-07-08-pr-8076-uses-reels.json). Cubre el shape del campo
+  # `uses_reels` y el query filter ?uses_reels=true|false (este ultimo usa
+  # $ne:true para backward-compat con playlists legacy). PLST-TC-021 es
+  # RED-HASTA-FIX del bug-falsy de la saga #847 - pasa a verde cuando el PR
+  # se mergee a dev.
+  - id: "PLST-TC-016"
+    titulo: "POST /api/playlist con uses_reels=true persiste el flag"
+    modulo: "playlist"
+    tipo: "contract"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["PLST-AC-1"]
+      mitigates: []
+      story: "US-026"
+      spec: "tests/api/contract/playlist/playlist.api.contract.spec.js"
+    # Verificacion doble: POST responde con el flag, GET posterior lo confirma.
+    # Assert estricto: si el server NO acepta uses_reels en el body, el spec
+    # salta con PLST-SKIP (PR no mergeado). Si el server acepta pero NO
+    # persiste, es bug del handler.
+
+  - id: "PLST-TC-017"
+    titulo: "POST /api/playlist SIN uses_reels -> default false del schema"
+    modulo: "playlist"
+    tipo: "contract"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["PLST-AC-1"]
+      mitigates: []
+      story: "US-026"
+      spec: "tests/api/contract/playlist/playlist.api.contract.spec.js"
+    # Default del schema Mongoose. Acepta undefined como equivalente de false
+    # (playlist legacy sin el campo).
+
+  - id: "PLST-TC-018"
+    titulo: "GET /api/playlist?uses_reels=true filtra a solo reels"
+    modulo: "playlist"
+    tipo: "contract"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["PLST-AC-2"]
+      mitigates: []
+      story: "US-026"
+      spec: "tests/api/contract/playlist/playlist.api.contract.spec.js"
+    # Setup: crea 1 con true + 1 con false. ?uses_reels=true devuelve la primera
+    # pero NO la segunda. Skip explicito si el server no soporta el param.
+
+  - id: "PLST-TC-019"
+    titulo: "GET /api/playlist?uses_reels=false usa $ne:true (legacy aparece)"
+    modulo: "playlist"
+    tipo: "contract"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["PLST-AC-2"]
+      mitigates: []
+      story: "US-026"
+      spec: "tests/api/contract/playlist/playlist.api.contract.spec.js"
+    # Backward-compat: ?uses_reels=false usa $ne:true (no equality) para que
+    # playlists legacy (sin el campo) aparezcan en este bucket. Si el server
+    # uso $eq:false, el test falla con PLST-SKIP que apunta al handler.
+
+  - id: "PLST-TC-020"
+    titulo: "GET /api/playlist sin param uses_reels devuelve todas (backward-compat)"
+    modulo: "playlist"
+    tipo: "contract"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["PLST-AC-2"]
+      mitigates: []
+      story: "US-026"
+      spec: "tests/api/contract/playlist/playlist.api.contract.spec.js"
+    # Sin param el server NO debe filtrar. Crea 2 (true y false), ambas
+    # deben aparecer en el listado.
+
+  - id: "PLST-TC-021"
+    titulo: "PUT /api/playlist/:id con uses_reels=false explicito PERSISTE el cambio"
+    modulo: "playlist"
+    tipo: "contract"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["PLST-AC-1"]
+      mitigates: ["PLST-RISK-X"]
+      story: "US-026"
+      spec: "tests/api/contract/playlist/playlist.api.contract.spec.js"
+    # RED-HASTA-FIX del falsy bug de la saga #847. El PR #8076 introduce
+    # normalizeBoolean en update.js. Si el server esta en la version vieja
+    # del update.js, mandarle uses_reels=false NO persistira. Pasa a verde
+    # cuando el PR se mergee a dev. Si el PR no esta mergeado, el spec salta
+    # con PLST-SKIP (no podemos testear el toggle sin la base instalada).

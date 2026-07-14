@@ -2,7 +2,7 @@
 # Defectos = issues GitHub (Jurrego1771/AQ2#N). NO se escribe mitigado_por_test (derivado).
 version: 1
 modulo: "live-stream"
-ultima_actualizacion: '2026-07-09'
+ultima_actualizacion: '2026-07-09'  # +LIVE-RISK-18 (patron latente find()+truthy en 3 endpoints hermanos del fix sm2#8496)
 
 riesgos:
   - id: "LIVE-RISK-1"
@@ -143,28 +143,45 @@ riesgos:
   - id: "LIVE-RISK-7"
     severidad: "medium"
     probabilidad: "high"
-    titulo: "Update de schedule ignora valores vacios/false: no se puede limpiar texto ni apagar flags"
+    titulo: "Update de schedule ignora valores vacios en campos user-editable: no se puede limpiar texto"
     descripcion: >
       Al actualizar un schedule (POST /schedule-job/:id), el server solo aplica un campo
-      cuando el valor entrante es truthy (guardas if(body.X) en updateSchedule). En
-      consecuencia no se puede vaciar la description (queda el texto previo) ni desactivar
-      is_featured/is_blackout/not_sellable/is_auto_publish/for_recording. El update responde
-      200, dando falsa sensacion de guardado. Verificado en vivo: description:'' e
-      is_featured:false se ignoraron tras releer. En create la description si maneja vacio.
+      cuando el valor entrante es truthy (guardas if(body.X) en updateSchedule,
+      src/server/routes/api/live-stream/schedule-job/utils/index.js:460-484). En
+      consecuencia no se puede vaciar la **description** del schedule (queda el texto
+      previo) ni (subjetivo, requiere confirmacion) desactivar not_sellable / is_blackout
+      / is_auto_publish / for_recording. El update responde 200, dando falsa sensacion
+      de guardado. Verificado en vivo: description:'' se ignora tras releer.
+
+      **IMPORTANTE — campos excluidos del bug (diseño, no defecto)**:
+      is_featured es un valor unidireccional fastchannel -> schedule (no user-editable
+      desde el form de schedule). Que el server lo ignore en update del schedule es
+      **contrato correcto**, no bug. Aunque comparta el mismo guard `if(body.is_featured)`
+      en utils/index.js:473, ese campo tiene semantica distinta: pertenece al motor de
+      fastchannel, no al form de edicion.
+      Otros campos como for_recording, monetizable, inherit_geo_restrictions,
+      inherit_custom_attributes, delayedContent, live_restreaming requieren analisis
+      caso por caso (cuales son user-editable desde schedule vs fed desde fastchannel)
+      antes de incluirlos como 'bug #23'.
+
+      En create la description si maneja vacio (verificado).
     detonador:
-      - "Editar un schedule existente vaciando un texto o desmarcando un checkbox y guardar"
+      - "Editar un schedule existente y vaciar el campo description, guardar"
+      - "Desmarcar checkboxes de monetizacion / publicacion automatica y guardar (a verificar caso por caso)"
     mitigacion: >
       En updateSchedule distinguir 'clave presente con valor vacio/false' de 'clave ausente':
-      aplicar description siempre que venga la clave (permitiendo ''), y los booleanos por
-      presencia (permitiendo false); o normalizar el body del form (checkbox desmarcado -> false).
+      aplicar description siempre que venga la clave (permitiendo ''), y los booleanos
+      user-editable por presencia (permitiendo false); o normalizar el body del form
+      (checkbox desmarcado -> false). No tocar campos fastchannel (is_featured).
     archivos_afectados:
       - "src/server/routes/api/live-stream/schedule-job/utils/index.js"
     defectos_relacionados:
       - "Jurrego1771/AQ2#23"
     prioridad_prueba: "MUST"
     nota_industria: >
-      Semantica de update parcial (PUT/PATCH): un valor explicito no debe descartarse.
-      Nielsen #3 (control y libertad: poder deshacer).
+      Semantica de update parcial (PUT/PATCH): un valor explicito user-editable no debe
+      descartarse. Nielsen #3 (control y libertad: poder deshacer). No aplicar el fix
+      a campos con semantica unidireccional desde otra capa (fastchannel).
 
   - id: "LIVE-RISK-8"
     severidad: "low"
@@ -326,7 +343,12 @@ riesgos:
       consumidor externo (clientes custom, scripts, integraciones) puede meter
       valores invalidos.
 
-  - id: "LIVE-RISK-13"
+  # ---- Riesgos nuevos: sesion 2026-07-09 ----
+  # ID renumerado desde LIVE-RISK-13 a LIVE-RISK-17 (2026-07-09):
+  # el ID 13 ya estaba referenciado en el spec de ingest (deprecated) como
+  # "entry_points.primary vacio al crear por API" (issue AQ2#49, CERRADO).
+  # Para mantener trazabilidad historica sin colision, este riesgo pasa a -17.
+  - id: "LIVE-RISK-17"
     severidad: "medium"
     probabilidad: "high"
     titulo: "TypeError en consola del detalle: addParamToURL de live_dynamic_preview.js"
@@ -354,6 +376,9 @@ riesgos:
       Fiabilidad/consola (heuristica del skill qa-module). Enmascarar errores 1ra
       linea (no manejar null) lleva a UX 'misteriosa' - el feature parece OK pero
       queda stack en consola.
+
+  # LIVE-RISK-14/15/16 ya existen debajo. LIVE-RISK-13 queda LIBRE (no se usa;
+  # ver cabecera de LIVE-RISK-17).
 
   - id: "LIVE-RISK-14"
     severidad: "low"
@@ -437,3 +462,67 @@ riesgos:
     nota_industria: >
       Testabilidad / contrato QA. Patrón recurrente: secciones con estado persistente
       en la API pero sin selectores estables → cobertura UI bloqueada.
+
+  # ---- Riesgo nuevo: patron latente find()+truthy en endpoints hermanos ----
+  # El fix sm2#8496 corrige el caso /schedule/:sid. El autor explicita en la
+  # seccion 'Consideraciones' del PR que los mismos 3 endpoints tienen el
+  # MISMO patron latente: una query que devuelve array (.find) seguida de
+  # una verificacion truthy (if (schedules)). Un array vacio es truthy -> 200
+  # con data:[] en lugar de 404. Sin un fix explicito, esos 3 endpoints siguen
+  # reportando '200 OK con lista vacia' cuando el recurso no existe, igual que
+  # el bug original. schedule-job/detail.js NO aplica (ya usa findOne -> null).
+  - id: "LIVE-RISK-18"
+    severidad: "medium"
+    probabilidad: "high"
+    titulo: "Patron latente find()+truthy en 3 endpoints hermanos del fix sm2#8496"
+    descripcion: >
+      El handler de GET /api/live-stream/:id/schedule/:sid (sm2#8496) usaba
+      EventSchedule.find(...) seguido de `if (schedule)`. Un array vacio es
+      truthy en JS, asi que el handler devolvia 200 OK con data:[] en vez
+      de 404 NOT_FOUND cuando el sid no existia o el schedule estaba en el
+      pasado. El fix sm2#8496 corrige SOLO este endpoint. El autor lista en
+      la seccion 'Consideraciones' del PR otros 3 endpoints con el mismo
+      patron latente:
+        - src/server/routes/api/live-stream/schedule/index.js (lineas 41 y 139)
+        - src/server/routes/api/live-stream/schedule-job/getScheduleJobs.js:107
+        - src/server/routes/api/live-stream/routes-embed/api/live-stream/schedule.js:27
+      Estos 3 endpoints (fuera del scope de sm2#8496) probablemente replican
+      el mismo bug silencioso: un 'GET listado' que no encuentra nada
+      devuelve 200 con data:[], lo que enmascara errores aguas abajo y viola
+      la semantica REST. El cliente (coffee) que llama a estos endpoints
+      puede estar recibiendo 'OK con lista vacia' y mostrando 'no hay
+      schedules' cuando deberia mostrar 'endpoint roto / recurso no existe'.
+    detonador:
+      - "GET a cualquiera de los 3 endpoints listados con un filtro que no matchea"
+      - "En el caso de schedule/index.js: GET /schedule/ sin :sid (listado) con filtros que excluyen todo"
+      - "En el caso de schedule-job/getScheduleJobs.js: GET /schedule-job/ con filtros sin match (similar al actual TC-62 que ya tolera 200/404)"
+      - "En el caso de routes-embed/.../schedule.js: la ruta embebida con filtro sin match"
+    mitigacion: >
+      Mismo patron que sm2#8496: cambiar `if (X)` por `if (!_.isEmpty(X))`
+      en cada uno de los 3 handlers. Idealmente refactor a findOne() cuando
+      se espera un unico documento (imposible por contrato: el server expone
+      listas), o normalizar la respuesta para que `data` sea `null` en lugar
+      de `[]` cuando no hay resultados. Tambien considerar agregar
+      validacion de tipo: `Array.isArray(X) && X.length > 0`.
+    verificado_en_dev: >
+      2026-07-09 — TC-62 (GET /schedule-job/ con live id inexistente) YA
+      respondia 404 estricto, no 200 con data:[]. Es decir: el patron
+      latente del LIST endpoint con un id inexistente NO se manifiesta
+      en este escenario concreto (posiblemente Mongoose falla antes del
+      truthy check, o el handler tiene otra guarda). El code smell sigue
+      siendo valido para el caso 'live valido + filtro que no matchea',
+      no verificado. TC-71 (DETAIL /schedule-job/:sid con sid inexistente)
+      tambien responde 404 correcto — el detail ya usa otra logica.
+    archivos_afectados:
+      - "src/server/routes/api/live-stream/schedule/index.js (lineas 41 y 139)"
+      - "src/server/routes/api/live-stream/schedule-job/getScheduleJobs.js (linea 107)"
+      - "src/server/routes/api/live-stream/routes-embed/api/live-stream/schedule.js (linea 27)"
+    defectos_relacionados:
+      - "mediastream/sm2#8496 (fix del endpoint /schedule/:sid; el patron sigue latente en los 3 hermanos)"
+    prioridad_prueba: "SHOULD"
+    nota_industria: >
+      Smell recurrente en codigo JS que mezcla .find() (array) con .findOne()
+      (objeto|undefined) sin disciplina. La leccion del fix sm2#8496 es
+      replicable: la ausencia de _.isEmpty() en validaciones de 'recurso
+      encontrado' es una clase de bug detectable por linter (regla:
+      'never use bare truthy check on array-returning query').

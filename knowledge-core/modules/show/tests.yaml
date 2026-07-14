@@ -16,7 +16,7 @@ tests:
       validates: ["SHW-AC-1"]
       mitigates: []
       story: "US-012"
-      spec: "tests/smoke/show.smoke.spec.js"
+      spec: "tests/smoke/show/show.smoke.spec.js"
 
   - id: "SHW-TC-002"
     titulo: "Buscar por titulo reduce el listado de shows"
@@ -28,7 +28,7 @@ tests:
       validates: ["SHW-AC-2"]
       mitigates: []
       story: "US-012"
-      spec: "tests/regression/show-list.regression.spec.js"
+      spec: "tests/regression/show/show-list.regression.spec.js"
 
   - id: "SHW-TC-003"
     titulo: "Limpiar busqueda restaura el listado completo de shows"
@@ -40,7 +40,7 @@ tests:
       validates: ["SHW-AC-3"]
       mitigates: []
       story: "US-012"
-      spec: "tests/regression/show-list.regression.spec.js"
+      spec: "tests/regression/show/show-list.regression.spec.js"
 
   - id: "SHW-TC-004"
     titulo: "El panel de busqueda avanzada se abre y cierra"
@@ -52,7 +52,7 @@ tests:
       validates: ["SHW-AC-4"]
       mitigates: []
       story: "US-012"
-      spec: "tests/regression/show-list.regression.spec.js"
+      spec: "tests/regression/show/show-list.regression.spec.js"
 
   - id: "SHW-TC-005"
     titulo: "Save con season vacia muestra validacion en lugar de TypeError [prueba viva BUG #25]"
@@ -64,7 +64,7 @@ tests:
       validates: ["SHW-AC-12"]
       mitigates: ["SHW-RISK-001"]
       story: "US-015"
-      spec: "tests/regression/show-seasons.regression.spec.js"
+      spec: "tests/regression/show/show-seasons.regression.spec.js"
 
   - id: "SHW-TC-006"
     titulo: "POST season con titulo valido retorna 201 [prueba viva BUG #26]"
@@ -76,7 +76,7 @@ tests:
       validates: ["SHW-AC-13"]
       mitigates: ["SHW-RISK-002"]
       story: "US-015"
-      spec: "tests/regression/show-seasons.regression.spec.js"
+      spec: "tests/regression/show/show-seasons.regression.spec.js"
 
   # ---- Contratos HTTP (capa contract, blindaje contra drift de sm2) ----
   # Migrado de api_test_flow/tests/api/contract/show/show.contract.spec.js.
@@ -94,7 +94,7 @@ tests:
       validates: ["SHW-AC-1"]
       mitigates: []
       story: "US-015"
-      spec: "tests/api/contract/show.api.contract.spec.js"
+      spec: "tests/api/contract/show/show.api.contract.spec.js"
     # El handler sm2 hace .select() que por defecto retorna SOLO _id/title/type
     # (MINIMUM_FIELDS en src/server/routes/api/show/list.js). Los demas campos
     # solo llegan con ?fields=slug,...
@@ -109,6 +109,6 @@ tests:
       validates: ["SHW-AC-1"]
       mitigates: []
       story: "US-015"
-      spec: "tests/api/contract/show.api.contract.spec.js"
+      spec: "tests/api/contract/show/show.api.contract.spec.js"
     # El param all=true es la unica manera de incluir shows no-publish sin
     # actualizar cada uno via UI.

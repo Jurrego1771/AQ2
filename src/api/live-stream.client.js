@@ -132,6 +132,16 @@ class LiveStreamClient extends BaseClient {
   scheduleJob(id, scheduleJobId) {
     return this.get(`/${id}/schedule-job/${scheduleJobId}`);
   }
+  /**
+   * Detalle de un schedule via el endpoint singular /schedule/:sid.
+   * Distinto de /schedule-job/:sid: este es el que devuelve EventSchedule como
+   * array (ver src/server/routes/api/live-stream/schedule/detail.js). Antes del
+   * fix sm2#8496 un resultado [] respondia 200 con data:[] (truthy en JS); el
+   * fix usa _.isEmpty() y devuelve 404 NOT_FOUND cuando no hay resultados.
+   */
+  schedule(id, scheduleId) {
+    return this.get(`/${id}/schedule/${scheduleId}`);
+  }
   /** Crea un schedule (POST a /schedule-job/). */
   createScheduleJob(id, payload) {
     return this.post(`/${id}/schedule-job/`, payload);

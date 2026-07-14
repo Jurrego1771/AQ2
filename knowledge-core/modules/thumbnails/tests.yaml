@@ -17,7 +17,7 @@ tests:
       validates: ["THM-AC-1"]
       mitigates: []
       story: "US-006"
-      spec: "tests/regression/thumbnails.regression.spec.js"
+      spec: "tests/regression/media/thumbnails.regression.spec.js"
 
   - id: "THM-TC-2"
     titulo: "Subir una imagen agrega un thumbnail que persiste"
@@ -29,7 +29,7 @@ tests:
       validates: ["THM-AC-2"]
       mitigates: []
       story: "US-006"
-      spec: "tests/regression/thumbnails.regression.spec.js"
+      spec: "tests/regression/media/thumbnails.regression.spec.js"
 
   - id: "THM-TC-3"
     titulo: "Regenerar el preview encola un job y responde OK con jobId"
@@ -41,7 +41,7 @@ tests:
       validates: ["THM-AC-3"]
       mitigates: []
       story: "US-006"
-      spec: "tests/regression/thumbnails.regression.spec.js"
+      spec: "tests/regression/media/thumbnails.regression.spec.js"
 
   # ---- US-007: sprite/VTT de timeline ----
   - id: "THM-TC-4"
@@ -54,7 +54,7 @@ tests:
       validates: ["THM-AC-5", "THM-AC-6", "THM-AC-7"]
       mitigates: []
       story: "US-007"
-      spec: "tests/regression/thumbnails-sprite.regression.spec.js"
+      spec: "tests/regression/media/thumbnails-sprite.regression.spec.js"
 
   # ---- US-008: replace actualiza imagenes derivadas ----
   - id: "THM-TC-5"
@@ -67,7 +67,7 @@ tests:
       validates: ["THM-AC-8"]
       mitigates: []
       story: "US-008"
-      spec: "tests/regression/thumbnails-replace.regression.spec.js"
+      spec: "tests/regression/media/thumbnails-replace.regression.spec.js"
 
   - id: "THM-TC-6"
     titulo: "Replace regenera el sprite/VTT de timeline [prueba viva BUG]"
@@ -79,5 +79,5 @@ tests:
       validates: ["THM-AC-9"]
       mitigates: ["THM-RISK-1"]
       story: "US-008"
-      spec: "tests/regression/thumbnails-replace.regression.spec.js"
+      spec: "tests/regression/media/thumbnails-replace.regression.spec.js"
     # test.fail() en el spec: rojo esperado hasta corregir AQ2#16.

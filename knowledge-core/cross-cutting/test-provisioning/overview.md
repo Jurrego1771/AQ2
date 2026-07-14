@@ -349,7 +349,7 @@ Checklist al crear un fixture nuevo:
 - `src/fixtures/resource-cleaner.js` — cleaner best-effort
 - `src/fixtures/index.js` — fixtures (`liveStream`, `audioLiveStream`, etc.)
 - `src/api/{live-stream,media,ads}-factory.js` — factories de creación
-- `tests/api/resource-cleaner.api.spec.js` — LIVE-TC-14: prueba del cleaner
+- `tests/api/smoke/provisioning/resource-cleaner.api.spec.js` — LIVE-TC-14: prueba del cleaner
 - `knowledge-core/modules/live-stream/overview.md` — ejemplo de cascade
   verificada (`live-stream → schedule`)
 - `CLAUDE.md` § Entorno y sesión — storageState y `.auth/`

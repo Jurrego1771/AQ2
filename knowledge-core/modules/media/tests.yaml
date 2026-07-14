@@ -16,7 +16,7 @@ tests:
       validates: []
       mitigates: []
       story: "US-001"
-      spec: "tests/smoke/media.smoke.spec.js"
+      spec: "tests/smoke/media/media.smoke.spec.js"
 
   - id: "MED-TC-002"
     titulo: "Buscar por titulo filtra el listado a coincidencias"
@@ -28,7 +28,7 @@ tests:
       validates: ["MED-AC-1"]
       mitigates: []
       story: "US-001"
-      spec: "tests/regression/media-search.regression.spec.js"
+      spec: "tests/regression/media/media-search.regression.spec.js"
 
   - id: "MED-TC-003"
     titulo: "Busqueda sin coincidencias muestra el estado vacio"
@@ -40,7 +40,7 @@ tests:
       validates: ["MED-AC-2"]
       mitigates: []
       story: "US-001"
-      spec: "tests/regression/media-search.regression.spec.js"
+      spec: "tests/regression/media/media-search.regression.spec.js"
 
   - id: "MED-TC-004"
     titulo: "Limpiar la busqueda restaura el listado completo"
@@ -52,7 +52,7 @@ tests:
       validates: ["MED-AC-3"]
       mitigates: []
       story: "US-001"
-      spec: "tests/regression/media-search.regression.spec.js"
+      spec: "tests/regression/media/media-search.regression.spec.js"
 
   - id: "MED-TC-005"
     titulo: "El contador muestra 0 en una busqueda sin resultados [prueba viva BUG]"
@@ -64,7 +64,7 @@ tests:
       validates: ["MED-AC-5"]
       mitigates: ["MED-RISK-002"]
       story: "US-001"
-      spec: "tests/regression/media-search.regression.spec.js"
+      spec: "tests/regression/media/media-search.regression.spec.js"
     # test.fail() en el spec: rojo esperado hasta corregir AQ2#1.
 
   - id: "MED-TC-006"
@@ -77,7 +77,7 @@ tests:
       validates: ["MED-AC-4"]
       mitigates: ["MED-RISK-003"]
       story: "US-001"
-      spec: "tests/regression/media-search.regression.spec.js"
+      spec: "tests/regression/media/media-search.regression.spec.js"
     # test.fail() en el spec: rojo esperado hasta corregir AQ2#2.
 
   - id: "MED-TC-007"
@@ -90,7 +90,7 @@ tests:
       validates: ["MED-AC-6"]
       mitigates: []
       story: "US-002"
-      spec: "tests/regression/media-list.regression.spec.js"
+      spec: "tests/regression/media/media-list.regression.spec.js"
 
   - id: "MED-TC-008"
     titulo: "Quitar el filtro restaura el listado completo"
@@ -102,7 +102,7 @@ tests:
       validates: ["MED-AC-7"]
       mitigates: []
       story: "US-002"
-      spec: "tests/regression/media-list.regression.spec.js"
+      spec: "tests/regression/media/media-list.regression.spec.js"
 
   - id: "MED-TC-009"
     titulo: "Cambiar items por pagina a 48 muestra mas de una pagina de 12"
@@ -114,7 +114,7 @@ tests:
       validates: ["MED-AC-8"]
       mitigates: []
       story: "US-002"
-      spec: "tests/regression/media-list.regression.spec.js"
+      spec: "tests/regression/media/media-list.regression.spec.js"
 
   - id: "MED-TC-010"
     titulo: "Next avanza skip en la URL y muestra el resto"
@@ -126,7 +126,7 @@ tests:
       validates: ["MED-AC-9"]
       mitigates: []
       story: "US-002"
-      spec: "tests/regression/media-list.regression.spec.js"
+      spec: "tests/regression/media/media-list.regression.spec.js"
 
   - id: "MED-TC-011"
     titulo: "El filtro activo se refleja en la URL [prueba viva BUG]"
@@ -138,7 +138,7 @@ tests:
       validates: ["MED-AC-10"]
       mitigates: ["MED-RISK-006"]
       story: "US-002"
-      spec: "tests/regression/media-list.regression.spec.js"
+      spec: "tests/regression/media/media-list.regression.spec.js"
     # test.fail() en el spec: rojo esperado hasta corregir AQ2#11.
 
   - id: "MED-TC-012"
@@ -151,7 +151,7 @@ tests:
       validates: ["MED-AC-11"]
       mitigates: []
       story: "US-003"
-      spec: "tests/regression/media-detail.regression.spec.js"
+      spec: "tests/regression/media/media-detail.regression.spec.js"
 
   - id: "MED-TC-013"
     titulo: "Editar descripcion y guardar persiste (verificado por API)"
@@ -163,7 +163,7 @@ tests:
       validates: ["MED-AC-12"]
       mitigates: ["MED-RISK-007"]
       story: "US-003"
-      spec: "tests/regression/media-detail.regression.spec.js"
+      spec: "tests/regression/media/media-detail.regression.spec.js"
     # Self-contained: fixture transcodedMedia (ingesta remota + gate transcoding + cleanup).
 
   # ---- US-004: Subtitulos ----
@@ -177,7 +177,7 @@ tests:
       validates: ["MED-AC-13", "MED-AC-14"]
       mitigates: []
       story: "US-004"
-      spec: "tests/regression/media-subtitles.regression.spec.js"
+      spec: "tests/regression/media/media-subtitles.regression.spec.js"
 
   - id: "MED-TC-020"
     titulo: "La generacion IA de subtitulo exige nombre + idioma principal"
@@ -189,7 +189,7 @@ tests:
       validates: ["MED-AC-15"]
       mitigates: []
       story: "US-004"
-      spec: "tests/regression/media-subtitles.regression.spec.js"
+      spec: "tests/regression/media/media-subtitles.regression.spec.js"
 
   # ---- US-005: Ad Markers ----
   - id: "MED-TC-014"
@@ -202,7 +202,7 @@ tests:
       validates: ["MED-AC-17"]
       mitigates: []
       story: "US-005"
-      spec: "tests/regression/media-ad-markers.regression.spec.js"
+      spec: "tests/regression/media/media-ad-markers.regression.spec.js"
 
   - id: "MED-TC-015"
     titulo: "Un tiempo mayor a la duracion es rechazado sin escritura"
@@ -214,7 +214,7 @@ tests:
       validates: ["MED-AC-18"]
       mitigates: []
       story: "US-005"
-      spec: "tests/regression/media-ad-markers.regression.spec.js"
+      spec: "tests/regression/media/media-ad-markers.regression.spec.js"
 
   - id: "MED-TC-016"
     titulo: "Crear un ad marker en un tiempo valido lo persiste (verificado por API)"
@@ -226,7 +226,7 @@ tests:
       validates: ["MED-AC-16"]
       mitigates: []
       story: "US-005"
-      spec: "tests/regression/media-ad-markers.regression.spec.js"
+      spec: "tests/regression/media/media-ad-markers.regression.spec.js"
     # Self-contained: fixture transcodedMedia (cleanup del media completo).
 
   - id: "MED-TC-017"
@@ -239,7 +239,7 @@ tests:
       validates: ["MED-AC-19"]
       mitigates: ["MED-RISK-009"]
       story: "US-005"
-      spec: "tests/regression/media-ad-markers.regression.spec.js"
+      spec: "tests/regression/media/media-ad-markers.regression.spec.js"
     # test.fail() en el spec: rojo esperado hasta corregir AQ2#15.
 
   - id: "MED-TC-018"
@@ -252,7 +252,7 @@ tests:
       validates: ["MED-AC-20"]
       mitigates: ["MED-RISK-008"]
       story: "US-005"
-      spec: "tests/regression/media-ad-markers.regression.spec.js"
+      spec: "tests/regression/media/media-ad-markers.regression.spec.js"
     # test.fail() en el spec: rojo esperado hasta corregir AQ2#14.
 
   # ---- US-016: Consistencia de estado Published ----
@@ -266,7 +266,7 @@ tests:
       validates: ["MED-AC-21"]
       mitigates: []
       story: "US-016"
-      spec: "tests/regression/media-publish-consistency.regression.spec.js"
+      spec: "tests/regression/media/media-publish-consistency.regression.spec.js"
     # Self-contained: fixture transcodedMedia. Verificado en vivo (2026-07-03):
     # no se reprodujo el reporte de desincronizacion; test verde, protege el
     # comportamiento. Gap de testabilidad relacionado: AQ2#35 (sin marca sm:
@@ -284,7 +284,7 @@ tests:
       validates: ["MED-AC-22"]
       mitigates: ["MED-RISK-010"]
       story: "US-017"
-      spec: "tests/regression/media-show-picker.regression.spec.js"
+      spec: "tests/regression/media/media-show-picker.regression.spec.js"
     # Contrato de API: defensa mas directa contra la causa raiz (all=true).
 
   - id: "MED-TC-023"
@@ -297,7 +297,7 @@ tests:
       validates: ["MED-AC-22"]
       mitigates: ["MED-RISK-010"]
       story: "US-017"
-      spec: "tests/regression/media-show-picker.regression.spec.js"
+      spec: "tests/regression/media/media-show-picker.regression.spec.js"
     # Deriva del entorno los titulos exclusivos de shows borrados (no hardcodea
     # un titulo); verificado en vivo (2026-07-03), test verde (fix ya en dev).
 
@@ -312,7 +312,7 @@ tests:
       validates: ["MED-AC-23"]
       mitigates: []
       story: "US-019"
-      spec: "tests/regression/changed-by-other-user-alert.regression.spec.js"
+      spec: "tests/regression/live-stream/changed-by-other-user-alert.regression.spec.js"
     # Verificado en vivo con dos sesiones reales antes de escribir el test.
     # Requiere TEST_USER2_DEV/TEST_PASS2_DEV en .env (se skipea si faltan).
     # Ver cross-cutting/changed-alert/overview.md.
@@ -334,7 +334,7 @@ tests:
       validates: ["MED-AC-1"]
       mitigates: []
       story: "US-006"
-      spec: "tests/api/contract/media.api.contract.spec.js"
+      spec: "tests/api/contract/media/media.api.contract.spec.js"
     # Blindaje contra drift silencioso de sm2: si sm2 cambia un campo de POST /api/media,
     # este spec rompe rapido en CI (no en runtime de cliente).
 
@@ -348,7 +348,7 @@ tests:
       validates: ["MED-AC-1"]
       mitigates: []
       story: "US-006"
-      spec: "tests/api/contract/media.api.contract.spec.js"
+      spec: "tests/api/contract/media/media.api.contract.spec.js"
     # Consistency check: el _id devuelto por GET debe matchear el id creado por POST.
 
   - id: "MED-TC-027"
@@ -361,7 +361,7 @@ tests:
       validates: ["MED-AC-2"]
       mitigates: []
       story: "US-006"
-      spec: "tests/api/contract/media.api.contract.spec.js"
+      spec: "tests/api/contract/media/media.api.contract.spec.js"
     # Solo se valida la forma (data = array, status OK); no se asume cantidad > 0
     # por portabilidad cross-cuenta.
 
@@ -375,7 +375,7 @@ tests:
       validates: ["MED-AC-2"]
       mitigates: []
       story: "US-006"
-      spec: "tests/api/contract/media.api.contract.spec.js"
+      spec: "tests/api/contract/media/media.api.contract.spec.js"
     # Caso especial: el handler sm2 devuelve `data: <number>` cuando viene
     # `?count=true`. Esquema separado para no forzar array.
 

@@ -41,6 +41,26 @@ const DELETERS = {
     if (!liveId || !quizId) return { status: () => 0, ok: () => false };
     return api.delete(`/api/live-stream/${liveId}/quizzes/${quizId}`);
   },
+  // Show: id simple (DELETE /api/show/:id). En este build de sm2 el endpoint
+  // público observable es /api/show/list; POST/GET-by-id/DELETE no están
+  // registrados en sm2/app.js — el deleter se incluye para que specs portados
+  // desde api_test_flow funcionen cuando sm2 exponga esos endpoints.
+  show: (api, id) => api.delete(`/api/show/${id}`),
+  // Season: id compuesto "showId/seasonId" (DELETE /api/show/:showId/season/:seasonId).
+  season: (api, compositeId) => {
+    const [showId, seasonId] = String(compositeId).split('/');
+    if (!showId || !seasonId) return { status: () => 0, ok: () => false };
+    return api.delete(`/api/show/${showId}/season/${seasonId}`);
+  },
+  // Episode: id compuesto "showId/seasonId/episodeId"
+  // (DELETE /api/show/:showId/season/:seasonId/episode/:episodeId).
+  episode: (api, compositeId) => {
+    const [showId, seasonId, episodeId] = String(compositeId).split('/');
+    if (!showId || !seasonId || !episodeId) return { status: () => 0, ok: () => false };
+    return api.delete(
+      `/api/show/${showId}/season/${seasonId}/episode/${episodeId}`
+    );
+  },
 }
 
 /**

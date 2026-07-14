@@ -16,7 +16,7 @@ tests:
       validates: ["QUIZ-AC-1", "QUIZ-AC-2"]
       mitigates: ["QUIZ-RISK-2"]
       story: "US-020"
-      spec: "tests/api/quiz-pagination.api.spec.js"
+      spec: "tests/api/smoke/quiz/quiz-pagination.api.spec.js"
     # Self-contained: fixture liveStream. Cubre modo legado (sin params),
     # paginas intermedias/ultima, pagina fuera de rango (200 vacio) y clamp
     # de items_per_page a 100. Usa expect.poll: el entorno dev muestra
@@ -32,7 +32,7 @@ tests:
       validates: ["QUIZ-AC-1", "QUIZ-AC-2"]
       mitigates: []
       story: "US-020"
-      spec: "tests/api/quiz-pagination.api.spec.js"
+      spec: "tests/api/smoke/quiz/quiz-pagination.api.spec.js"
     # Self-contained: fixture transcodedMedia (waitTranscoding:false, no
     # necesita el gate de transcoding para este test). Los quizzes se crean
     # deliberadamente FUERA de orden de creacion (300s, 100s, 200s) para que
@@ -49,7 +49,7 @@ tests:
       validates: ["QUIZ-AC-3"]
       mitigates: []
       story: "US-020"
-      spec: "tests/api/quiz-pagination.api.spec.js"
+      spec: "tests/api/smoke/quiz/quiz-pagination.api.spec.js"
     # Self-contained: fixture transcodedMedia. Prueba el limite exacto (no
     # solo el caso obvio): a distancia estrictamente menor al intervalo
     # rechaza 400, a distancia EXACTAMENTE igual acepta 201 (frontera

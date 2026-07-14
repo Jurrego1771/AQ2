@@ -8,11 +8,26 @@
 **Actualización 2026-07-09** (sesión de cobertura de secciones inexploradas):
 - Cosecha de marcas del detalle en dev v7.0.75 → 207 nodos / 180 marcas únicas.
 - POM nuevo del detalle: `src/pages/live-stream-detail.page.js`.
-- Spec nuevo: `tests/regression/live-stream-detail-unexplored.regression.spec.js`
+- Spec nuevo: `tests/regression/live-stream/live-stream-detail-unexplored.regression.spec.js`
   (LIVE-TC-116..123; 3 verdes + 5 vivos por issues AQ2#50/#51/#52/#53/#54).
-- Riesgos nuevos: `LIVE-RISK-13` (TypeError consola), `LIVE-RISK-14` (404 `/records`),
+- Riesgos nuevos: `LIVE-RISK-17` (TypeError consola), `LIVE-RISK-14` (404 `/records`),
   `LIVE-RISK-15` (AI Live Transcription sin sm:), `LIVE-RISK-16` (Playout y Next Settings
   sin sm:).
+
+**Actualización 2026-07-09** (cobertura del fix sm2#8496 /schedule/:sid):
+- Tests nuevos `LIVE-TC-124..127` en `tests/api/integration/live-stream/live-stream-schedule-edge.integration.spec.js`
+  (happy path + 2 casos del fix + auth). Método nuevo `schedule(id, sid)` en
+  `src/api/live-stream.client.js` para el endpoint singular `/schedule/:sid`
+  (distinto de `/schedule-job/:sid`, que ya tenía `scheduleJob()`).
+- Apretados al nuevo comportamiento: `LIVE-TC-62` y `LIVE-TC-71` antes toleraban
+  `[200, 404]` (cubrían el bug latente como aceptable); ahora assert `404`
+  estricto. Verificado en dev que ambos casos ya devuelven 404 (el patrón
+  latente de `LIVE-RISK-18` no se manifiesta en estos 2 escenarios concretos,
+  aunque el code smell sigue siendo válido para filtros que no matchean).
+- Riesgo nuevo `LIVE-RISK-18`: documenta el patrón latente `find()+truthy` en
+  3 endpoints hermanos del fix (schedule/index.js, schedule-job/getScheduleJobs.js,
+  routes-embed/api/live-stream/schedule.js) — fuera del scope del PR pero
+  probablemente con el mismo bug silencioso.
 
 Prefijo de IDs: **LIVE** · Rutas: listado `/live-stream` (vista `live_streams.coffee`),
 detalle/creación `/live-stream/:id` y `/live-stream/new[?type=audio]` (vista

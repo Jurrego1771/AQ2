@@ -13,7 +13,7 @@ tests:
       validates: ["CAT-AC-1"]
       mitigates: ["CAT-RISK-1", "CAT-RISK-3"]
       story: "US-035"
-      spec: "tests/api/contract/category.api.contract.spec.js"
+      spec: "tests/api/contract/category/category.api.contract.spec.js"
     # Migrado de api_test_flow/tests/api/smoke/category/category-crud.smoke.spec.js.
     # Verifica que el shape envelope jsonp {status:'OK', data:[...]} se mantiene
     # y que cada item tiene al menos _id.
@@ -28,7 +28,7 @@ tests:
       validates: ["CAT-AC-1"]
       mitigates: ["CAT-RISK-2"]
       story: "US-035"
-      spec: "tests/api/contract/category.api.contract.spec.js"
+      spec: "tests/api/contract/category/category.api.contract.spec.js"
     # Cobertura explicita del negativo: distingue 403 INVALID_TOKEN de un 5xx
     # que indicaria fuga de error.
 
@@ -42,7 +42,7 @@ tests:
       validates: ["CAT-AC-1"]
       mitigates: []
       story: "US-035"
-      spec: "tests/api/contract/category.api.contract.spec.js"
+      spec: "tests/api/contract/category/category.api.contract.spec.js"
     # Tomamos el _id del primer item del listado, asi evitamos hardcodear un
     # id que podria no existir en otras cuentas.
 
@@ -56,4 +56,4 @@ tests:
       validates: ["CAT-AC-1"]
       mitigates: []
       story: "US-035"
-      spec: "tests/api/contract/category.api.contract.spec.js"
+      spec: "tests/api/contract/category/category.api.contract.spec.js"

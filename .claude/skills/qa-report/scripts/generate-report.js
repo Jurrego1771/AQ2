@@ -210,6 +210,17 @@ function renderFindings(findings, evNum) {
     .join('');
 }
 
+function renderCoverageGaps(gaps) {
+  if (!gaps.length) return '';
+  return gaps
+    .map((g) => `<div class="gap">
+      <h3><span class="chip">gap</span> ${esc(g.id || '')} — ${esc(g.area || '')}</h3>
+      ${g.why ? `<div class="desc"><b>Por qué no se cubre:</b> ${mdLite(g.why)}</div>` : ''}
+      ${g.mitigation ? `<div class="rec"><b>Cómo cubrirlo:</b> ${mdLite(g.mitigation)}</div>` : ''}
+    </div>`)
+    .join('');
+}
+
 /** Galería grande y numerada (cada evidencia una vez). `registry` = [{file,caption}]. */
 function renderGallery(registry, baseDir, embed, outDir) {
   if (!registry.length) return '';
@@ -272,6 +283,7 @@ function buildHtml(m, opts) {
   tests.forEach((t) => { counts[normStatus(t.status)] += 1; });
   const total = tests.length;
   const findings = Array.isArray(m.findings) ? m.findings : [];
+  const gaps = Array.isArray(m.coverageGaps) ? m.coverageGaps : [];
   const recs = Array.isArray(m.recommendations) ? m.recommendations : [];
   const scope = Array.isArray(m.scope) ? m.scope : [];
   const logs = Array.isArray(m.logs) ? m.logs : [];
@@ -305,6 +317,7 @@ function buildHtml(m, opts) {
 
   ${sec('Resumen', renderSummary(counts, total, m.summary))}
   ${sec('Qué se probó', scope.length ? `<ul class="scope">${scope.map((s) => `<li>${mdLite(s)}</li>`).join('')}</ul>` : '')}
+  ${sec('Qué NO se cubrió (huecos de cobertura)', renderCoverageGaps(gaps), gaps.length || null)}
   ${sec('Resultados de los tests', renderTests(tests, num), total || null)}
   ${sec('Hallazgos', renderFindings(findings, num), findings.length || null)}
   ${sec('Recomendaciones', recs.length ? `<ol class="recs">${recs.map((r) => `<li>${mdLite(r)}</li>`).join('')}</ol>` : '')}
@@ -350,8 +363,9 @@ function main() {
   const n = manifest.tests.length;
   const c = { passed: 0, failed: 0, skipped: 0, xfail: 0 };
   manifest.tests.forEach((t) => { c[normStatus(t.status)] += 1; });
+  const gaps = (manifest.coverageGaps || []).length;
   console.log(`qa-report: ${outPath}`);
-  console.log(`  ${n} tests — ${c.passed} passed, ${c.failed} failed, ${c.xfail} rojo-esperado, ${c.skipped} skipped · ${(manifest.findings || []).length} hallazgos`);
+  console.log(`  ${n} tests — ${c.passed} passed, ${c.failed} failed, ${c.xfail} rojo-esperado, ${c.skipped} skipped · ${(manifest.findings || []).length} hallazgos · ${gaps} huecos de cobertura`);
 }
 
 main();

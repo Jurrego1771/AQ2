@@ -48,4 +48,60 @@ function categoryFactory(overrides = {}) {
   };
 }
 
-module.exports = { mediaItem, user, categoryFactory, faker };
+/**
+ * Show payload — base completa con type aleatorio + genre aleatorio.
+ * Pensado para specs de API (POST /api/show).
+ */
+/** @param {Partial<Record<string, any>>} [overrides] */
+function showPayload(overrides = {}) {
+  const validTypes = ['tvshow', 'radioshow', 'podcast', 'mixed'];
+  const validGenres = [
+    'action', 'adventure', 'animation', 'comedy', 'drama', 'documentary',
+    'education', 'fantasy', 'music', 'news', 'sports & recreation', 'talk show',
+    'technology', 'thriller', 'tv & film',
+  ];
+  return {
+    title: `[QA-AUTO] Show-${faker.string.alphanumeric(6)}`,
+    description: faker.lorem.paragraph(),
+    type: faker.helpers.arrayElement(validTypes),
+    genres: [faker.helpers.arrayElement(validGenres)],
+    is_published: false,
+    first_emision: faker.date.past().toISOString(),
+    ...overrides,
+  };
+}
+
+/** Show mínimo: solo `title` + `type` (campos required). */
+/** @param {Partial<Record<string, any>>} [overrides] */
+function showMinimalPayload(overrides = {}) {
+  return {
+    title: `[QA-AUTO] Show-Min-${faker.string.alphanumeric(6)}`,
+    type: 'tvshow',
+    ...overrides,
+  };
+}
+
+/** Show completo: type fijo + genres + is_published + descripción larga. */
+/** @param {Partial<Record<string, any>>} [overrides] */
+function showFullPayload(overrides = {}) {
+  return {
+    title: `[QA-AUTO] Show-Full-${faker.string.alphanumeric(6)}`,
+    description: faker.lorem.paragraphs(2),
+    type: 'podcast',
+    genres: ['music', 'education'],
+    is_published: true,
+    first_emision: faker.date.past().toISOString(),
+    rating: 7,
+    ...overrides,
+  };
+}
+
+module.exports = {
+  mediaItem,
+  user,
+  categoryFactory,
+  showPayload,
+  showMinimalPayload,
+  showFullPayload,
+  faker,
+};

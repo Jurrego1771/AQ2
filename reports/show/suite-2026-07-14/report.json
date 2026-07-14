@@ -1,0 +1,576 @@
+{
+  "meta": {
+    "title": "Informe de QA — Show (corrida de suite)",
+    "subtitle": "Inventario de todos los tests de show — suite verde tras corregir la autenticación por API token",
+    "module": "show",
+    "environment": "dev · https://dev.platform.mediastre.am",
+    "date": "2026-07-14",
+    "tester": "Julio Urrego"
+  },
+  "summary": "Corrida completa de la suite **show** (`npx playwright test show`) **después de corregir la causa raíz** de los 53 fallos previos.\n\n**Veredicto: suite verde — 77 passed, 0 failed, 2 rojo-esperado (bugs vivos #25/#26), 5 skipped por precondición.**\n\n**Causa raíz encontrada y corregida:** el CRUD de `/api/show` (y `/api/media`) se autentica con el header **`X-API-TOKEN`** de cuenta, no con la cookie de sesión del login UI. La suite mandaba la cookie -> **401** en 45 casos. El token ya existía en `.env` (`API_TOKEN`) pero **nadie lo consumía**: `env.js` no lo exponía y el fixture `api` solo usaba `storageState`.\n\n**Fix aplicado:** (1) `env.apiToken` en `env.js`; (2) nuevo fixture **`apiToken`** (APIRequestContext con `X-API-TOKEN`); (3) specs show-API repuntados de `api` a `apiToken`; (4) el `beforeAll` de episodes ahora **crea 2 medias dedicadas** (self-contained) en vez de cazar medias libres del listado (que en cuentas con data real ya están ocupadas -> `found 0`).",
+  "scope": [
+    "**UI Smoke** — carga del módulo Show para usuario autenticado.",
+    "**UI Listado** — búsqueda básica, limpiar búsqueda, panel de búsqueda avanzada (toggle).",
+    "**UI Seasons** — regresión de temporadas en el detalle.",
+    "**API Show CRUD** — create/read/delete + validaciones (contra endpoints no expuestos en este build).",
+    "**API Seasons** — CRUD de temporadas (`/api/show/:id/season`).",
+    "**API Episodes / Recommended / Contract** — estructura y casos negativos."
+  ],
+  "tests": [
+    {
+      "id": "SHW-TC-001",
+      "title": "el módulo Show carga para un usuario autenticado",
+      "layer": "smoke",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-CON-001",
+      "title": "TC_CON_SHW_001 POST /api/show response schema",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-CON-002",
+      "title": "TC_CON_SHW_002 GET /api/show/:id response schema",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-LST",
+      "title": "SHW-TC-LST GET /api/show/list devuelve items con shape minimo (id/title/type)",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-LST-ALL",
+      "title": "SHW-TC-LST-ALL GET /api/show/list?all=true bypasea filtro de status",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-EP-CRT-001",
+      "title": "SHW-TC-EP-CRT-001 POST episode valid",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-EP-CRT-002",
+      "title": "SHW-TC-EP-CRT-002 with optional fields",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-EP-CRT-003",
+      "title": "SHW-TC-EP-CRT-003 order auto assigned",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-EP-CRT-VAL-001",
+      "title": "SHW-TC-EP-CRT-VAL-001 missing title",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-EP-CRT-VAL-002",
+      "title": "SHW-TC-EP-CRT-VAL-002 missing content",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-EP-CRT-NEG-001",
+      "title": "SHW-TC-EP-CRT-NEG-001 season not found",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-EP-CRT-AUTH-001",
+      "title": "SHW-TC-EP-CRT-AUTH-001 no token",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-EP-LST-001",
+      "title": "SHW-TC-EP-LST-001 valid",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-EP-LST-002",
+      "title": "SHW-TC-EP-LST-002 empty season",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-EP-LST-003",
+      "title": "SHW-TC-EP-LST-003 with limit",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-EP-LST-AUTH-001",
+      "title": "SHW-TC-EP-LST-AUTH-001 no token",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-EP-GET-001",
+      "title": "SHW-TC-EP-GET-001 valid",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-EP-GET-NEG-001",
+      "title": "SHW-TC-EP-GET-NEG-001 not found",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-EP-GET-AUTH-001",
+      "title": "SHW-TC-EP-GET-AUTH-001 no token",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-EP-UPD-001",
+      "title": "SHW-TC-EP-UPD-001 update title",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-EP-UPD-002",
+      "title": "SHW-TC-EP-UPD-002 update description",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-EP-UPD-003",
+      "title": "SHW-TC-EP-UPD-003 update persists",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-EP-UPD-NEG-001",
+      "title": "SHW-TC-EP-UPD-NEG-001 not found",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-EP-UPD-AUTH-001",
+      "title": "SHW-TC-EP-UPD-AUTH-001 no token",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-EP-DEL-001",
+      "title": "SHW-TC-EP-DEL-001 valid",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-EP-DEL-NEG-001",
+      "title": "SHW-TC-EP-DEL-NEG-001 not found",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-EP-DEL-AUTH-001",
+      "title": "SHW-TC-EP-DEL-AUTH-001 no token",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-REC-001",
+      "title": "SHW-TC-REC-001 UPDATE ShowsCriteriaEnabled",
+      "layer": "api",
+      "status": "skipped"
+    },
+    {
+      "id": "SHW-TC-REC-002",
+      "title": "SHW-TC-REC-002 UPDATE ShowsCriteriaDisabled",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-REC-010",
+      "title": "SHW-TC-REC-010 UPDATE CategoriesCriteriaEnabled",
+      "layer": "api",
+      "status": "skipped"
+    },
+    {
+      "id": "SHW-TC-REC-011",
+      "title": "SHW-TC-REC-011 UPDATE CategoriesSortByDateCreated",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-REC-020",
+      "title": "SHW-TC-REC-020 UPDATE GenresCriteriaEnabled",
+      "layer": "api",
+      "status": "skipped"
+    },
+    {
+      "id": "SHW-TC-REC-021",
+      "title": "SHW-TC-REC-021 UPDATE GenresMultipleValues",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-REC-030",
+      "title": "SHW-TC-REC-030 UPDATE EpisodesCriteriaEnabled",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-REC-031",
+      "title": "SHW-TC-REC-031 UPDATE EpisodesCriteriaDisabled",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-REC-040",
+      "title": "SHW-TC-REC-040 UPDATE AllCriteriaEnabled",
+      "layer": "api",
+      "status": "skipped"
+    },
+    {
+      "id": "SHW-TC-REC-041",
+      "title": "SHW-TC-REC-041 UPDATE AllCriteriaDisabled",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-REC-050",
+      "title": "SHW-TC-REC-050 GET RecommendedShowsPersistedAfterUpdate",
+      "layer": "api",
+      "status": "skipped"
+    },
+    {
+      "id": "SHW-TC-REC-051",
+      "title": "SHW-TC-REC-051 GET RecommendedShowsCriteriaStructure",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-REC-NEG-001",
+      "title": "SHW-TC-REC-NEG-001 UPDATE InvalidShowIdInCriteria",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-REC-NEG-002",
+      "title": "SHW-TC-REC-NEG-002 UPDATE InvalidGenreInCriteria",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-REC-NEG-003",
+      "title": "SHW-TC-REC-NEG-003 UPDATE EmptyShowsArrayWhenEnabled",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-REC-NEG-004",
+      "title": "SHW-TC-REC-NEG-004 UPDATE MultipleShowsInCriteria",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-REC-NEG-005",
+      "title": "SHW-TC-REC-NEG-005 UPDATE NonExistentShowTarget",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-INT-LST-001",
+      "title": "SHW-TC-SS-INT-LST-001 list valid",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-INT-LST-002",
+      "title": "SHW-TC-SS-INT-LST-002 empty show",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-INT-LST-003",
+      "title": "SHW-TC-SS-INT-LST-003 with limit",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-INT-LST-NEG-001",
+      "title": "SHW-TC-SS-INT-LST-NEG-001 show not found",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-INT-LST-AUTH-001",
+      "title": "SHW-TC-SS-INT-LST-AUTH-001 no token",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-INT-GET-001",
+      "title": "SHW-TC-SS-INT-GET-001 valid",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-INT-GET-002",
+      "title": "SHW-TC-SS-INT-GET-002 with populate",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-INT-GET-NEG-001",
+      "title": "SHW-TC-SS-INT-GET-NEG-001 not found",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-INT-GET-AUTH-001",
+      "title": "SHW-TC-SS-INT-GET-AUTH-001 no token",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-INT-UPD-001",
+      "title": "SHW-TC-SS-INT-UPD-001 update title",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-INT-UPD-002",
+      "title": "SHW-TC-SS-INT-UPD-002 update description",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-INT-UPD-003",
+      "title": "SHW-TC-SS-INT-UPD-003 update persists",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-INT-UPD-NEG-001",
+      "title": "SHW-TC-SS-INT-UPD-NEG-001 not found",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-INT-UPD-AUTH-001",
+      "title": "SHW-TC-SS-INT-UPD-AUTH-001 no token",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-INT-DEL-001",
+      "title": "SHW-TC-SS-INT-DEL-001 valid",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-INT-DEL-002",
+      "title": "SHW-TC-SS-INT-DEL-002 confirm gone",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-INT-DEL-NEG-001",
+      "title": "SHW-TC-SS-INT-DEL-NEG-001 not found",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-INT-DEL-AUTH-001",
+      "title": "SHW-TC-SS-INT-DEL-AUTH-001 no token",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-CRUD-001",
+      "title": "SHW-TC-CRUD-001 POST CreateMinimal",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-CRUD-010",
+      "title": "SHW-TC-CRUD-010 GET ExistingShowDetail",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-CRUD-NEG-010",
+      "title": "SHW-TC-CRUD-NEG-010 GET NonExistentShow",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-CRUD-050",
+      "title": "SHW-TC-CRUD-050 DELETE Success",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-CRUD-NEG-002",
+      "title": "SHW-TC-CRUD-NEG-002 POST MissingTitle",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-001",
+      "title": "SHW-TC-SS-001 POST season valid",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-002",
+      "title": "SHW-TC-SS-002 POST season with optional fields",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-003",
+      "title": "SHW-TC-SS-003 POST season order auto-assigned",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-004",
+      "title": "SHW-TC-SS-004 POST season show linked in response",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-AUTH-001",
+      "title": "SHW-TC-SS-AUTH-001 POST season no token",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-AUTH-002",
+      "title": "SHW-TC-SS-AUTH-002 POST season invalid token",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-VAL-001",
+      "title": "SHW-TC-SS-VAL-001 POST season missing title",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-VAL-002",
+      "title": "SHW-TC-SS-VAL-002 POST season empty title",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-ERR-001",
+      "title": "SHW-TC-SS-ERR-001 POST season show not found",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-SS-ERR-002",
+      "title": "SHW-TC-SS-ERR-002 POST season invalid show id",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "MED-TC-022",
+      "title": "GET /api/show/list filtra por status: sin all=true solo OK, con all=true incluye DELETE",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "MED-TC-023",
+      "title": "el selector de Show del detalle no incluye shows borrados",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-002",
+      "title": "búsqueda por título reduce el listado",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-003",
+      "title": "limpiar búsqueda restaura el listado completo",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "SHW-TC-004",
+      "title": "el panel de búsqueda avanzada se abre con el botón",
+      "layer": "regression",
+      "status": "passed",
+      "notes": "Falso positivo verificado en vivo (2026-07-14): el producto funciona; asercion fragil."
+    },
+    {
+      "id": "SHW-TC-005",
+      "title": "Save con season vacía muestra validación en lugar de lanzar TypeError [BUG #25]",
+      "layer": "regression",
+      "status": "xfail",
+      "notes": "Rojo esperado: test.fail vivo de bug conocido (#25/#26)."
+    },
+    {
+      "id": "SHW-TC-006",
+      "title": "POST /show/:id/season debe retornar 201 al guardar con título válido [BUG #26]",
+      "layer": "regression",
+      "status": "xfail",
+      "notes": "Rojo esperado: test.fail vivo de bug conocido (#25/#26)."
+    }
+  ],
+  "findings": [
+    {
+      "id": "SHW-TC-004",
+      "title": "Falso positivo: aserción de visibilidad del panel de búsqueda avanzada",
+      "severity": "info",
+      "type": "test-flakiness",
+      "description": "`SHW-TC-004` falla de forma intermitente en `not.toBeVisible()`. **Verificado en vivo (2026-07-14): el producto funciona** — el panel abre/cierra bien y no persiste. Es una carrera entre la aserción y el render async del contenedor legacy. En esta corrida pasó. No es bug de front.",
+      "recommendation": "Endurecer: validar el toggle (click->visible / cancel->oculto) en vez de la visibilidad inicial del contenedor."
+    },
+    {
+      "id": "AUTH-FIX",
+      "title": "Los endpoints show-API exigen X-API-TOKEN, no la cookie de sesión",
+      "severity": "info",
+      "type": "infra",
+      "description": "El CRUD de `/api/show` y `/api/media` acepta el header `X-API-TOKEN` de cuenta y rechaza (401) la cookie del login UI. Antes bloqueaba 45 tests. Resuelto con el fixture `apiToken`. La cuenta usa el nuevo módulo de shows (`activate_new_show_module`), lo que explica el gateo de la auth de sesión.",
+      "recommendation": "Usar el fixture `apiToken` para todo endpoint que exija token de cuenta; mantener `api` (sesión) para lo autorizado por cookie."
+    }
+  ],
+  "coverageGaps": [
+    {
+      "id": "GAP-KNOWN-BUGS",
+      "area": "2 bugs vivos de seasons (UI regression)",
+      "why": "`SHW-TC-005` (#25: saveSeason lanza TypeError en vez de validación) y `SHW-TC-006` (#26: POST season 500/ERR_FAILED) son `test.fail` -> rojo-esperado hasta que dev los corrija.",
+      "mitigation": "Promover #25/#26 y repuntar los test.fail cuando se cierren."
+    },
+    {
+      "id": "GAP-SKIPS",
+      "area": "5 skips por precondición",
+      "why": "prodGuard (`env.isProd`) y algún caso condicionado por datos/entorno. No son fallos.",
+      "mitigation": "Correctos; se dejan."
+    }
+  ],
+  "recommendations": [
+    "Endurecer `SHW-TC-004` (falso positivo verificado): validar el toggle en vez de la visibilidad inicial.",
+    "Documentar el patrón `apiToken` en CLAUDE.md para futuros módulos cuyo API exija X-API-TOKEN.",
+    "Promover #25/#26 (seasons) al repo de dev y repuntar los test.fail al cerrarlos."
+  ],
+  "evidence": [
+    {
+      "file": "tc004-01-onload.png",
+      "caption": "SHW-TC-004 en vivo: /show carga con el panel Advanced Search CERRADO (comportamiento correcto)"
+    },
+    {
+      "file": "tc004-02-afterclick.png",
+      "caption": "SHW-TC-004 en vivo: tras click en Advanced Search el panel abre correctamente"
+    }
+  ],
+  "logs": []
+}

@@ -57,6 +57,11 @@ const playlistSchema = z.object({
   slug: z.string().optional(),
   description: z.string().nullable().optional(),
   featured: z.boolean().optional(),
+  // PR sm2#8076: campo anadido para distinguir playlists "usadas como content
+  // source para Reels Slider" del resto. Default false a nivel schema. El listado
+  // acepta ?uses_reels=true|false (?=false usa $ne:true para backward-compat
+  // con playlists legacy que no tienen el campo).
+  uses_reels: z.boolean().optional(),
   medias: z.array(z.string()).optional(),
   access_tokens: z.array(accessTokenSchema).optional(),
 }).passthrough();

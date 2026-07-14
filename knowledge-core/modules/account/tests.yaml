@@ -14,6 +14,6 @@ tests:
       validates: ["ACC-AC-1"]
       mitigates: ["ACC-RISK-1"]
       story: "US-021"
-      spec: "tests/api/account-dfp.api.spec.js"
+      spec: "tests/api/smoke/account/account-dfp.api.spec.js"
     # Lectura pura, sin fixtures ni cleanup (no crea datos). Corre en
     # cualquier entorno -no requiere prodGuard-.

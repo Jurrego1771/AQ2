@@ -92,8 +92,8 @@ Familia **`/api/live-editor`** (datos del editor):
   UI DVR-dependientes hacen `skip` si el buffer no está listo (no fallan en falso).
 - Endpoints autorizados por **cookie de sesión** (storageState), sin token aparte.
 - Probes de contrato no-destructivos (ids inválidos / body incompleto fallan antes de crear nada).
-- POM: `src/pages/live-editor.page.js` (solo `sm()`). Specs: `tests/api/live-editor.api.spec.js`,
-  `tests/regression/live-editor.regression.spec.js`. Cliente API: `src/api/live-editor.client.js`.
+- POM: `src/pages/live-editor.page.js` (solo `sm()`). Specs: `tests/api/smoke/live-editor/live-editor.api.spec.js`,
+  `tests/regression/live-editor/live-editor.regression.spec.js`. Cliente API: `src/api/live-editor.client.js`.
 
 ## Hallazgos filados (GitHub)
 - **AQ2#32** (bug, medium): `POST /api/dvr` no valida duración ni inicio/fin del clip —

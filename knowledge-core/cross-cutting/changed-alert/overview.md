@@ -30,7 +30,7 @@ Con dos sesiones reales (`botqa` observando, un segundo usuario guardando):
   alta confianza por analogía — GAP menor si se quiere cerrar).
 
 ## Cobertura automatizada
-`tests/regression/changed-by-other-user-alert.regression.spec.js` — `LIVE-TC-15` / `MED-TC-024`.
+`tests/regression/live-stream/changed-by-other-user-alert.regression.spec.js` — `LIVE-TC-15` / `MED-TC-024`.
 
 **Diseño del test**: la sesión que edita NO usa un browser real — el servidor solo mira la
 cookie de sesión del request, sin importar si vino de un `<form>` o de una llamada API directa.

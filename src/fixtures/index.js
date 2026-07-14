@@ -18,6 +18,8 @@ const { AdsClient } = require('../api/ads.client');
 const { ResourceCleaner } = require('./resource-cleaner');
 const { createTranscodedMedia } = require('../api/media-factory');
 const { createLiveStream } = require('../api/live-stream-factory');
+const { createLiveSignal } = require('../api/live-signal-factory');
+const { isAvailable: isFfmpegAvailable } = require('../utils/ffmpeg');
 const { createAd } = require('../api/ads-factory');
 const { env } = require('../utils/env');
 const { qaName } = require('../utils/qa-name');
@@ -95,6 +97,22 @@ const test = base.test.extend({
       // para clicks de UI; un POST de escritura contra el dev compartido bajo
       // carga paralela (crear live/schedule) puede tardar más. 30s no enmascara
       // bugs (un fallo real responde con status, no timeout de red).
+      timeout: 30_000,
+    });
+    await use(ctx);
+    await ctx.dispose();
+  },
+
+  // APIRequestContext autenticado por API TOKEN (header X-API-TOKEN), NO por
+  // cookie de sesión. Endpoints como el CRUD de /api/show exigen el token de
+  // cuenta y devuelven 401 con el storageState del login UI. Ver env.apiToken.
+  apiToken: async ({ playwright }, use) => {
+    if (!env.apiToken) {
+      throw new Error('API_TOKEN vacío: setealo en .env (Settings > API en el dashboard).');
+    }
+    const ctx = await playwright.request.newContext({
+      baseURL: env.baseURL,
+      extraHTTPHeaders: { 'X-API-TOKEN': env.apiToken },
       timeout: 30_000,
     });
     await use(ctx);
@@ -180,6 +198,61 @@ const test = base.test.extend({
     cleaner.register('ad', id);
     await use(id);
     await cleaner.clean();
+  },
+
+  /**
+   * Live-signal fixture: crea un live + habilita MediaLive RTMP_PUSH + empuja
+   * una senal sintetica (testsrc + sine, 720p default) via ffmpeg. Devuelve
+   * un handle con:
+   *   - liveId, rtmpUrl (o null si MediaLive no termino de aprovisionar),
+   *     rtmpSource (medialive|legacy|null), ffmpeg proc
+   *   - isOnline() / waitForOnline() / waitForRtmpUrl() para asserciones async
+   *   - stop() que mata ffmpeg + apaga MediaLive + borra el live
+   *
+   * Tolerante: si ffmpeg no esta en PATH o el server no expone RTMP URL
+   * (MediaLive sin aprovisionar / entry_points vacio), NO rompe el suite -
+   * skipea el test via test.skip() con la razon. Los specs que necesiten
+   * el handle "vivo" pueden verificar `handle.rtmpUrl !== null` antes de
+   * asserciones que dependan del push.
+   *
+   * Ver src/api/live-signal-factory.js para el detalle.
+   */
+  liveSignal: async ({ api }, use, testInfo) => {
+    test.skip(
+      !(await isFfmpegAvailable()),
+      'ffmpeg no esta en PATH; instalar o setear FFMPEG_PATH'
+    );
+    const name = qaName({ type: 'LiveSignal', testTitle: testInfo.title });
+    const handle = await createLiveSignal(api, {
+      name,
+      durationSec: 30,
+      verbose: false,
+    });
+
+    // start() lanza el push; si no hay RTMP URL en el server, loguea y
+    // deja el handle con rtmpUrl=null. El spec caller puede detectar eso
+    // y skipear su assercion si quiere.
+    let startErr = null;
+    try {
+      await handle.start();
+    } catch (e) {
+      startErr = e;
+    }
+
+    if (!handle.rtmpUrl) {
+      // Mejor opcion para el runner: skipear con la causa real visible.
+      test.skip(
+        true,
+        `liveSignal sin RTMP URL: ${startErr?.message || 'medialive.inputs y entry_points.primary vacios'}. ` +
+          `Verificar que MediaLive este habilitado en esta cuenta o que el server exponga entry_points por defecto.`
+      );
+    }
+
+    try {
+      await use(handle);
+    } finally {
+      await handle.stop();
+    }
   },
 });
 

@@ -31,7 +31,7 @@ contra categorias pre-existentes.
 
 ## Cobertura actual
 
-- `tests/api/contract/category.api.contract.spec.js`:
+- `tests/api/contract/category/category.api.contract.spec.js`:
   - CAT-TC-001 GET /api/category (200 + Zod shape del envelope List)
   - CAT-TC-002 GET /api/category sin auth (403 INVALID_TOKEN, sin caer en 500)
   - CAT-TC-003 GET /api/category/:id (200 + Zod Get Response)

@@ -42,6 +42,26 @@
       "recommendation": "Pedir confirmación antes de crear, o que 'Back' elimine la media no guardada."
     }
   ],
+  "coverageGaps": [
+    {
+      "id": "GAP-1",
+      "area": "Ruta embebida /routes-embed/api/live-stream/schedule.js",
+      "why": "Requiere token de embed (no JWT de admin); la suite usa storageState de auth.setup.js. Misma familia de bug latente que sm2#8496 (LIVE-RISK-18).",
+      "mitigation": "Pedir a Diego Ponce un token de embed válido o un endpoint /api/embed-token de prueba; agregar fixture embedAuth una vez disponible."
+    },
+    {
+      "id": "GAP-2",
+      "area": "Live con 1k+ schedules concurrentes (perf stress)",
+      "why": "El fixture liveStream crea schedules uno a uno; bajo la concurrencia del dev compartido (mitigada por Semaphore permits=2) no se reproduce carga real. No hay runner de stress en el harness AQ2.",
+      "mitigation": "Sembrar un escenario con QA_MAX_CONCURRENT_CREATE=10 + un fixture que cree 50+ schedules en bucle; documentar métrica p95 como baseline antes de promover cambios al scheduler."
+    },
+    {
+      "id": "GAP-3",
+      "area": "Schedule recurrente que cruza cambio de horario (DST)",
+      "why": "No reproducible en dev estable (UTC, sin DST). El smoke de recurrencia usa tz_offset=0.",
+      "mitigation": "Levantar un entorno con TZ America/Mexico_City (caso de uso principal de clientes TV Azteca) y correr LIVE-TC-9/10 contra el."
+    }
+  ],
   "recommendations": [
     "Priorizar la corrección de #32 (validación de duración anulada en `/api/dvr`).",
     "Agregar nombre accesible y foco por teclado a los controles de zoom (#29)."

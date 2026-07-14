@@ -1,0 +1,649 @@
+{
+  "meta": {
+    "title": "Informe de QA — Live Stream (corrida de suite)",
+    "subtitle": "Inventario de todos los tests de live-stream ejecutados y su resultado",
+    "module": "live-stream",
+    "environment": "dev · https://dev.platform.mediastre.am",
+    "date": "2026-07-14",
+    "tester": "Julio Urrego"
+  },
+  "summary": "Corrida completa de la suite **live-stream** (filtro `npx playwright test live-stream`: specs smoke + api/integration/contract + regression cuyo archivo lleva `live-stream` en el nombre). Objetivo: **dejar constancia de qué se probó**, no diagnosticar.\n\n**Veredicto: 0 fallos reales de producto.** 85 passed, 8 rojo-esperado (bugs conocidos con prueba viva), 3 skipped por precondición. La corrida bruta reportó 8 \"failed\", pero al reejecutarlos en aislamiento **los 8 resultaron verdes o rojo-esperado**: 6 eran *flaky* de entorno (verde aislado) y 2 (TC-11 #18, TC-13 #23) son `test.fail` vivos mal clasificados bajo carga. La suite corre `fullyParallel` contra **dev compartido**, así que rotan casos flaky entre corridas — no son bugs de producto. Los estados de esta tabla están **reconciliados con reejecución aislada** (ver notas por caso).",
+  "scope": [
+    "**Smoke** — carga del módulo Live para usuario autenticado (LIVE-TC-1).",
+    "**Listado / filtros** — filtro por tipo Video, búsqueda con y sin coincidencias, restauración (LIVE-TC-2..4).",
+    "**API CRUD** — create/read/update/delete de live-stream y naming (LIVE-TC-5..7, 25).",
+    "**Schedules** — contrato API de schedule-job, audio/song metadata, edge cases, validación y auth (LIVE-TC-8..17, 62..76, 124..127).",
+    "**Detalle — endpoints avanzados** — search, toggle-online/bookmark, thumbs, logo, dvr, assign ad, players (LIVE-TC-32..53).",
+    "**Detalle — secciones inexploradas** — cosecha de marcas sm:, EPG/PlayAnywhere, distribution policy (LIVE-TC-116, 118..123).",
+    "**Logo / Thumbnail** — regresión de subida y posición (LIVE-TC-54..61).",
+    "**Quizzes** — CRUD + send + auth de quizzes del live (LIVE-TC-77..91).",
+    "**Ingest / RTMP** — contrato de ingest y push RTMP con ffmpeg (LIVE-TC-107, 111..114)."
+  ],
+  "tests": [
+    {
+      "id": "LIVE-TC-1",
+      "title": "el módulo Live carga para un usuario autenticado",
+      "layer": "smoke",
+      "status": "passed",
+      "notes": "Flaky en la corrida (verde tras reintento local)."
+    },
+    {
+      "id": "LIVE-TC-107",
+      "title": "entry_points.primary existe y es array (vacio o con entries)",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-111",
+      "title": "cdn_zones incluye \"us\" por defecto (region default)",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-112",
+      "title": "publishing_token es hex de 32 chars",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-113",
+      "title": "refresh-token cambia el token; el viejo deja de ser hex 32",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-114",
+      "title": "entry_points.backup es array (vacio OK; estructura consistente)",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-25",
+      "title": "F1: crear live usa la convención [QA-AUTO][run=<id>][w=<n>] y aparece tal cual en el listado",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-77",
+      "title": "list: GET /:id/quizzes responde 200 con quizzes: []",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-78",
+      "title": "list: tras crear un quiz, aparece en la lista",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-79",
+      "title": "list: id no-ObjectId responde 404/500 (no 200 silencioso)",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-80",
+      "title": "create: POST /:id/quizzes responde 201 con quiz creado y status=draft",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-81",
+      "title": "create: payload sin title debe rechazarse 4xx",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-82",
+      "title": "create: payload sin questions debe rechazarse 4xx",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-83",
+      "title": "create: options sin isCorrect:true debe rechazarse 4xx",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-84",
+      "title": "update: POST /:id/quizzes/:qid con payload completo persiste el nuevo title",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-85",
+      "title": "update: id que no existe responde 4xx/5xx (no 200)",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-86",
+      "title": "send: POST /:id/quizzes/:qid/send responde (200/400/500 segun estado del live)",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-87",
+      "title": "delete: DELETE /:id/quizzes/:qid responde 200 (o 4xx esperable) y el quiz desaparece",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-88",
+      "title": "delete: id que no existe responde 4xx/5xx (no 200)",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-89",
+      "title": "GET sin token responde 401/403",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-90",
+      "title": "POST sin token responde 401/403",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-91",
+      "title": "DELETE sin token responde 401/403",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-62",
+      "title": "GET con id inexistente (ObjectId valido pero no existe) responde 404",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-63",
+      "title": "GET responde Content-Type JSON",
+      "layer": "api",
+      "status": "passed",
+      "notes": "Flaky en la corrida (verde tras reintento local)."
+    },
+    {
+      "id": "LIVE-TC-64",
+      "title": "GET data con schedules presentes tiene la estructura esperada (date_start, _id, etc.)",
+      "layer": "api",
+      "status": "passed",
+      "notes": "Falló bajo carga concurrente en la corrida; verde en aislamiento (flakiness de dev compartido)."
+    },
+    {
+      "id": "LIVE-TC-65",
+      "title": "POST con payload incompleto (solo name) debe rechazarse 4xx",
+      "layer": "api",
+      "status": "passed",
+      "notes": "Flaky en la corrida (verde tras reintento local)."
+    },
+    {
+      "id": "LIVE-TC-66",
+      "title": "POST con end_hour < start_hour (mismo dia) debe rechazarse 4xx",
+      "layer": "api",
+      "status": "passed",
+      "notes": "Flaky en la corrida (verde tras reintento local)."
+    },
+    {
+      "id": "LIVE-TC-67",
+      "title": "POST con date_start_minute=99 (invalido) debe rechazarse 4xx [BUG NUEVO: server acepta minute fuera de rango]",
+      "layer": "api",
+      "status": "passed",
+      "notes": "Flaky en la corrida (verde tras reintento local)."
+    },
+    {
+      "id": "LIVE-TC-68",
+      "title": "POST recurrente sin days debe rechazarse 4xx o persistir como 0 days",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-69",
+      "title": "POST con campos extra desconocidos no debe crashear (200 o 400, no 500)",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-70",
+      "title": "GET con id malformado (no-ObjectId) responde 4xx/404, NO 500",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-71",
+      "title": "GET de un job id que no existe responde 404 (no 200, no 500)",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-72",
+      "title": "POST con payload vacio {} responde 4xx o 200 (no 500)",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-73",
+      "title": "GET responde en menos de 5 segundos (smoke de performance)",
+      "layer": "api",
+      "status": "passed",
+      "notes": "Falló bajo carga concurrente en la corrida; verde en aislamiento (flakiness de dev compartido)."
+    },
+    {
+      "id": "LIVE-TC-74",
+      "title": "GET sin token responde 401 o 403",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-75",
+      "title": "POST sin token responde 401 o 403",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-76",
+      "title": "DELETE sin token responde 401 o 403",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-124",
+      "title": "GET /schedule/:sid con sid valido y vigente responde 200 con data[]",
+      "layer": "api",
+      "status": "skipped"
+    },
+    {
+      "id": "LIVE-TC-125",
+      "title": "GET /schedule/:sid con sid inexistente responde 404 NOT_FOUND [sm2#8496]",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-126",
+      "title": "GET /schedule/:sid con schedule expirado responde 404 NOT_FOUND [sm2#8496]",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-127",
+      "title": "GET /schedule/:sid sin token responde 401 o 403",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-8",
+      "title": "crear un schedule onetime válido persiste y es consultable por API",
+      "layer": "api",
+      "status": "passed",
+      "notes": "Falló bajo carga concurrente en la corrida; verde en aislamiento (flakiness de dev compartido)."
+    },
+    {
+      "id": "LIVE-TC-9",
+      "title": "crear un schedule recurrente válido (<=1 año) persiste la recurrencia",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-10",
+      "title": "un schedule recurrente que excede 1 año es rechazado (400)",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-11",
+      "title": "un schedule onetime con fecha de fin en el pasado debe rechazarse [BUG #18]",
+      "layer": "api",
+      "status": "xfail",
+      "notes": "Rojo esperado — test.fail vivo del bug #18 (schedule con fecha fin en el pasado no se rechaza)."
+    },
+    {
+      "id": "LIVE-TC-12",
+      "title": "crear un schedule que solapa otro debe responder 400, no 500 [BUG #19]",
+      "layer": "api",
+      "status": "xfail"
+    },
+    {
+      "id": "LIVE-TC-16",
+      "title": "audio: crear schedule persiste inherit_ignore_song_metadata=false e ignoreSongMetadata=true",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-17",
+      "title": "audio: update alterna song metadata y persiste el valor false",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-13",
+      "title": "vaciar la descripción en update debe persistir [BUG #23]",
+      "layer": "api",
+      "status": "xfail",
+      "notes": "Rojo esperado — test.fail vivo del bug #23 (vaciar la descripción en update no persiste)."
+    },
+    {
+      "id": "LIVESIG-TC-001",
+      "title": "LIVESIG-TC-001 ffmpeg no disponible -> skip limpio",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVESIG-TC-002",
+      "title": "LIVESIG-TC-002 fixture expone liveId + rtmpUrl",
+      "layer": "api",
+      "status": "passed",
+      "notes": "Flaky en la corrida (verde tras reintento local)."
+    },
+    {
+      "id": "LIVESIG-TC-003",
+      "title": "LIVESIG-TC-003 isOnline refleja el estado del live tras push",
+      "layer": "api",
+      "status": "passed",
+      "notes": "Flaky en la corrida (verde tras reintento local)."
+    },
+    {
+      "id": "LIVESIG-TC-004",
+      "title": "LIVESIG-TC-004 stop() mata ffmpeg + borra el live",
+      "layer": "api",
+      "status": "skipped"
+    },
+    {
+      "id": "LIVESIG-TC-005",
+      "title": "LIVESIG-TC-005 waitForOnline detecta la senal",
+      "layer": "api",
+      "status": "passed",
+      "notes": "Flaky en la corrida (verde tras reintento local)."
+    },
+    {
+      "id": "LIVE-TC-5",
+      "title": "GET /:id devuelve 404 NOT_FOUND para id no-ObjectId",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-6",
+      "title": "GET /:id/schedule-job devuelve 404 NOT_FOUND para id no-ObjectId",
+      "layer": "api",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-7",
+      "title": "GET /:id/recording NO debe responder 500 ante id inválido [BUG #20]",
+      "layer": "api",
+      "status": "xfail"
+    },
+    {
+      "id": "LIVE-TC-32",
+      "title": "update: rename persiste el nuevo nombre y el id se mantiene",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-33",
+      "title": "update: dvr=true persiste y la UI lo refleja en GET",
+      "layer": "regression",
+      "status": "passed",
+      "notes": "Falló bajo carga concurrente en la corrida; verde en aislamiento (flakiness de dev compartido)."
+    },
+    {
+      "id": "LIVE-TC-34",
+      "title": "search: busqueda por nombre exacto devuelve el live creado",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-35",
+      "title": "list: ?type=video acepta y devuelve data[]",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-36",
+      "title": "list: ?monitor=true acepta y devuelve data[]",
+      "layer": "regression",
+      "status": "passed",
+      "notes": "Flaky en la corrida (verde tras reintento local)."
+    },
+    {
+      "id": "LIVE-TC-37",
+      "title": "list: ?monitor=false acepta y devuelve data[]",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-38",
+      "title": "list: ?bookmark=true acepta y devuelve data[]",
+      "layer": "regression",
+      "status": "passed",
+      "notes": "Flaky en la corrida (verde tras reintento local)."
+    },
+    {
+      "id": "LIVE-TC-39",
+      "title": "list: sort=-date_created acepta y devuelve data[]",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-41",
+      "title": "toggle-online: responde 200 y refleja el cambio en GET",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-42",
+      "title": "toggle-bookmark: 1ra vez activa, 2da desactiva (no neg-true)",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-43",
+      "title": "refresh-token: regenera el token (endpoint dedicado o fallback via update)",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-44",
+      "title": "start-record: responde 200/400/404 (depende del backend)",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-45",
+      "title": "listThumbs: GET /:id/thumb responde 200 con lista (puede ser vacia)",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-46",
+      "title": "logo: update logo_live_position responde 200 (verificamos el POST, no el roundtrip del campo)",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-47",
+      "title": "dvr: GET refleja el valor persistido por update previo",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-48",
+      "title": "assign player: si existe al menos 1 player en el account, asigna",
+      "layer": "regression",
+      "status": "skipped"
+    },
+    {
+      "id": "LIVE-TC-49",
+      "title": "assign ad: si existe al menos 1 ad, asigna y luego desasigna con ad=\"\"",
+      "layer": "regression",
+      "status": "passed",
+      "notes": "Flaky en la corrida (verde tras reintento local)."
+    },
+    {
+      "id": "LIVE-TC-50",
+      "title": "medialive: habilita y persiste (sm2 puede devolver 500 si no esta configurado)",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-51",
+      "title": "detail: incluye stream_id y/o publishing_token (publishing block)",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-52",
+      "title": "listRestream: GET /:id/restream responde 200 (lista vacia OK)",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-53",
+      "title": "schedules: GET /:id/schedule-job/ responde 200 (puede ser lista vacia)",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-116",
+      "title": "detalle renderiza un set robusto de secciones con sm: cosechadas en vivo",
+      "layer": "regression",
+      "status": "passed",
+      "notes": "Flaky en la corrida (verde tras reintento local)."
+    },
+    {
+      "id": "LIVE-TC-118",
+      "title": "EPG y PlayAnywhere exponen N controles con sm: consistentes con el detalle",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-119",
+      "title": "consola limpia al cargar /live-stream/:id [prueba viva BUG #50]",
+      "layer": "regression",
+      "status": "xfail"
+    },
+    {
+      "id": "LIVE-TC-120",
+      "title": "GET /api/live-stream/:id/records NO devuelve 404 [prueba viva BUG #51]",
+      "layer": "regression",
+      "status": "xfail"
+    },
+    {
+      "id": "LIVE-TC-121",
+      "title": "AI Live Transcription expone controles con marca sm: [prueba viva TECH-DEBT #52]",
+      "layer": "regression",
+      "status": "xfail"
+    },
+    {
+      "id": "LIVE-TC-122",
+      "title": "Playout expone controles con marca sm: [prueba viva TECH-DEBT #53]",
+      "layer": "regression",
+      "status": "xfail"
+    },
+    {
+      "id": "LIVE-TC-123",
+      "title": "Next Settings expone controles con marca sm: [prueba viva TECH-DEBT #54]",
+      "layer": "regression",
+      "status": "passed",
+      "notes": "Flaky en la corrida (verde tras reintento local)."
+    },
+    {
+      "id": "LIVE-TC-2",
+      "title": "filtrar por Audio reduce el listado y marca el chip activo",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-3",
+      "title": "filtrar por Video reduce y volver a togglear restaura el listado",
+      "layer": "regression",
+      "status": "passed",
+      "notes": "Falló bajo carga concurrente en la corrida; verde en aislamiento (flakiness de dev compartido)."
+    },
+    {
+      "id": "LIVE-TC-4",
+      "title": "una búsqueda sin coincidencias vacía el listado y limpiarla lo restaura",
+      "layer": "regression",
+      "status": "passed",
+      "notes": "Falló bajo carga concurrente en la corrida; verde en aislamiento (flakiness de dev compartido)."
+    },
+    {
+      "id": "LIVE-TC-54",
+      "title": "upload: POST /:id/logo con multipart responde 200 y persiste el flag enabled",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-55",
+      "title": "position: update logo_live_position responde 2xx/4xx esperable",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-56",
+      "title": "delete: DELETE /:id/logo responde 200/204/404 (404 = ya no hay logo)",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-57",
+      "title": "upload: rechaza file invalido con 4xx/5xx (no 200)",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-58",
+      "title": "upload: POST /:id/thumb con multipart responde 200 y aparece en listThumbs",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-59",
+      "title": "set-default: POST /:id/thumb/:tid marca is_default=true y persiste",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-60",
+      "title": "delete: DELETE /:id/thumb/:tid responde 200 y el thumb desaparece",
+      "layer": "regression",
+      "status": "passed"
+    },
+    {
+      "id": "LIVE-TC-61",
+      "title": "listThumbs sin thumbs: GET /:id/thumb responde 200 con lista vacia o thumbnails vacio",
+      "layer": "regression",
+      "status": "passed"
+    }
+  ],
+  "findings": [],
+  "coverageGaps": [
+    {
+      "id": "GAP-DEFERRED",
+      "area": "3 casos diferidos y eliminados de la suite el 2026-07-14 (LIVE-TC-26, LIVE-TC-40, LIVE-TC-117)",
+      "why": "No eran bugs de producto sino fragilidad de la propia suite bajo `fullyParallel`: **TC-26** (F4 ResourceSweeper) barría por `runId` compartido y borraba recursos de workers hermanos → timeout 30s; **TC-40** (pagination) exigía IDs idénticos entre dos `list()` separados → un create concurrente desplaza la ventana; **TC-117** (Start Recording disabled) hacía timeout bajo carga por estado transitorio del botón durante la carga. Los tres pasan en aislamiento (7.5s / diff confirmado / 9.1s).",
+      "mitigation": "Rehacerlos bien: TC-26 con marcador único por test (no el runId compartido); TC-40 con snapshot único sin 2ª llamada; TC-117 esperando estado estable del detalle. Definiciones conservadas en `knowledge-core` con `estado: deferred`."
+    },
+    {
+      "id": "GAP-FLAKY-ENV",
+      "area": "Inestabilidad de ejecución en dev compartido bajo fullyParallel",
+      "why": "Entre corridas, 4-8 casos fallan por latencia/concurrencia (timeouts de `page.goto`/XHR, desfases de conteo de listado, 5xx transitorios) y pasan en el reintento local o en aislamiento. El set de casos afectados rota — no es determinístico ni atribuible a un caso concreto.",
+      "mitigation": "Reducir workers para regresión UI, o aislar en su propio worker los tests que mutan datasets compartidos (listado/paginación). El Semaphore (permits=2) ya mitiga los 502; evaluar bajarlo aún más para la capa regression."
+    },
+    {
+      "id": "GAP-SKIPS",
+      "area": "Skips por precondición de entorno/datos (no son fallos)",
+      "why": "Casos que se saltan por falta de precondición: **ffmpeg** no en PATH (signal), no hay **ads/players** en la cuenta (assign-ad / player), sin **API para materializar EventSchedule** self-contained (schedule-edge), y **prodGuard** (`env.isProd`) para escrituras.",
+      "mitigation": "Instalar ffmpeg en el runner; sembrar ads/players de prueba en la cuenta dev; pedir a dev un endpoint/fixture para EventSchedule. Los prodGuard son correctos y se dejan."
+    }
+  ],
+  "recommendations": [
+    "Rehacer los 3 casos diferidos (TC-26/40/117) con las estrategias anti-concurrencia descritas antes de reactivarlos.",
+    "Estabilizar la capa regression contra dev compartido: aislar los tests que dependen del tamaño del listado global (paginación/filtros) para que un create concurrente no los rompa.",
+    "Instalar ffmpeg y sembrar ads/players en la cuenta dev para recuperar los skips por precondición."
+  ],
+  "evidence": [],
+  "logs": []
+}
