@@ -8,27 +8,47 @@ riesgos:
   - id: "FCH-RISK-1"
     severidad: "high"
     probabilidad: "medium"
-    titulo: "Sincronizacion programacion del fast channel -> schedules del live vinculado sin cobertura"
+    titulo: "Sincronizacion COMPLETA programacion -> schedule-jobs del live (publish) sin cobertura"
     descripcion: >
-      El comportamiento central del modulo: al crear un fast channel se crea un
-      live-stream vinculado (liveId), y cada cambio de programacion en el fast
-      channel debe sincronizarse como schedule(s) en ese live (flag "Sync by
-      block" OFF = por evento individual). No hay cobertura: un fallo de
-      sincronizacion (programa que no genera schedule, desincronizacion, o
-      schedule huerfano en el live) pasaria desapercibido. Verificado el vinculo
-      base por lectura (fast channel -> live vinculado); falta ejercitar cambios.
+      Parcialmente cubierto (2026-07-14): se contrato el vinculo (crear fast
+      channel -> live vinculado mismo nombre, FCH-TC-1) y agregar un bloque de
+      programacion al fast channel (FCH-TC-7). PERO la sincronizacion COMPLETA
+      -que el bloque agregado se materialice como schedule-job en el live
+      vinculado- NO se reprodujo por API: en estado DRAFT el bloque queda en el
+      fast channel y el live schedule-jobs sigue en 0; el "publish" probado
+      (POST /fast-channel/:id/schedule con payload vacio) responde "0 schedules
+      created" y no sincroniza. Falta el contrato exacto del Save & Publish.
     detonador:
-      - "Agregar/editar/quitar programacion en el fast channel y comparar con los schedule-jobs del live vinculado"
+      - "Agregar programacion y publicar; comparar con GET /api/live-stream/:liveId/schedule-job"
     mitigacion: >
-      Capturar el contrato del POST que dispara al programar/Save&Publish (el
-      editor es drag&drop; automatizar el drag es fragil -> capturar y programar
-      por API contra dev-api con x-api-token). Test: GET schedule fast channel +
-      GET /api/live-stream/:liveId/schedule-job antes/despues de un cambio,
-      asertar que el schedule aparece/desaparece en el live de forma consistente.
+      Capturar el contrato del Save & Publish (payload que empuja los schedules
+      al live) -requiere el editor en vivo (navegador MCP) para capturar la red-.
+      Con eso, test: agregar bloque -> publish -> asertar que aparece el
+      schedule-job en el live vinculado; y que al quitar/borrar se limpia.
     archivos_afectados:
-      - "dev-api.platform.mediastre.am /fast-channel/advanced/:id/schedule (backend separado)"
+      - "dev-api.platform.mediastre.am /fast-channel/:id/schedule (publish, backend separado)"
       - "sm2 src/server/routes/api/live-stream/schedule-job/{createScheduleJob,deleteFastScheduleJob}.js"
     defectos_relacionados: []
+    prioridad_prueba: "MUST"
+
+  - id: "FCH-RISK-5"
+    severidad: "medium"
+    probabilidad: "high"
+    titulo: "El nombre del fast channel no se valida bien (espacios en create, cualquier valor en update)"
+    descripcion: >
+      Validacion de nombre inconsistente: create rechaza name="" (400) pero
+      acepta name="   " (solo espacios, falta trim) -> crea canal + live con
+      nombre en blanco. El update (POST /fast-channel/:id) NO valida el nombre
+      en absoluto: acepta name="" y name="   ", dejando el canal sin nombre.
+      Genera canales/lives/MediaLive ilegibles y dificiles de gestionar.
+    detonador:
+      - "POST /fast-channel con name espacios; POST /fast-channel/:id con name vacio o espacios"
+    mitigacion: >
+      Aplicar trim + validacion required de name tanto en create como en update.
+      Pruebas vivas FCH-TC-4 (create) y FCH-TC-8 (update) en rojo-esperado.
+    archivos_afectados:
+      - "dev-api.platform.mediastre.am /fast-channel (create) y /fast-channel/:id (update)"
+    defectos_relacionados: ["Jurrego1771/AQ2#56"]
     prioridad_prueba: "MUST"
 
   - id: "FCH-RISK-2"
@@ -74,18 +94,19 @@ riesgos:
   - id: "FCH-RISK-4"
     severidad: "medium"
     probabilidad: "low"
-    titulo: "Crear fast channel genera recursos MediaLive reales (costo) sin DELETE mapeado"
+    titulo: "Crear fast channel genera recursos MediaLive reales (costo)"
     descripcion: >
       Cada fast channel crea un canal MediaLive + live vinculado + endpoint RTMP
-      reales. El endpoint de borrado aun no se mapeo, por lo que un test que cree
-      canales sin poder borrarlos dejaria recursos MediaLive costosos huerfanos.
+      reales (~25s por creacion). RESUELTO el teardown: DELETE /fast-channel/:id
+      (200) borra el fast channel Y el live vinculado en cascada (verificado
+      2026-07-14). Los tests son self-contained (crean y borran su canal). Riesgo
+      residual: correr muchos tests en paralelo crearia varios MediaLive a la vez.
     detonador:
-      - "Crear fast channels de prueba sin teardown"
+      - "Correr la suite de fast-channel repetidamente / en paralelo"
     mitigacion: >
-      Mapear el DELETE de fast channel antes de escribir tests que creen canales.
-      Preferir tests de sincronizacion sobre un canal existente (agregar/quitar
-      programacion es reversible y no crea MediaLive nuevo).
+      Tests self-contained con DELETE en afterEach (ya implementado). Preferir
+      --workers=1 o pocos workers para esta suite. En prod: prodGuard (skip).
     archivos_afectados:
-      - "dev-api.platform.mediastre.am /fast-channel/advanced"
+      - "dev-api.platform.mediastre.am /fast-channel (create) y DELETE /fast-channel/:id"
     defectos_relacionados: []
     prioridad_prueba: "SHOULD"

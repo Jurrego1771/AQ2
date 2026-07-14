@@ -1,0 +1,52 @@
+version: 1
+epic: "fast-channel-management"
+ultima_actualizacion: '2026-07-14'
+
+# Fast Channel: canal lineal (FAST) armado con programación a partir de VODs.
+# Backend SEPARADO (dev-api.platform.mediastre.am/fast-channel), auth x-api-token
+# (= jwt del storageState). Ver knowledge-core/modules/fast-channel/overview.md.
+
+stories:
+  - id: "US-038"
+    titulo: "Crear y configurar un Fast Channel con su live vinculado"
+    rol: "operador de contenido que arma un canal lineal FAST"
+    meta: "Crear un fast channel (que genera un live vinculado) y editar sus opciones y programación"
+    beneficio: "Emitir un canal 24/7 programado desde VODs sin gestionar el live a mano"
+    descripcion: |
+      Como operador de contenido,
+      quiero crear un fast channel y configurarlo (nombre, timezone, ad/bumper,
+      programación),
+      para emitir un canal lineal cuyo live-stream vinculado y schedules se
+      generen y sincronicen automáticamente.
+
+      Al crear un fast channel se crea un live-stream vinculado (liveId) con el
+      mismo nombre. La programación se arma agregando bloques (desde VODs) y se
+      sincroniza al live como schedules (la sincronización completa requiere un
+      paso de publish, ver GAP en riesgos).
+    acceptance_criteria:
+      - id: "FCH-AC-1"
+        criterio: "Crear un fast channel (POST /fast-channel con name+adBreakMedia+bumperMedia) crea un live-stream vinculado con el mismo nombre"
+      - id: "FCH-AC-2"
+        criterio: "El create rechaza (400) si falta name, adBreakMedia o bumperMedia"
+      - id: "FCH-AC-3"
+        criterio: "Editar opciones del canal (name, timezone, syncByBlock, adBreak/bumper) via POST /fast-channel/:id persiste los cambios"
+      - id: "FCH-AC-4"
+        criterio: "Renombrar el fast channel NO altera el nombre del live vinculado (el nombre se copia solo al crear)"
+      - id: "FCH-AC-5"
+        criterio: "Agregar un bloque de programación (POST /advanced/:id/schedule con name+items) aparece en el schedule del fast channel"
+      - id: "FCH-AC-6"
+        criterio: "El nombre del fast channel debe validarse (required + trim) tanto en create como en update; un nombre vacío o de solo espacios debe rechazarse (400)"
+    prioridad: "high"
+    tipo: "feature"
+    dependencias:
+      - "Backend dev-api de fast-channel + auth x-api-token (jwt del storageState)"
+
+    notas: |
+      Cobertura (sesión 2026-07-14): 8 tests. Backend separado dev-api.
+      - API create + vínculo: tests/api/integration/fast-channel/fast-channel-create.integration.spec.js (FCH-TC-1..4)
+      - API opciones + schedule: tests/api/integration/fast-channel/fast-channel-options.integration.spec.js (FCH-TC-5..8)
+      - Bugs vivos (Jurrego1771/AQ2#56): FCH-TC-4 (create name espacios) y FCH-TC-8 (update name vacío/espacios).
+      - Cada test crea recursos MediaLive reales (~25s) y los borra (DELETE cascada al live vinculado).
+      - GAP (FCH-RISK-1): sincronización COMPLETA programación->schedule-jobs del live
+        (paso de publish) no reproducida por API; el publish con payload vacío no
+        crea schedule-jobs. Requiere capturar el contrato del "Save & Publish".

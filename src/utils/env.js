@@ -34,6 +34,10 @@ const env = {
   // Media de prueba para features de IA (fixture aiMedia). Dropbox debe usar dl=1.
   sampleAudioUrl: pick('QA_SAMPLE_AUDIO_URL', process.env.QA_SAMPLE_AUDIO_URL || ''),
   sampleImageUrl: pick('QA_SAMPLE_IMAGE_URL', process.env.QA_SAMPLE_IMAGE_URL || ''),
+  // Backend SEPARADO de Fast Channel (micro-frontend advanced). Auth por header
+  // x-api-token = el JWT de sesión (cookie `jwt` del storageState). Ver
+  // knowledge-core/modules/fast-channel/overview.md.
+  fastChannelApiUrl: pick('FAST_CHANNEL_API_URL', process.env.FAST_CHANNEL_API_URL || 'https://dev-api.platform.mediastre.am'),
   // prod-us / prod-eu bloquean mutaciones (prodGuard en specs que escriben).
   isProd: ENV.startsWith('prod'),
   // Token Profiles (sm2#8451): ids de TokenProfile pre-creados una sola vez por un

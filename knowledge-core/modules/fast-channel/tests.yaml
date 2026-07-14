@@ -1,0 +1,99 @@
+# Tests - Modulo Fast Channel. Definicion (sin estado de ejecucion: derivado).
+# Backend separado dev-api, auth x-api-token. refs = FUENTE UNICA de los vinculos.
+version: 1
+modulo: "fast-channel"
+ultima_actualizacion: '2026-07-14'
+
+tests:
+  - id: "FCH-TC-1"
+    titulo: "Crear un fast channel crea un live vinculado con el mismo nombre"
+    modulo: "fast-channel"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["FCH-AC-1"]
+      mitigates: []
+      story: "US-038"
+      spec: "tests/api/integration/fast-channel/fast-channel-create.integration.spec.js"
+  - id: "FCH-TC-2"
+    titulo: "Crear sin name responde 400 (name requerido)"
+    modulo: "fast-channel"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["FCH-AC-2"]
+      mitigates: []
+      story: "US-038"
+      spec: "tests/api/integration/fast-channel/fast-channel-create.integration.spec.js"
+  - id: "FCH-TC-3"
+    titulo: "Crear sin adBreakMedia/bumperMedia responde 400 (requeridos)"
+    modulo: "fast-channel"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["FCH-AC-2"]
+      mitigates: []
+      story: "US-038"
+      spec: "tests/api/integration/fast-channel/fast-channel-create.integration.spec.js"
+  - id: "FCH-TC-4"
+    titulo: "Crear con nombre de solo espacios debe rechazarse 400 [prueba viva BUG #56]"
+    modulo: "fast-channel"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["FCH-AC-6"]
+      mitigates: ["FCH-RISK-5"]
+      story: "US-038"
+      spec: "tests/api/integration/fast-channel/fast-channel-create.integration.spec.js"
+    # test.fail() en el spec: rojo esperado hasta corregir Jurrego1771/AQ2#56.
+  - id: "FCH-TC-5"
+    titulo: "Editar nombre/timezone/syncByBlock/adBreak-bumper persiste"
+    modulo: "fast-channel"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["FCH-AC-3"]
+      mitigates: []
+      story: "US-038"
+      spec: "tests/api/integration/fast-channel/fast-channel-options.integration.spec.js"
+  - id: "FCH-TC-6"
+    titulo: "Renombrar el fast channel no altera el nombre del live vinculado"
+    modulo: "fast-channel"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["FCH-AC-4"]
+      mitigates: []
+      story: "US-038"
+      spec: "tests/api/integration/fast-channel/fast-channel-options.integration.spec.js"
+  - id: "FCH-TC-7"
+    titulo: "Agregar un bloque de programacion aparece en el schedule del fast channel"
+    modulo: "fast-channel"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["FCH-AC-5"]
+      mitigates: ["FCH-RISK-1"]
+      story: "US-038"
+      spec: "tests/api/integration/fast-channel/fast-channel-options.integration.spec.js"
+    # Cubre agregar el bloque a la programacion del fast channel. La sincronizacion
+    # COMPLETA al live (publish -> schedule-jobs) sigue como GAP (FCH-RISK-1).
+  - id: "FCH-TC-8"
+    titulo: "Editar el nombre a vacio/espacios debe rechazarse 400 [prueba viva BUG #56]"
+    modulo: "fast-channel"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["FCH-AC-6"]
+      mitigates: ["FCH-RISK-5"]
+      story: "US-038"
+      spec: "tests/api/integration/fast-channel/fast-channel-options.integration.spec.js"
+    # test.fail() en el spec: rojo esperado hasta corregir Jurrego1771/AQ2#56.

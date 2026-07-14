@@ -1,8 +1,9 @@
 # Fast Channel — Overview estructural (mapa del módulo)
 
 > Conocimiento **estructural/factual** aquí; el comportamiento vive en `historias.yaml` (AC)
-> y `riesgos.yaml`. Módulo nuevo (explorado 2026-07-14, F0-F1). Prefijo de IDs: **FCH**.
-> **Sin tests aún**: falta capturar el contrato del editor de programación (ver GAP abajo).
+> y `riesgos.yaml`. Módulo nuevo (2026-07-14). Prefijo de IDs: **FCH**.
+> **Cobertura**: 8 tests API (FCH-TC-1..8, create + vínculo live + opciones + schedule + 2
+> bugs vivos #56). GAP: sincronización completa publish→live schedule-jobs (FCH-RISK-1).
 
 ## Qué es
 Un **Fast Channel** es un canal lineal (FAST) armado con **programación a partir de VODs**.

@@ -19,6 +19,7 @@ const { PlaylistClient } = require('../api/playlist.client');
 const { AdsClient } = require('../api/ads.client');
 const { ResourceCleaner } = require('./resource-cleaner');
 const { createTranscodedMedia } = require('../api/media-factory');
+const { newFastChannelContext } = require('../api/fast-channel-factory');
 const { createLiveStream } = require('../api/live-stream-factory');
 const { createLiveSignal } = require('../api/live-signal-factory');
 const { isAvailable: isFfmpegAvailable } = require('../utils/ffmpeg');
@@ -198,6 +199,14 @@ const test = base.test.extend({
     cleaner.register('media', id);
     await use(id);
     await cleaner.clean();
+  },
+
+  // APIRequestContext contra el backend SEPARADO de Fast Channel (dev-api),
+  // autenticado por x-api-token (= jwt del storageState). Ver fast-channel-factory.
+  fastChannelCtx: async ({ playwright }, use) => {
+    const ctx = await newFastChannelContext(playwright.request);
+    await use(ctx);
+    await ctx.dispose();
   },
 
   // Media de AUDIO REAL para features de IA (transcription/Deepgram): ingesta
