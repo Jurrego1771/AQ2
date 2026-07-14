@@ -1,0 +1,91 @@
+# Riesgos - Modulo Fast Channel. Poblado desde exploracion en vivo (F0-F1, 2026-07-14)
+# + lectura de sm2. Defectos = issues GitHub. Prefijo FCH.
+version: 1
+modulo: "fast-channel"
+ultima_actualizacion: '2026-07-14'
+
+riesgos:
+  - id: "FCH-RISK-1"
+    severidad: "high"
+    probabilidad: "medium"
+    titulo: "Sincronizacion programacion del fast channel -> schedules del live vinculado sin cobertura"
+    descripcion: >
+      El comportamiento central del modulo: al crear un fast channel se crea un
+      live-stream vinculado (liveId), y cada cambio de programacion en el fast
+      channel debe sincronizarse como schedule(s) en ese live (flag "Sync by
+      block" OFF = por evento individual). No hay cobertura: un fallo de
+      sincronizacion (programa que no genera schedule, desincronizacion, o
+      schedule huerfano en el live) pasaria desapercibido. Verificado el vinculo
+      base por lectura (fast channel -> live vinculado); falta ejercitar cambios.
+    detonador:
+      - "Agregar/editar/quitar programacion en el fast channel y comparar con los schedule-jobs del live vinculado"
+    mitigacion: >
+      Capturar el contrato del POST que dispara al programar/Save&Publish (el
+      editor es drag&drop; automatizar el drag es fragil -> capturar y programar
+      por API contra dev-api con x-api-token). Test: GET schedule fast channel +
+      GET /api/live-stream/:liveId/schedule-job antes/despues de un cambio,
+      asertar que el schedule aparece/desaparece en el live de forma consistente.
+    archivos_afectados:
+      - "dev-api.platform.mediastre.am /fast-channel/advanced/:id/schedule (backend separado)"
+      - "sm2 src/server/routes/api/live-stream/schedule-job/{createScheduleJob,deleteFastScheduleJob}.js"
+    defectos_relacionados: []
+    prioridad_prueba: "MUST"
+
+  - id: "FCH-RISK-2"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "Micro-frontend de Fast Channel sin marcas sm:/data-testid (testabilidad)"
+    descripcion: >
+      La Advanced View es un micro-frontend (v5.2.381) que no expone el contrato
+      de selectores del admin (sm:) ni data-testid/data-name. Cualquier cobertura
+      UI dependeria de getByRole/estructura (fragil). No bloquea (se puede cubrir
+      por API contra dev-api), pero es deuda de testabilidad del front.
+    detonador:
+      - "Intentar automatizar la Advanced View por selectores estables"
+    mitigacion: >
+      Pedir al front marcas estables (sm:/data-testid) en la Advanced View.
+      Mientras tanto, preferir cobertura por API (dev-api, x-api-token).
+    archivos_afectados:
+      - "micro-frontend fast-channel advanced (v5.2.381)"
+    defectos_relacionados: []
+    prioridad_prueba: "COULD"
+
+  - id: "FCH-RISK-3"
+    severidad: "low"
+    probabilidad: "medium"
+    titulo: "Crear fast channel por UI no dispara el POST bajo el harness (sin confirmar)"
+    descripcion: >
+      El boton Create del modal "Create Fast Channel" no envio ninguna peticion
+      al backend bajo el harness Playwright MCP (2 intentos, con y sin caracteres
+      especiales en el nombre). No confirmado como bug de producto: probable
+      friccion entre el click sintetico y los handlers de React del micro-frontend.
+      Requiere verificacion con otro metodo (click nativo / manual) antes de filar.
+    detonador:
+      - "Click en Create del modal de creacion via Playwright MCP"
+    mitigacion: >
+      Verificar con click nativo o manual. Para automatizar, capturar el contrato
+      del POST de creacion y crear por API contra dev-api (ojo: crea recursos
+      MediaLive reales; mapear antes el DELETE para teardown self-contained).
+    archivos_afectados:
+      - "micro-frontend fast-channel advanced (modal Create Fast Channel)"
+    defectos_relacionados: []
+    prioridad_prueba: "SHOULD"
+
+  - id: "FCH-RISK-4"
+    severidad: "medium"
+    probabilidad: "low"
+    titulo: "Crear fast channel genera recursos MediaLive reales (costo) sin DELETE mapeado"
+    descripcion: >
+      Cada fast channel crea un canal MediaLive + live vinculado + endpoint RTMP
+      reales. El endpoint de borrado aun no se mapeo, por lo que un test que cree
+      canales sin poder borrarlos dejaria recursos MediaLive costosos huerfanos.
+    detonador:
+      - "Crear fast channels de prueba sin teardown"
+    mitigacion: >
+      Mapear el DELETE de fast channel antes de escribir tests que creen canales.
+      Preferir tests de sincronizacion sobre un canal existente (agregar/quitar
+      programacion es reversible y no crea MediaLive nuevo).
+    archivos_afectados:
+      - "dev-api.platform.mediastre.am /fast-channel/advanced"
+    defectos_relacionados: []
+    prioridad_prueba: "SHOULD"
