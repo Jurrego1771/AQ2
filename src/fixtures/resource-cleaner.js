@@ -33,6 +33,55 @@ const DELETERS = {
   'live-stream': (api, id) => api.delete(`/api/live-stream/${id}`),
   playlist: (api, id) => api.delete(`/api/playlist/${id}`),
   ad: (api, id) => api.delete(`/api/ad/${id}`),
+  // Category: sm2 expone DELETE /api/category/:id, PERO rechaza borrar un
+  // parent con children presentes (400 CANT_DELETE_PARENT, verificado 2026-07-15
+  // en vivo contra dev). Para que el teardown sea robusto sin obligar a
+  // cada test a registrar los children antes que los parents, hacemos deleter
+  // recursivo: GET /api/category?parent=:id -> borra cada child -> borra el
+  // parent. Tolerante a 404 (categoria ya borrada = OK). Retorna la Response
+  // del ultimo DELETE (que es lo que el outer _deleteWithRetry espera:
+  // .status() / .ok() como funciones sobre la Response de Playwright).
+  // Si el GET falla por 5xx transient, dejamos que el retry del outer lo
+  // propague. Si el primer DELETE falla (parent con children), reintentamos
+  // tras borrar children. Si nada funciona, devolvemos la ultima Response
+  // con status>=400 para que el outer lo marque como leaked.
+  category: async (api, id) => {
+    let lastResponse = null;
+
+    const deleteTree = async (cid) => {
+      // Listar children directos (no falla el teardown si esto devuelve 5xx:
+      // el outer reintenta toda la operacion, devolver null aca seria peor).
+      const list = await api.get(`/api/category?parent=${encodeURIComponent(cid)}`);
+      const listOk = list.ok();
+      let children = [];
+      if (listOk) {
+        try {
+          const body = await list.json();
+          children = body?.data ?? [];
+        } catch (_) {
+          children = [];
+        }
+      }
+      // Borrar descendientes primero (recursion 1 nivel por iteracion: si hay
+      // nietos, vuelven a aparecer como children de su parent inmediato).
+      for (const child of children) {
+        if (child?._id && child._id !== cid) {
+          await deleteTree(child._id);
+        }
+      }
+      // Borrar este nodo.
+      const r = await api.delete(`/api/category/${cid}`);
+      const status = r.status();
+      if (r.ok() || status === 404) {
+        lastResponse = r;
+        return r;
+      }
+      lastResponse = r;
+      return r;
+    };
+
+    return deleteTree(id);
+  },
   // Quiz: id compuesto "liveId/quizId" porque el quiz es sub-recurso del
   // live y su delete endpoint es /api/live-stream/:liveId/quizzes/:quizId.
   // (El ResourceCleaner hace split('/') para obtener ambos.)
@@ -61,6 +110,12 @@ const DELETERS = {
       `/api/show/${showId}/season/${seasonId}/episode/${episodeId}`
     );
   },
+  // User: deletable para fixtures qaUser/qaUserWithCategory. DELETE /api/user/:id
+  // responde 200 con {data: null} y el GET siguiente da 404. Idempotente:
+  // 404 se considera OK en resource-cleaner (res.ok() || status===404).
+  // Cubre CAT-RISK-6: el bot puede borrar users que él mismo creo; antes no
+  // podia porque nadie podia crearlos (mitigado por users-factory.createUser).
+  user: (api, id) => api.delete(`/api/user/${id}`),
 }
 
 /**

@@ -12,6 +12,7 @@ const { SchedulePage } = require('../pages/schedule.page');
 const { AdsPage } = require('../pages/ads.page');
 const { TokenPage } = require('../pages/token.page');
 const { MoaiPage } = require('../pages/moai.page');
+const { CustomerDetailPage } = require('../pages/customer-detail.page');
 const { MediaClient } = require('../api/media.client');
 const { LiveStreamClient } = require('../api/live-stream.client');
 const { EditorClient, LiveEditorClient, DvrClient } = require('../api/live-editor.client');
@@ -24,6 +25,7 @@ const { createLiveStream } = require('../api/live-stream-factory');
 const { createLiveSignal } = require('../api/live-signal-factory');
 const { isAvailable: isFfmpegAvailable } = require('../utils/ffmpeg');
 const { createAd } = require('../api/ads-factory');
+const { createUser, setUserCategories } = require('../api/users-factory');
 const { env } = require('../utils/env');
 const { qaName } = require('../utils/qa-name');
 
@@ -73,6 +75,11 @@ const test = base.test.extend({
   // Page Object de MoAI Options (/settings/ai)
   moaiPage: async ({ page }, use) => {
     await use(new MoaiPage(page));
+  },
+
+  // Page Object del detalle de Customer (secciones Purchases/Payments)
+  customerDetailPage: async ({ page }, use) => {
+    await use(new CustomerDetailPage(page));
   },
 
   // Page Object del editor de un evento (live editor detail)
@@ -232,6 +239,81 @@ const test = base.test.extend({
     cleaner.register('ad', id);
     await use(id);
     await cleaner.clean();
+  },
+
+  /**
+   * User REAL self-contained (1 user por test): lo crea via POST /api/user
+   * con email unico `[QA-AUTO]...@mediastre.am` y lo borra al terminar
+   * (DELETE /api/user/:id). Resuelve CAT-RISK-6: el bot no puede actualizar
+   * SU PROPIO record (500), pero SI puede crear + modificar + borrar
+   * users NUEVOS. Detalles y riesgos cubiertos en src/api/users-factory.js.
+   *
+   * Defaults del user creado: sin permisos (todos los modulos level 0, by-
+   * design: server IGNORA permissions al crear), sin 2FA, sin account_admin.
+   * Para elevarlo usar `setUserPermissions` (factory).
+   */
+  qaUser: async ({ api }, use, testInfo) => {
+    const cleaner = new ResourceCleaner(api, { testId: testInfo.title });
+    const tag = qaName({ type: 'User', testTitle: testInfo.title })
+      .replace(/[^a-zA-Z0-9@._-]/g, '-')
+      .toLowerCase();
+    const id = await createUser(api, {
+      first_name: 'QA',
+      last_name: 'Auto',
+      email: `${tag}@mediastre.am`,
+      password: `Qa!${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      can_access_uncategorized_content: true,
+    });
+    cleaner.register('user', id);
+    await use(id);
+    await cleaner.clean();
+  },
+
+  /**
+   * Factory de users: en lugar de auto-crear, expone una funcion que crea
+   * users bajo demanda y los borra TODOS al final del test. Pensado para
+   * specs (como CAT-INH-R-001..006) que necesitan CADA test uno o mas users
+   * pre-asignados a categorias distintas.
+   *
+   * Uso:
+   *   test('...', async ({ api, qaUserFactory }) => {
+   *     const userId = await qaUserFactory({ categories: [parentId] });
+   *     ...
+   *   });
+   *
+   * Devuelve el userId (string). Los users creados se trackean y se borran
+   * via ResourceCleaner con deleter `user` al terminar el test, asi no
+   * leakear ni contaminar la cuenta.
+   */
+  qaUserFactory: async ({ api }, use, testInfo) => {
+    /** @type {ResourceCleaner|null} */
+    let cleaner = null;
+    /** @type {string[]} */
+    const createdIds = [];
+    await use(async (opts = {}) => {
+      if (!cleaner) cleaner = new ResourceCleaner(api, { testId: testInfo.title });
+      const tag = qaName({
+        type: opts.tag || 'User',
+        testTitle: testInfo.title,
+        suffix: String(createdIds.length),
+      })
+        .replace(/[^a-zA-Z0-9@._-]/g, '-')
+        .toLowerCase();
+      const id = await createUser(api, {
+        first_name: opts.first_name || 'QA',
+        last_name: opts.last_name || 'Auto',
+        email: `${tag}@mediastre.am`,
+        password: `Qa!${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        categories: opts.categories,
+        accounts: opts.accounts,
+        can_access_uncategorized_content:
+          opts.can_access_uncategorized_content !== false,
+      });
+      cleaner.register('user', id);
+      createdIds.push(id);
+      return id;
+    });
+    if (cleaner) await cleaner.clean();
   },
 
   /**

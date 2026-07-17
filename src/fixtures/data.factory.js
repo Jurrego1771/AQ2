@@ -28,11 +28,9 @@ function user(overrides = {}) {
 }
 
 /**
- * Factory de Category. NOTA: el bot QA en dev NO tiene modulo `category` habilitado
- * para POST /api/category (verificado 2026-07-08: devuelve 403 al intentar crear).
- * Por ahora este factory existe para tests futuros cuando se configuren las
- * credenciales admin (TOK-RISK-001). Mientras tanto, los specs de category son
- * todos read-only contra categorias pre-existentes en dev.
+ * Factory de Category. Habilitado en dev para el bot QA desde 2026-07-14
+ * (la nota previa "403 POST /api/category" de 2026-07-08 quedo desactualizada).
+ * Usado por los specs CRUD en tests/api/smoke/category/category-crud.smoke.spec.js.
  */
 /** @param {Partial<Record<string, any>>} [overrides] */
 function categoryFactory(overrides = {}) {
