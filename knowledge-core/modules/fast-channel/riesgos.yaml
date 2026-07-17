@@ -10,21 +10,24 @@ riesgos:
     probabilidad: "medium"
     titulo: "Sincronizacion COMPLETA programacion -> schedule-jobs del live (publish) sin cobertura"
     descripcion: >
-      Parcialmente cubierto (2026-07-14): se contrato el vinculo (crear fast
-      channel -> live vinculado mismo nombre, FCH-TC-1) y agregar un bloque de
-      programacion al fast channel (FCH-TC-7). PERO la sincronizacion COMPLETA
-      -que el bloque agregado se materialice como schedule-job en el live
-      vinculado- NO se reprodujo por API: en estado DRAFT el bloque queda en el
-      fast channel y el live schedule-jobs sigue en 0; el "publish" probado
-      (POST /fast-channel/:id/schedule con payload vacio) responde "0 schedules
-      created" y no sincroniza. Falta el contrato exacto del Save & Publish.
+      Contrato del Save & Publish YA capturado (2026-07-14): POST
+      /fast-channel/advanced/:id/plannerItems/saveItems (plannerId + items +
+      operation:replace) + POST /advanced/:id/schedule. Un item FUTURO via
+      saveItems responde insertedCount:1 y deja el planner "published"; los items
+      en el PASADO se descartan. PERO el live vinculado
+      (GET /api/live-stream/:liveId/schedule-job) SIGUE en 0 schedule-jobs de
+      forma inmediata/sincrona tras publicar -> la materializacion planner ->
+      schedule-jobs del live parece DIFERIDA por un scheduler backend (async), no
+      inmediata por API. NO confirmado si es bug o comportamiento async esperado.
+      Es el riesgo central a vigilar (la sincronizacion que el usuario quiere probar).
     detonador:
-      - "Agregar programacion y publicar; comparar con GET /api/live-stream/:liveId/schedule-job"
+      - "Publicar un item futuro (saveItems) y consultar GET /api/live-stream/:liveId/schedule-job"
     mitigacion: >
-      Capturar el contrato del Save & Publish (payload que empuja los schedules
-      al live) -requiere el editor en vivo (navegador MCP) para capturar la red-.
-      Con eso, test: agregar bloque -> publish -> asertar que aparece el
-      schedule-job en el live vinculado; y que al quitar/borrar se limpia.
+      Confirmar con dev si la materializacion al live es asincrona (scheduler) y
+      su ventana de tiempo. Si es async: test con poll de timeout amplio (o un
+      trigger explicito) que asrte que el schedule-job aparece en el live tras
+      publicar; si deberia ser sincrona y no ocurre, es bug -> filar. Contrato del
+      publish ya conocido (ver overview / memoria fast-channel).
     archivos_afectados:
       - "dev-api.platform.mediastre.am /fast-channel/:id/schedule (publish, backend separado)"
       - "sm2 src/server/routes/api/live-stream/schedule-job/{createScheduleJob,deleteFastScheduleJob}.js"
