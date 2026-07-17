@@ -1,0 +1,62 @@
+# Tests - Modulo Purchase (compras de un customer, sub-recurso CustomerPurchase).
+# Solo lectura + contrato (dominio de pagos reales). refs = FUENTE UNICA.
+version: 1
+modulo: "purchase"
+ultima_actualizacion: '2026-07-14'
+
+tests:
+  - id: "PUR-TC-1"
+    titulo: "GET purchase de un customer real responde 200 con data array"
+    modulo: "purchase"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["PUR-AC-1"]
+      mitigates: []
+      story: "US-039"
+      spec: "tests/api/integration/purchase/purchase.integration.spec.js"
+  - id: "PUR-TC-2"
+    titulo: "GET purchase acepta filtros (status/limit) sin error"
+    modulo: "purchase"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["PUR-AC-2"]
+      mitigates: []
+      story: "US-039"
+      spec: "tests/api/integration/purchase/purchase.integration.spec.js"
+  - id: "PUR-TC-3"
+    titulo: "GET purchase de customer inexistente responde 404 CUSTOMER_NOT_FOUND"
+    modulo: "purchase"
+    tipo: "integration"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["PUR-AC-3"]
+      mitigates: []
+      story: "US-039"
+      spec: "tests/api/integration/purchase/purchase.integration.spec.js"
+  - id: "PUR-TC-4"
+    titulo: "GET detalle de purchase inexistente responde 404 PURCHASE_NOT_FOUND"
+    modulo: "purchase"
+    tipo: "integration"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["PUR-AC-3"]
+      mitigates: []
+      story: "US-039"
+      spec: "tests/api/integration/purchase/purchase.integration.spec.js"
+  - id: "PUR-TC-5"
+    titulo: "La seccion Purchases del detalle del customer carga con su tabla"
+    modulo: "purchase"
+    tipo: "smoke"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["PUR-AC-4"]
+      mitigates: ["PUR-RISK-2"]
+      story: "US-039"
+      spec: "tests/smoke/purchase/purchase.smoke.spec.js"

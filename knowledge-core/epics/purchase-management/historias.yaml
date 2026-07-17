@@ -1,0 +1,46 @@
+version: 1
+epic: "purchase-management"
+ultima_actualizacion: '2026-07-14'
+
+# Purchase: compras/suscripciones de un customer (model CustomerPurchase), con pagos
+# por gateway. Sub-recurso del customer. Dominio sensible (pagos reales): cobertura
+# SOLO de lectura y contrato de errores. Ver knowledge-core/modules/purchase/overview.md.
+
+stories:
+  - id: "US-039"
+    titulo: "Consultar las compras de un customer"
+    rol: "operador de soporte / administrador de cuenta"
+    meta: "Ver el historial de compras y pagos de un customer (estado, tipo, gateway, monto)"
+    beneficio: "Dar soporte y auditar transacciones sin exponer ni alterar los pagos reales"
+    descripcion: |
+      Como operador,
+      quiero listar y consultar las compras de un customer (con sus filtros y detalle),
+      para revisar su estado (SUCCESS/PENDING/FAILURE), tipo (subscription/ppv/one-time),
+      gateway y pagos asociados.
+
+      Purchase no tiene pantalla propia: se muestra embebido en el detalle del customer
+      (/customer/:id, sección "Purchases"). El backend expone
+      GET /api/customer/:customer_id/purchase (list + filtros) y .../purchase/:id (detalle).
+    acceptance_criteria:
+      - id: "PUR-AC-1"
+        criterio: "GET /api/customer/:customer_id/purchase de un customer real responde 200 con data como array (vacío si no tiene compras)"
+      - id: "PUR-AC-2"
+        criterio: "El listado acepta filtros (status, type, product_id, limit) sin error"
+      - id: "PUR-AC-3"
+        criterio: "GET purchase de un customer inexistente responde 404 CUSTOMER_NOT_FOUND; el detalle de una purchase inexistente responde 404 PURCHASE_NOT_FOUND"
+      - id: "PUR-AC-4"
+        criterio: "El detalle del customer (/customer/:id) muestra la sección Purchases con su tabla (columnas ID/Gateway/Amount/Currency/Product/Status/Payments/... y estado vacío cuando no hay compras)"
+    prioridad: "medium"
+    tipo: "feature"
+    dependencias:
+      - "Customer existente en el entorno (los tests derivan uno real)"
+
+    notas: |
+      Cobertura (sesión 2026-07-14): 5 tests, SOLO lectura + contrato (dominio de pagos).
+      - API: tests/api/integration/purchase/purchase.integration.spec.js (PUR-TC-1..4)
+      - UI: tests/smoke/purchase/purchase.smoke.spec.js (PUR-TC-5)
+      - Sin bugs.
+      - GAP (PUR-RISK-1): dev NO tiene customers con compras (escaneados 100), así que
+        la lectura de compras REALES (estados, pagos, facturas, detalle poblado) no se
+        pudo asertar. Se cubrió el contrato de errores y el estado vacío. Escrituras
+        (create/pay) fuera de alcance por ser pagos reales con gateway.

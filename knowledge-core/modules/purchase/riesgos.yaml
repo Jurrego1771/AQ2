@@ -1,0 +1,51 @@
+# Riesgos - Modulo Purchase. Poblado desde lectura de codigo sm2 + verificacion en
+# vivo (2026-07-14). Dominio de pagos reales -> cobertura solo lectura. Prefijo PUR.
+version: 1
+modulo: "purchase"
+ultima_actualizacion: '2026-07-14'
+
+riesgos:
+  - id: "PUR-RISK-1"
+    severidad: "medium"
+    probabilidad: "high"
+    titulo: "Sin data transaccional en dev: lectura de compras reales sin cobertura"
+    descripcion: >
+      El entorno dev no tiene ningun customer con compras (escaneados 100 -> 0
+      con purchases). Por eso la lectura de compras REALES no se pudo ejercitar:
+      estados (SUCCESS/PENDING/FAILURE), tipos (subscription/ppv/one-time),
+      gateway, monto/currency, pagos (PurchasePayment), facturas (invoice/e_fact)
+      y el detalle poblado. Se cubrio el contrato de errores (404 CUSTOMER/
+      PURCHASE_NOT_FOUND), el estado vacio (200 data:[]) y que la seccion UI
+      carga. El resto del comportamiento del modulo queda sin verificar.
+    detonador:
+      - "Consultar/filtrar compras reales de un customer en dev"
+    mitigacion: >
+      Sembrar data de compras de prueba (via seed de backend o un customer QA con
+      compras PENDING sin gateway real, si el create lo permite sin pago), o
+      apuntar a un entorno con data transaccional. Con data: cubrir listado
+      poblado, filtros por status/type, detalle con payments, y el render de la
+      tabla en la UI del customer.
+    archivos_afectados:
+      - "sm2 src/server/routes/api/customer/purchase/** (list/detail/create/payment)"
+      - "model CustomerPurchase / PurchasePayment"
+    defectos_relacionados: []
+    prioridad_prueba: "SHOULD"
+
+  - id: "PUR-RISK-2"
+    severidad: "low"
+    probabilidad: "medium"
+    titulo: "Escrituras de purchase (create/pay) fuera de alcance (pagos reales)"
+    descripcion: >
+      Crear compras y procesar pagos toca gateways reales (stripe, payu, paypal,
+      apple_store, etc.) y genera transacciones. Queda deliberadamente fuera de la
+      cobertura automatizada para no producir cargos/estado transaccional real ni
+      depender de sandboxes de gateway. Es una decision de alcance, no un defecto.
+    detonador:
+      - "Automatizar POST /api/customer/:id/purchase o /payment contra gateways"
+    mitigacion: >
+      Si se requiere cubrir el flujo de compra, hacerlo en un entorno con gateways
+      en modo sandbox y con teardown explicito, aislado de la suite de regresion.
+    archivos_afectados:
+      - "sm2 src/server/routes/api/customer/purchase/{create,payment}.js"
+    defectos_relacionados: []
+    prioridad_prueba: "WONT"
