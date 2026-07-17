@@ -1,24 +1,48 @@
-# Selectores del modulo Category. Cosechado en vivo (dev v7.0.71, 2026-07-08).
+# Selectores del modulo Category. Cosechado en vivo (dev v7.0.71, 2026-07-08;
+# segunda verificacion 2026-07-15 con PR #8507 desplegado).
 #
-# La UI /admin/category NO es accesible con la cuenta QA botqa (403 Forbidden
-# admin-only). Esta cosecha vino de /api/category con cookie de user, lo que
-# solo confirma el shape de la respuesta HTTP. Para UI real, requiere setup
-# admin en /admin/category (ver TOK-RISK-001).
+# La UI /admin/category NO es accesible con la cuenta QA botqa (404 "Look like
+# you're lost"). URLs /admin/category, /category, /settings/categories todas
+# devuelven 404; sin entrada en nav desde /dashboard. La cobertura de la UI del
+# PR (#8507 introduce el toggle 'Auto-grant subcategory access' en los modales
+# de crear/editar) queda como GAP — ver CAT-RISK-9. Esta cosecha vino de
+# /api/category con cookie de user, lo que solo confirma el shape de la respuesta
+# HTTP.
 
-version: 1
+version: 2
 modulo: "category"
-ultima_actualizacion: '2026-07-08'
+ultima_actualizacion: '2026-07-15'
 
 # ---- API (GET /api/category) ----
 api:
   list: "GET /api/category"
   detail: "GET /api/category/:category_id"
+  create: "POST /api/category (form-encoded, default UI)"
+  update: "POST /api/category/:category_id (sm2 no expone PUT)"
   shape_envelope: "jsonp { status: 'OK', data: ... }"
-  shape_item_minimo: "_id, name, slug, description, parent, date_created, image_url, visible, track, drm, custom, filter_categories"
-  auth_requerida: "MIDDLEWRITE.USER + MIDDLEWRITE.API_AUTH_READ (acepta cookies o x-api-token con profile valido)"
+  shape_item_minimo_listados: "_id, name, slug, description, parent, date_created, image_url, visible, track, drm, custom, filter_categories, inherit_access (en listados; ver CAT-INH-003)"
+  shape_item_minimo_detail: "_id, name, slug (GAP: el detail handler NO proyecta inherit_access aun; ver CAT-INH-002 / CAT-RISK-5)"
+  auth_requerida: "MIDDLEWRITE.USER + MIDDLEWRITE.API_AUTH_READ (acepta cookies o x-api-token con profile valido). POST requiere modulo `category` habilitado en cuenta (CAT-RISK-4 resuelto 2026-07-14)."
   respuesta_sin_auth: "403 INVALID_TOKEN (jsonp { status: 'ERROR', data: 'INVALID_TOKEN' })"
   response_codes:
     - "200 OK con array de categorias"
     - "200 OK con objeto categoria en detail"
+    - "200 OK al crear con form-encoded"
+    - "200 OK al actualizar con form-encoded"
     - "403 INVALID_TOKEN sin auth"
     - "404 NOT_FOUND para id inexistente"
+  inherit_access:
+    campo: "Boolean, default false (schema)"
+    guardado_forma_form: "acepta {inherit_access:'true'|'false'|'1'|'0'|...}; normalizeBoolean convierte"
+    guardado_forma_json: "acepta true/1 explicitamente; false explicito cae fuera del guard truthy (CAT-RISK-8) — el server conserva el valor previo"
+    comportamiento_hook: "post-save: si parent.inherit_access=true y _isNew o _parentModified, User.updateMany $addToSet sobre el nuevo cat + getAllWithChildren (1 nivel efectivo, CAT-RISK-7)"
+
+# ---- UI (NO accesible desde bot QA, cosecha pendiente) ----
+# Cuando el dev conceda al bot el modulo `category` UI enabled + rol is_admin,
+# cosechar las marcas sm: reales con browser_evaluate sobre /admin/category.
+# Esperado segun el diff del PR #8507:
+#   - toggle: [sm-category-inherit-access] o [data-name="inherit_access"]
+#   - modales: [sm="category-modal-new"], [sm="category-modal-edit"]
+#   - tooltip bootstrap: target selectable via el toggle + .tooltip()
+#   - icono info (i): aria-label o title
+# Por ahora esta seccion queda en blanco y CAT-RISK-9 documenta el gap.

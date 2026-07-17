@@ -1,6 +1,24 @@
-version: 1
+version: 3
 modulo: "category"
-ultima_actualizacion: '2026-07-08'
+ultima_actualizacion: '2026-07-15'
+
+# 2026-07-15 (segundo pase): cobertura ampliada para cerrar las brechas del
+# qa_checklist del PR #8507 que el primer pase dejo abiertas. Anadidos:
+#   - CAT-INH-006 / CAT-INH-007 (smoke): el guard `if (req.body.inherit_access)`
+#     del server descarta `false` explicito en JSON; con form-encoding el
+#     string 'false' si se normaliza correctamente. CAT-RISK-8 documentado.
+#   - CAT-INH-R-007..R-012 (regression gaps): cubren los AC pendientes de
+#     HU-2 (edit-sin-parent, parent=''/null), HU-5 (multi-user fan-out,
+#     idempotencia del $addToSet), grant-only reforzado (re-parent no
+#     remueve).
+#   - CAT-INH-R-013 (regression gap): test.fail vivo del detail handler
+#     (mismo gap que CAT-INH-002, con sesgo POST-update). Cierra contra
+#     CAT-RISK-5.
+# Bateria gaps vive en tests/api/regression/category/category-inherit-access.gaps.regression.spec.js.
+# UI del PR (toggle 'Auto-grant subcategory access' en modales, tooltip
+# bootstrap) NO accesible desde el bot (ver CAT-RISK-9 nuevo): la nav del
+# dashboard no expone /admin/category ni /settings/categories; las URLs
+# devuelven 404. Cobertura UI queda como GAP hasta que se conceda acceso.
 
 tests:
   - id: "CAT-TC-001"
@@ -57,3 +75,471 @@ tests:
       mitigates: []
       story: "US-035"
       spec: "tests/api/contract/category/category.api.contract.spec.js"
+
+  # ---- CRUD smoke (portado desde api_test_flow) ----
+  # Migrados de api_test_flow/tests/api/smoke/category/category-crud.smoke.spec.js.
+  # Bloque GET (CAT-TC-005..009): verdes contra el dev compartido, ya autentica
+  # por sesion y cubre los filtros basicos del listado.
+  # Bloque POST (CAT-TC-010..015): verdes desde 2026-07-14 (modulo `category`
+  # habilitado en el bot QA; CAT-RISK-4 quedo resuelto y esta documentado en
+  # riesgos.yaml).
+
+  - id: "CAT-TC-005"
+    titulo: "GET /api/category (sin filtros) devuelve List Response"
+    modulo: "category"
+    tipo: "crud"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-2"]
+      mitigates: ["CAT-RISK-3"]
+      story: "US-035"
+      spec: "tests/api/smoke/category/category-crud.smoke.spec.js"
+
+  - id: "CAT-TC-006"
+    titulo: "GET /api/category?category_name=<name> filtra por nombre"
+    modulo: "category"
+    tipo: "crud"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-2"]
+      mitigates: ["CAT-RISK-1"]
+      story: "US-035"
+      spec: "tests/api/smoke/category/category-crud.smoke.spec.js"
+
+  - id: "CAT-TC-007"
+    titulo: "GET /api/category?full=true devuelve nombre con ruta completa"
+    modulo: "category"
+    tipo: "crud"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-2"]
+      mitigates: []
+      story: "US-035"
+      spec: "tests/api/smoke/category/category-crud.smoke.spec.js"
+
+  - id: "CAT-TC-008"
+    titulo: "GET /api/category?with_count=true devuelve conteo de hijos"
+    modulo: "category"
+    tipo: "crud"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-2"]
+      mitigates: []
+      story: "US-035"
+      spec: "tests/api/smoke/category/category-crud.smoke.spec.js"
+
+  - id: "CAT-TC-009"
+    titulo: "GET /api/category incluye categorias hijas recien creadas en el listado"
+    modulo: "category"
+    tipo: "crud"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-2"]
+      mitigates: ["CAT-RISK-1"]
+      story: "US-035"
+      spec: "tests/api/smoke/category/category-crud.smoke.spec.js"
+
+  - id: "CAT-TC-010"
+    titulo: "POST /api/category minimo (solo name) crea categoria"
+    modulo: "category"
+    tipo: "crud"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-2"]
+      mitigates: []
+      story: "US-035"
+      spec: "tests/api/smoke/category/category-crud.smoke.spec.js"
+
+  - id: "CAT-TC-011"
+    titulo: "POST /api/category completo persiste parent/drm/track/visible"
+    modulo: "category"
+    tipo: "crud"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-2"]
+      mitigates: []
+      story: "US-035"
+      spec: "tests/api/smoke/category/category-crud.smoke.spec.js"
+
+  - id: "CAT-TC-012"
+    titulo: "POST /api/category sin name devuelve 400 NAME_IS_REQUIRED"
+    modulo: "category"
+    tipo: "crud"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-2"]
+      mitigates: []
+      story: "US-035"
+      spec: "tests/api/smoke/category/category-crud.smoke.spec.js"
+
+  - id: "CAT-TC-013"
+    titulo: "POST /api/category con drm invalido normaliza drm.enabled=false"
+    modulo: "category"
+    tipo: "crud"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-2"]
+      mitigates: []
+      story: "US-035"
+      spec: "tests/api/smoke/category/category-crud.smoke.spec.js"
+
+  - id: "CAT-TC-014"
+    titulo: "POST /api/category con parent invalido devuelve 4xx/5xx"
+    modulo: "category"
+    tipo: "crud"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-2"]
+      mitigates: []
+      story: "US-035"
+      spec: "tests/api/smoke/category/category-crud.smoke.spec.js"
+
+  - id: "CAT-TC-015"
+    titulo: "POST /api/category con name vacio devuelve 4xx/5xx"
+    modulo: "category"
+    tipo: "crud"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-2"]
+      mitigates: []
+      story: "US-035"
+      spec: "tests/api/smoke/category/category-crud.smoke.spec.js"
+
+  # ---- inherit_access (PR sm2#8507) ----
+  # El flag `inherit_access` agrega hook post-save que hace $addToSet sobre
+  # User.categories[] del subarbol nuevo cuando la categoria padre lo tiene
+  # en true. La bateria la armo como pre-flight del fix. El 2026-07-14 el
+  # deploy en dev esta PARCIAL (ver CAT-RISK-5): 5 specs pasan, 9 fallan
+  # con mensaje claro "DEPLOY INCOMPLETO PR #8507: ...". Cuando el equipo
+  # termine el deploy (GET by id proyecta, POST /api/category/:id existe),
+  # los 9 rojos pasan a verde sin reescribir nada.
+
+  - id: "CAT-INH-001"
+    titulo: "POST /api/category sin inherit_access persiste default false/ausente"
+    modulo: "category"
+    tipo: "inherit-smoke"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-3"]
+      mitigates: []
+      story: "US-035"
+      spec: "tests/api/smoke/category/category-inherit-access.smoke.spec.js"
+    # Verde al 2026-07-14: el handler create.js acepta el body (o lo ignora) sin error.
+
+  - id: "CAT-INH-002"
+    titulo: "POST /api/category con inherit_access=true persiste y GET by id lo expone"
+    modulo: "category"
+    tipo: "inherit-smoke"
+    prioridad: "high"
+    estado: "expected-fail"
+    refs:
+      validates: ["CAT-AC-3"]
+      mitigates: ["CAT-RISK-5"]
+      story: "US-035"
+      spec: "tests/api/smoke/category/category-inherit-access.smoke.spec.js"
+    # Rojo al 2026-07-14: POST acepta el flag pero GET /api/category/:id no lo proyecta.
+    # Mensaje: "DEPLOY INCOMPLETO PR #8507: ... GET devolvio inherit_access=undefined".
+    # Pasara a verde cuando el dev despliegue el cambio en src/server/routes/api/category/index.js
+    # que selecciona inherit_access tambien en detail.
+
+  - id: "CAT-INH-003"
+    titulo: "GET /api/category (basico) proyecta inherit_access sobre categoria fresca"
+    modulo: "category"
+    tipo: "inherit-smoke"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-3"]
+      mitigates: []
+      story: "US-035"
+      spec: "tests/api/smoke/category/category-inherit-access.smoke.spec.js"
+    # Verde al 2026-07-14: el listado basico popula inherit_access en items frescos.
+
+  - id: "CAT-INH-003b"
+    titulo: "GET /api/category?full=true proyecta inherit_access sobre categoria fresca"
+    modulo: "category"
+    tipo: "inherit-smoke"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-3"]
+      mitigates: []
+      story: "US-035"
+      spec: "tests/api/smoke/category/category-inherit-access.smoke.spec.js"
+
+  - id: "CAT-INH-003c"
+    titulo: "GET /api/category?with_count=true proyecta inherit_access sobre categoria fresca"
+    modulo: "category"
+    tipo: "inherit-smoke"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-3"]
+      mitigates: []
+      story: "US-035"
+      spec: "tests/api/smoke/category/category-inherit-access.smoke.spec.js"
+
+  - id: "CAT-INH-004"
+    titulo: "POST /api/category/:id cambia inherit_access false->true"
+    modulo: "category"
+    tipo: "inherit-smoke"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-3"]
+      mitigates: ["CAT-RISK-5"]
+      story: "US-035"
+      spec: "tests/api/smoke/category/category-inherit-access.smoke.spec.js"
+    # Verde desde 2026-07-14 (deploy completo: POST /api/category/:id ya
+    # responde 200). Antes en 2026-07-14 primera corrida respondia 404 (CAT-
+    # RISK-5); cerramos el riesgo parcialmente.
+
+  - id: "CAT-INH-005"
+    titulo: "POST /api/category/:id solo con name conserva inherit_access=true previo"
+    modulo: "category"
+    tipo: "inherit-smoke"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-3"]
+      mitigates: ["CAT-RISK-5"]
+      story: "US-035"
+      spec: "tests/api/smoke/category/category-inherit-access.smoke.spec.js"
+    # Verde desde 2026-07-14 (encadenado al deploy de CAT-INH-004).
+
+  - id: "CAT-INH-006"
+    titulo: "POST /api/category {inherit_access:false} (JSON) no activa el flag"
+    modulo: "category"
+    tipo: "inherit-smoke"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-3"]
+      mitigates: ["CAT-RISK-8"]
+      story: "US-035"
+      spec: "tests/api/smoke/category/category-inherit-access.smoke.spec.js"
+    # Verde desde 2026-07-15: confirma que el guard `if (req.body.inherit_access)`
+    # del create.js descarta `false` explicito en JSON (queda default false). El
+    # flag NO se activa al reves (eso seria un bug mas grave).
+
+  - id: "CAT-INH-007"
+    titulo: "POST /api/category {inherit_access:'false'} (form) NO activa el flag"
+    modulo: "category"
+    tipo: "inherit-smoke"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-3"]
+      mitigates: ["CAT-RISK-8"]
+      story: "US-035"
+      spec: "tests/api/smoke/category/category-inherit-access.smoke.spec.js"
+    # Verde desde 2026-07-15: con form-encoding el string 'false' es truthy,
+    # entra al guard, normalizeBoolean lo convierte a false. La categoria queda
+    # con inherit_access=false/ausente. Cubre el camino de la UI actual (.coffee
+    # envia form-encoded por default).
+
+  - id: "CAT-INH-R-001"
+    titulo: "Child bajo parent inherit=true se otorga a user.categories del parent (hook post-save)"
+    modulo: "category"
+    tipo: "inherit-regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-3"]
+      mitigates: ["CAT-RISK-5", "CAT-RISK-6"]
+      story: "US-035"
+      spec: "tests/api/regression/category/category-inherit-access.regression.spec.js"
+    # Verde desde 2026-07-15 (CAT-RISK-6 resuelto via qaUserFactory). Valida
+    # 1 nivel: parent.inherit=true -> child agregado al user.categories.
+
+  - id: "CAT-INH-R-002"
+    titulo: "La herencia cubre TODO el subarbol del child (getAllWithChildren)"
+    modulo: "category"
+    tipo: "inherit-regression"
+    prioridad: "high"
+    estado: "expected-fail"
+    refs:
+      validates: ["CAT-AC-3"]
+      mitigates: ["CAT-RISK-7"]
+      story: "US-035"
+      spec: "tests/api/regression/category/category-inherit-access.regression.spec.js"
+    # Rojo al 2026-07-15: la recursion al grandchild NO ocurre aunque
+    # getAllWithChildren del modelo SI es recursiva. Esperado vivir hasta
+    # que el back extienda el hook post-save para usar la funcion recursiva.
+
+  - id: "CAT-INH-R-003"
+    titulo: "Child bajo parent inherit=false (default) NO se otorga (regression legacy)"
+    modulo: "category"
+    tipo: "inherit-regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-3"]
+      mitigates: ["CAT-RISK-5", "CAT-RISK-6"]
+      story: "US-035"
+      spec: "tests/api/regression/category/category-inherit-access.regression.spec.js"
+    # Verde desde 2026-07-15. Comportamiento legacy intacto: el child no se
+    # otorga cuando el parent tiene inherit=false.
+
+  - id: "CAT-INH-R-004"
+    titulo: "Grant-only: quitar el parent no remueve el child ya heredado (by-design)"
+    modulo: "category"
+    tipo: "inherit-regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-3"]
+      mitigates: ["CAT-RISK-5", "CAT-RISK-6"]
+      story: "US-035"
+      spec: "tests/api/regression/category/category-inherit-access.regression.spec.js"
+    # Verde desde 2026-07-15. Confirma que grant-only se respeta.
+
+  - id: "CAT-INH-R-005"
+    titulo: "Activar inherit_access retroactivo NO otorga a hijos preexistentes (by-design)"
+    modulo: "category"
+    tipo: "inherit-regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-3"]
+      mitigates: ["CAT-RISK-5", "CAT-RISK-6"]
+      story: "US-035"
+      spec: "tests/api/regression/category/category-inherit-access.regression.spec.js"
+    # Verde desde 2026-07-15. By-design documentado en la UI: el flag no es
+    # retroactivo.
+
+  - id: "CAT-INH-R-006"
+    titulo: "Mover categoria bajo parent inherit=true dispara la herencia (_parentModified)"
+    modulo: "category"
+    tipo: "inherit-regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-3"]
+      mitigates: ["CAT-RISK-5", "CAT-RISK-6"]
+      story: "US-035"
+      spec: "tests/api/regression/category/category-inherit-access.regression.spec.js"
+    # Verde desde 2026-07-15. Verifica _parentModified hook: mover una cat
+    # bajo un parent con inherit=true la otorga al user.
+
+  # ---- inherit_access gaps (R-007..R-013, segundo pase 2026-07-15) ----
+  # Cubre el resto del qa_checklist del PR #8507 que la primera bateria dejo
+  # pendiente: HU-2 (edit-sin-parent, parent=''), HU-5 (multi-user fan-out,
+  # idempotencia del $addToSet, grant-only reforzado tras re-parent), y
+  # cierre de CAT-RISK-5 (detail handler via POST update).
+
+  - id: "CAT-INH-R-007"
+    titulo: "Editar name sin cambiar parent NO dispara herencia"
+    modulo: "category"
+    tipo: "inherit-regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-3"]
+      mitigates: ["CAT-RISK-5", "CAT-RISK-6"]
+      story: "US-035"
+      spec: "tests/api/regression/category/category-inherit-access.gaps.regression.spec.js"
+    # Verde desde 2026-07-15. Valida el guard _parentModified del hook:
+    # editar sin cambiar parent NO debe agregar ni quitar nada de
+    # user.categories. Edge case de HU-2 ("solo movimiento real dispara").
+
+  - id: "CAT-INH-R-008"
+    titulo: "Mover categoria a parent='' (sin padre) NO otorga acceso"
+    modulo: "category"
+    tipo: "inherit-regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-3"]
+      mitigates: ["CAT-RISK-5", "CAT-RISK-6"]
+      story: "US-035"
+      spec: "tests/api/regression/category/category-inherit-access.gaps.regression.spec.js"
+    # Verde desde 2026-07-15. Confirmado: parent='' sale del path de
+    # herencia porque _parentModified exige un parent no-vacio + heredante.
+
+  - id: "CAT-INH-R-009"
+    titulo: "POST /api/category/:id {inherit_access:false} (JSON) NO apaga flag true previo"
+    modulo: "category"
+    tipo: "inherit-regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-3"]
+      mitigates: ["CAT-RISK-8"]
+      story: "US-035"
+      spec: "tests/api/regression/category/category-inherit-access.gaps.regression.spec.js"
+    # Verde desde 2026-07-15. Documenta vivo el bug CAT-RISK-8: con JSON
+    # body explicito `false`, el guard del update.js no procesa el campo y
+    # el flag previo sobrevive. Si se corrige, el spec pasa a verde con la
+    # asercion invertida (acepta `false` como apagar explicito).
+
+  - id: "CAT-INH-R-010"
+    titulo: "Dos users simultaneos con acceso al parent heredan el child"
+    modulo: "category"
+    tipo: "inherit-regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-3"]
+      mitigates: ["CAT-RISK-5", "CAT-RISK-6"]
+      story: "US-035"
+      spec: "tests/api/regression/category/category-inherit-access.gaps.regression.spec.js"
+    # Verde desde 2026-07-15. El hook User.updateMany $addToSet debe cubrir
+    # a TODOS los users con acceso al parent, no solo al primero.
+
+  - id: "CAT-INH-R-011"
+    titulo: "Re-parent del child NO remueve el grant ya otorgado"
+    modulo: "category"
+    tipo: "inherit-regression"
+    prioridad: "high"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-3"]
+      mitigates: ["CAT-RISK-5", "CAT-RISK-6"]
+      story: "US-035"
+      spec: "tests/api/regression/category/category-inherit-access.gaps.regression.spec.js"
+    # Verde desde 2026-07-15. Grant-only reforzado: cambiar el parent de un
+    # child que ya fue otorgado por herencia NO debe revocar el grant. Edge
+    # case de HU-3.
+
+  - id: "CAT-INH-R-012"
+    titulo: "Idempotencia: la categoria aparece UNA sola vez en user.categories"
+    modulo: "category"
+    tipo: "inherit-regression"
+    prioridad: "medium"
+    estado: "active"
+    refs:
+      validates: ["CAT-AC-3"]
+      mitigates: ["CAT-RISK-5", "CAT-RISK-6"]
+      story: "US-035"
+      spec: "tests/api/regression/category/category-inherit-access.gaps.regression.spec.js"
+    # Verde desde 2026-07-15. $addToSet de Mongo es idempotente. Verificado:
+    # tras setUserCategories con array que ya incluye el child, el server
+    # no duplica la entrada.
+
+  - id: "CAT-INH-R-013"
+    titulo: "GET /api/category/:id proyecta inherit_access tras POST update"
+    modulo: "category"
+    tipo: "inherit-regression"
+    prioridad: "low"
+    estado: "expected-fail"
+    refs:
+      validates: ["CAT-AC-3"]
+      mitigates: ["CAT-RISK-5"]
+      story: "US-035"
+      spec: "tests/api/regression/category/category-inherit-access.gaps.regression.spec.js"
+    # Rojo al 2026-07-15: mismo gap que CAT-INH-002 (detail handler sin
+    # inherit_access en .select()). Cierra cuando se arregle ese handler
+    # en src/server/routes/api/category/index.js (ruta detail).

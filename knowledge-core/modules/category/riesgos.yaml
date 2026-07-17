@@ -1,6 +1,6 @@
-version: 1
+version: 2
 modulo: "category"
-ultima_actualizacion: '2026-07-08'
+ultima_actualizacion: '2026-07-15'
 
 riesgos:
   - id: "CAT-RISK-1"
@@ -72,3 +72,317 @@ riesgos:
       - "src/server/routes/api/category/index.js:239"
     defectos_relacionados: []
     prioridad_prueba: "SHOULD"
+
+  # CAT-RISK-4 RESUELTO 2026-07-14: el modulo `category` quedo habilitado para el
+  # bot QA en dev (la nota original del 2026-07-08 que decia "POST devuelve 403"
+  # quedo desactualizada). Los specs CRUD del modulo pasaron a verde sin
+  # reescribir. Si vuelve a romperse la autorizacion, restauramos este riesgo
+  # y repuntamos los test.fail() en tests/api/smoke/category/.
+  # ---- BEGIN RESOLVED ----
+  # - id: "CAT-RISK-4"
+  #   titulo: "Bot QA sin modulo 'category' habilitado para escribir POST/DELETE en dev"
+  #   ...
+  # ---- END RESOLVED ----
+
+  # ---- inherit_access (PR sm2#8507) ----
+
+  - id: "CAT-RISK-5"
+    severidad: "high"
+    probabilidad: "high"
+    titulo: "Deploy parcial de PR #8507 en dev al 2026-07-14 (mejoro luego)"
+    descripcion: >
+      El PR #8507 (inherit_access) esta abierto al staging. Verificado en vivo:
+        2026-07-14 primera corrida: deploy CASI nulo. GET/POST/PUT fallaban.
+        2026-07-14 segunda corrida: deploy COMPLETO salvo el detail handler.
+        OK    POST /api/category (con inherit_access=true) acepta y persiste
+        OK    GET /api/category (basico) proyecta inherit_access en items frescos
+        OK    GET /api/category?full=true proyecta inherit_access
+        OK    GET /api/category?with_count=true proyecta inherit_access
+        OK    POST /api/category/:id edita (responde 200 con doc actualizado)
+        NO    GET /api/category/:id detail solo devuelve {_id, name, slug} (no proyecta inherit_access)
+        NO    PUT /api/category/:id devuelve 404 (sm2 solo expone POST, no PUT)
+    detonador:
+      - "Detalle: GET /api/category/<id> de una categoria con inherit_access=true devuelve body sin el campo"
+    mitigacion: >
+      El unico test rojo legitimo hoy es CAT-INH-002 (detail handler). Cuando
+      el dev agregue `inherit_access` al .select() del detail handler en
+      src/server/routes/api/category/index.js, ese test pasa a verde. Los
+      6 regression specs siguen vivos (test.fail) por CAT-RISK-6.
+    archivos_afectados:
+      - "src/server/routes/api/category/index.js (handler detail en /api/category/:id)"
+    defectos_relacionados: []
+    prioridad_prueba: "MUST"
+    nota_industria: >
+      Detalle: el deploy de un fix amplio en sm2 suele caer en varias piezas
+      y rara vez llega completo a dev. Specs que verifican cada path
+      individualmente reportan el gap exacto sin contaminar CI.
+
+  - id: "CAT-RISK-7"
+    severidad: "medium"
+    probabilidad: "high"
+    titulo: "Herencia de PR #8507 NO recurre al grandchild: solo cubre 1 nivel"
+    descripcion: >
+      Verificado en vivo 2026-07-15 contra dev (bot QA, account
+      6013fd44ab74b068d929c17d). Setup: parent(inherit_access=true) +
+      child(parent=parent) + grandchild(parent=child) + user con
+      categories=[parent]. Comportamiento observado:
+
+        t=0:    user.categories = [parent]
+        t<1s:   child creado -> user.categories = [parent, child]   <- OK, 1 nivel
+        t=21s+: grandchild creado -> user.categories = [parent, child] <- NO se agrego el grandchild
+
+      La funcion getAllWithChildren del modelo Category SI es recursiva
+      (src/server/model/schemas/category.js:255, recursion explicita via
+      find({parent: {$in: categories}})). Pero el hook post-save que
+      dispara User.updateMany $addToSet parece usar solo el parent
+      inmediato del nuevo cat (no una expansion recursiva), por lo que
+      un grandchild no se otorga automaticamente al user via la rama
+      inherit del grandparent. Poll de 21s sin cambio: NO es timing.
+
+      Implicacion de producto: la herencia declarada via
+      inherit_access=true cubre hijos directos. Nietos o mas abajo
+      requieren que la categoria INTERMEDIA (el child) tambien tenga
+      inherit_access=true. Si el comportamiento esperado era "el flag
+      en el abuelo se propaga a todo el subarbol", esto es un gap de
+      implementacion en PR #8507. La funcion getAllWithChildren
+      documenta la intencion (recursive), pero el hook no la honra.
+    detonador:
+      - "Jerarquia parent > child > grandchild con solo parent.inherit_access=true"
+    mitigacion: >
+      Spec CAT-INH-R-002 vive como `test.fail(true, ...)` con la
+      explicacion del gap. Cuando el back extienda el hook para usar
+      getAllWithChildren (o equivalente), el test pasa a verde sin
+      cambios. Mientras tanto, los specs 1-nivel (CAT-INH-R-001,
+      R-003, R-004, R-005, R-006) validan el subconjunto implementado.
+      Workaround si el equipo quiere cobertura mientras tanto: cambiar
+      los specs a verificar el comportamiento real ("solo immediate
+      child bajo parent.inherit") en vez de "todo el subarbol".
+    archivos_afectados:
+      - "src/server/model/schemas/category.js:255 (hook post-save, falta revisar)"
+      - "src/server/routes/api/category/index.js (handlers de create/update)"
+    defectos_relacionados: []
+    prioridad_prueba: "MUST"
+    nota_industria: >
+      Caso tipico de "modelo recursivo pero hook de un nivel": la
+      funcion auxiliar sabe hacer el trabajo (getAllWithChildren esta
+      ahi), pero el orquestador (hook post-save) no la invoca.
+      Pattern matching contra OTROS modulos con grants transitivity:
+      si hay alguno en cola (Federation Groups, Resellers, etc.),
+      conviene auditarlo antes de marcarlo como cerrado.
+
+  - id: "CAT-RISK-8"
+    severidad: "low"
+    probabilidad: "high"
+    titulo: "API: {inherit_access:false} explicito (JSON) no apaga el flag (guard truthy en create/update)"
+    descripcion: >
+      Verificado en vivo 2026-07-15 contra dev. PR #8507 introduce el
+      campo inherit_access y los handlers create.js/update.js lo procesan
+      con un guard:
+
+        if (req.body.inherit_access) { ... }
+
+      El problema: este guard solo entra cuando el campo es truthy.
+      Para la UI actual (.coffee envia form-encoded) no es problema
+      porque el string 'false' es truthy y normalizeBoolean lo convierte
+      a false antes de asignar. PERO para integraciones API que envian
+      JSON body con boolean `false` explicito (curl, fetch, SDK, otros
+      microservicios), el campo cae fuera del guard y el server conserva
+      el valor previo. Se verifica como vivo:
+
+        1) POST /api/category con JSON {inherit_access:false} -> la
+           categoria queda con inherit_access=false/ausente (default).
+           Aceptable: el default coincide con el valor solicitado.
+        2) POST /api/category/:id con JSON {inherit_access:false} sobre
+           una categoria que YA tiene inherit_access=true -> el server
+           lo ignora. El flag queda en true (no se apaga). Aqui si es
+           gap funcional: el cliente no puede apagar el flag por JSON.
+
+      Para la UI actual no se nota. Para integraciones API es un gotcha
+      que el spec del PR deberia documentar explicito o arreglar (cambiar
+      el guard a 'if (req.body.inherit_access !== undefined)' para
+      respetar booleans explicitos).
+    detonador:
+      - "PATCH /api/category/:id con {inherit_access:false} JSON para apagar el flag"
+      - "Cualquier consumidor de API que quiera apagar inherit_access dinamicamente"
+    mitigacion: >
+      Specs CAT-INH-006 (smoke, create), CAT-INH-007 (smoke, create con
+      form-encoded 'false'), CAT-INH-R-009 (regression, update JSON).
+      Cubren el contrato actual: form-encoded 'false' SI apaga el flag;
+      JSON `false` explicito NO. Si el dev cambia el guard, los specs
+      R-009 y los smoke 006/007 se ajustan automaticamente para que el
+      verde signifique "el contrato cambio y respeta JSON false".
+      Workaround para integraciones: enviar {inherit_access:undefined}
+      en JSON, o forzar el re-save del flag a true y luego un POST con
+      SOLO name (back-compat) — feo pero funciona.
+    archivos_afectados:
+      - "src/server/routes/api/category/create.js (linea 31-33, guard truthy)"
+      - "src/server/routes/api/category/update.js (mismo patron)"
+    defectos_relacionados: []
+    prioridad_prueba: "SHOULD"
+    nota_industria: >
+      Patron conocido: `if (req.body.x)` solo procesa cuando llega
+      truthy; en form-encoding todo string no-vacio es truthy (cubierto
+      por normalizeBoolean), pero en JSON respeta tipos. Cualquier
+      "toggle/checkbox" introducido via API debe cuidarse con este
+      gotcha. Recomendacion: usar `req.body.hasOwnProperty('x')` o
+      `req.body.x !== undefined` antes del normalize.
+
+  - id: "CAT-RISK-9"
+    severidad: "medium"
+    probabilidad: "high"
+    titulo: "UI de Category Management no accesible desde bot QA: cobertura HU-4 (toggle, tooltip, modales) queda como GAP"
+    descripcion: >
+      Verificado en vivo 2026-07-15 contra dev (bot botcita@mediastre.am,
+      session del storageState .auth/user.json). El nav del dashboard no
+      expone ninguna ruta de Category Management, y las URLs candidatas
+      devuelven 404 'Look like you're lost':
+
+        - /admin/category        -> 404
+        - /category              -> 404
+        - /settings/categories   -> 404
+
+      Por contraste, /settings/users (donde se edita User.categories)
+      si es accesible (existe en el nav), pero el bot no tiene
+      users_write para modificarse a si mismo (CAT-RISK-6 resolvio via
+      qaUserFactory, pero el sidebar queda operativo solo para el flujo
+      de navegacion; no para editar el bot).
+
+      Implicacion: la cobertura de la UI introducida por PR #8507
+      (cambio en views/partial/category_management.coffee + client .coffee)
+      NO se puede automatizar desde AQ2 sin un upgrade de permisos del
+      bot a is_admin o is_account_admin con modulo `category` UI enabled:
+
+        - Toggle 'Auto-grant subcategory access' (Inherit/Manual) en
+          modales de crear/editar categoria.
+        - Tooltip bootstrap junto al label (rechazo explicito de
+          Alejandro 2026-07-09 al title nativo).
+        - Default Manual al abrir 'nueva categoria' (false por schema).
+        - Persistencia del valor al reabrir el modal de edicion.
+        - Icono de info (i) accesible (aria-label/tooltip).
+    detonador:
+      - "Intentar navegar a la UI category desde un user no-admin"
+      - "Solicitar un spec UI de los modales del PR #8507"
+    mitigacion: >
+      Cobertura 100% por API para el comportamiento del backend (HU-1,
+      HU-2, HU-3, HU-5 contractuales). Cobertura UI queda como GAP
+      documentado. Tres caminos para cerrar:
+        A) Pedir al admin de plataforma que habilite el modulo category
+           en el sidebar del bot + darle rol is_admin (1-click, no toca
+           API).
+        B) Sembrar categorias + usuario via API y luego automatizar UI
+           con un user admin separado (mas fragil: ya no es self-
+           contained por test).
+        C) Cobertura manual (no automatizable desde AQ2 mientras el
+           bot no tenga UI).
+      Mientras tanto, los criterios de aceptacion HU-4 (tooltip
+      bootstrap, default Manual, persistencia) quedan validados solo
+      por inspeccion manual con un is_admin.
+    archivos_afectados:
+      - "views/partial/category_management.coffee (PR #8507, no accesible)"
+      - "src/client/partial/category_management.coffee (PR #8507, no accesible)"
+    defectos_relacionados: []
+    prioridad_prueba: "SHOULD"
+    nota_industria: >
+      Patron que se repite en otros modulos: la cobertura automatizable
+      se queda en API cuando el bot no es admin. La UI queda fuera del
+      scope automatizable hasta que alguien conceda permisos admin al
+      bot de QA. Vale la pena un ticket dedicado para escalar el
+      pedido (TOK-RISK-001 cubre el mismo patron para TokenProfile UI).
+
+  - id: "CAT-RISK-6"
+    severidad: "medium"
+    probabilidad: "high"
+    titulo: "Bot QA sin modulo users_write: no puede asignar user.categories[] via API ni editar users via UI"
+    descripcion: >
+      Verificado 2026-07-14 contra el bot botcito2@mediastre.am
+      (id 6a48117a9ec296ba2422ef0a, account 6013fd44ab74b068d929c17d):
+
+      Permisos actuales del bot:
+        is_admin: false
+        is_link_admin: false
+        is_cdn_admin: false
+        is_support_admin: false
+        is_sales_admin: false
+        is_account_admin: true   <- bypass de cuenta, pero el handler user NO lo respeta
+        permissions.<todos los modulos>.level: 0   <- 25+ modulos en 0
+
+      Lo que SI funciona:
+        GET /api/user           -> 200 (5 users con categories[] legible)
+        GET /api/user/<id>      -> 200 (user completo con permissions y accounts)
+
+      Lo que NO funciona:
+        POST /api/user/<id>     -> 500 DB_ERROR (con cualquier sub-payload)
+        POST /api/user          -> 403 EMAIL_ALREADY_REGISTERED (solo crea)
+        PUT /api/user/<id>      -> 404 (no montado)
+        POST /api/user/<id>/categories -> 404
+        POST /api/account/users -> 404
+
+      UI bloqueada:
+        GET /settings/users            -> redirect ?expired=true (404 de sesion para el modulo)
+        GET /settings/users/<id>       -> 404
+        GET /admin/users               -> 404 "Look like you're lost" (bot no es is_admin)
+
+      Conclusion: el bot tiene `users_read` (GET funciona) pero NO `users_write`
+      (POST falla con 500) y tampoco acceso a la UI de users. El flag
+      is_account_admin=true del modelo no es suficiente para el handler
+      /api/user/:id; el modulo `users` debe estar habilitado a nivel cuenta.
+    detonador:
+      - "Llamadas setUserCategories() en regression specs (CAT-INH-R-001..006)"
+      - "Cualquier intento de modificar un campo de user desde la API"
+      - "Acceso a /settings/users o /admin/users desde la UI"
+    mitigacion: >
+      RESUELTO 2026-07-15: la conclusion del parrafo original ("el modulo
+      `users` NO se ha prendido") era cierta PARA EL BOT PROPIO, pero NO
+      para users NUEVOS creados por el bot via API. Verificado en vivo:
+      el bot puede hacer POST /api/user (con email unico, no choca con
+      EMAIL_ALREADY_REGISTERED), POST /api/user/<nuevo> (cualquier sub-
+      payload incluyendo {categories: [...]} y {permissions: {...}}),
+      y DELETE /api/user/<nuevo>. El 500 del parrafo original es
+      ESPECIFICO al record del bot mismo (probablemente una rama
+      "no te podes sacar a vos mismo de admins" del handler user.update
+      que rompe contra Mongo cuando el user es account_admin y tiene __v
+      alto). Para los specs de inherit_access usamos la estrategia
+      "fresh self-contained user":
+
+      - src/api/users-factory.js expone createUser, setUserCategories,
+        setUserPermissions, deleteUser. createUser acepta `categories[]`
+        en el payload (server respeta al crear, no requiere POST /:id
+        posterior), `accounts[]` y opciones basicas. permissions e
+        is_account_admin SE IGNORAN al crear (quedan en 0/false por
+        default) — para elevarlos hay que hacer setUserPermissions
+        posterior (que SI funciona para users nuevos).
+      - src/fixtures/index.js expone los fixtures qaUser (1 user por
+        test, auto-cleanup) y qaUserFactory (factory invocada por el
+        spec; todos los users creados se borran al final).
+      - resource-cleaner.js gana un deleter 'user' (DELETE /api/user/:id).
+      - tests/api/regression/category/category-inherit-access.regression.spec.js
+        deja de usar loadTargetUser() (que tomaba al bot mismo, el camino
+        roto) y pasa a qaUserFactory. Los 6 specs viven ahora como:
+            R-001, R-003, R-004, R-005, R-006 -> VERDES (validan
+              comportamiento PR #8507 en 1 nivel de herencia).
+            R-002 -> test.fail (validacion honesta del gap recursivo,
+              ver CAT-RISK-7 mas abajo).
+
+      Conclusion del fix: ya no es deuda infra. La cobertura del modulo
+      Category queda al 100% en dev para los aspectos que NO dependen
+      de gato (bot no es admin cross-account). Si en algun momento se
+      quiere cubrir la UI de gestion de usuarios o la actualizacion
+      del bot mismo, ese subconjunto seguira bloqueado por el mismo
+      motivo y habra que pedir el modulo `users` al admin de plataforma.
+    archivos_afectados:
+      - "src/api/users-factory.js (nuevo)"
+      - "src/fixtures/index.js (qaUser / qaUserFactory)"
+      - "src/fixtures/resource-cleaner.js (deleter 'user')"
+      - "tests/api/regression/category/category-inherit-access.regression.spec.js"
+    defectos_relacionados: []
+    prioridad_prueba: "SHOULD"
+    nota_industria: >
+      Patron replicable: "self-contained fresh-resource per test" — para
+      cualquier modulo donde la cuenta bot no puede modificar su propio
+      record, pero SI puede crear recursos nuevos con el ciclo POST/POST/DELETE,
+      armar un factory que cree uno por test. Reduce el acoplamiento entre
+      tests (cada uno opera sobre datos propios) y elimina la necesidad de
+      pedir permisos adicionales al admin. El trade-off: la cobertura de la
+      UI o del bot mismo sigue off-limits hasta que el admin conceda los
+      permisos correspondientes. Verificado en categoria 2026-07-15.
+
